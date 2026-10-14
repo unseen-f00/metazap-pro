@@ -1,0 +1,315 @@
+/**
+ * globals.css
+ * Premium 'Paper' Design System for MetaZap.
+ * Full Dark Mode support via next-themes and responsive mobile optimization.
+ */
+
+@import "tailwindcss";
+
+/* Enable class-based dark mode variant for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =====================================================
+   PREMIUM PAPER DESIGN TOKENS
+   Light & Dark mode variables
+   ===================================================== */
+
+:root {
+  /* Light Theme */
+  --background: #fafafa;
+  --background-secondary: #f3f4f6;
+  --foreground: #0f172a;
+  --foreground-secondary: #334155;
+
+  /* Card & Borders */
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(15, 23, 42, 0.06);
+  --shadow-hover: rgba(15, 23, 42, 0.08);
+
+  /* Brand Accent */
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-light: #e0e7ff;
+
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  /* Font families */
+  --font-headings: var(--font-merriweather), Georgia, serif;
+  --font-body: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-caption: var(--font-inter), sans-serif;
+}
+
+.dark {
+  /* Dark Theme */
+  --background: #090d16;
+  --background-secondary: #0f172a;
+  --foreground: #f8fafc;
+  --foreground-secondary: #94a3b8;
+
+  /* Card & Borders */
+  --card-bg: #0f172a;
+  --border-color: #1e293b;
+  --shadow-color: rgba(0, 0, 0, 0.45);
+  --shadow-hover: rgba(0, 0, 0, 0.65);
+
+  /* Brand Accent */
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-light: #1e1b4b;
+}
+
+/* Tailwind theme mapping */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card-bg);
+  --color-border: var(--border-color);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --font-sans: var(--font-sans);
+}
+
+/* =====================================================
+   BASE STYLES & SVG SIZING SAFETY
+   ===================================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--background);
+  box-sizing: border-box;
+}
+
+/* Strict SVG sizing defense: prevents SVGs from ever expanding to full screen */
+svg:not([width]):not([height]) {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* =====================================================
+   COMPONENT STYLES (PAPER UI)
+   ===================================================== */
+
+.paper-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px 0 var(--shadow-color);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.paper-card:hover {
+  box-shadow: 0 10px 25px -5px var(--shadow-hover);
+}
+
+.section-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+
+@media (min-width: 768px) {
+  .section-container {
+    padding: 64px 24px;
+  }
+}
+
+/* Typography defaults */
+h1 {
+  font-family: var(--font-headings);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-family: var(--font-headings);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+h3 {
+  font-family: var(--font-headings);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+
+p {
+  font-family: var(--font-body);
+  margin-bottom: 1.4em;
+  line-height: 1.75;
+}
+
+/* Shadows */
+.shadow-paper {
+  box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+}
+
+.shadow-paper-lg {
+  box-shadow: 0 10px 20px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
+}
+
+/* =====================================================
+   DARK THEME COMPONENT & TYPOGRAPHY OVERRIDES
+   ===================================================== */
+
+/* Universal Dark Mode Headings */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #f8fafc !important;
+}
+
+/* Universal Dark Mode Body Text */
+.dark p,
+.dark li,
+.dark dt,
+.dark dd {
+  color: #cbd5e1 !important;
+}
+
+.dark strong,
+.dark b {
+  color: #f8fafc !important;
+}
+
+/* Global Slate & Gray Text Inversions in Dark Mode */
+.dark .text-slate-950,
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-gray-950,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-black {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-400,
+.dark .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* Dark Mode Backgrounds & Borders */
+.dark .bg-white {
+  background-color: var(--card-bg, #0f172a) !important;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-200\/90,
+.dark .border-slate-200\/80,
+.dark .border-slate-200\/70,
+.dark .border-slate-200\/60,
+.dark .border-slate-100,
+.dark .border-slate-100\/80,
+.dark .border-slate-100\/60 {
+  border-color: #1e293b !important;
+}
+
+.dark .paper-card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .paper-card h1,
+.dark .paper-card h2,
+.dark .paper-card h3,
+.dark .paper-card h4,
+.dark h1,
+.dark h2 {
+  color: #f8fafc !important;
+}
+
+.dark .paper-card p {
+  color: #cbd5e1 !important;
+}
+
+/* Dark mode for FAQ Accordions across all pages */
+.dark details {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark details summary {
+  color: #f8fafc !important;
+}
+
+.dark details summary span {
+  color: #f8fafc !important;
+}
+
+.dark details summary:hover {
+  background-color: rgba(30, 41, 59, 0.4) !important;
+}
+
+.dark details > div {
+  border-color: var(--border-color) !important;
+  background-color: transparent !important;
+  color: #cbd5e1 !important;
+}
+
+.dark details > div p {
+  color: #cbd5e1 !important;
+}
+
+/* Dark mode inputs and forms */
+.dark input[type="text"],
+.dark textarea {
+  background-color: #0b1120;
+  border-color: #1e293b;
+  color: #f8fafc;
+}
+
+
