@@ -25,4 +25,4 @@ To run MetaZap Pro on your local machine, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YOUR_GITHUB_USERNAME/metazap-pro.git](https://github.com/YOUR_GITHUB_USERNAME/metazap-pro.git)
+   git clone [https://github.com/unseen-f00/metazap-pro.git](https://github.com/unseen-f00/metazap-pro.git)
