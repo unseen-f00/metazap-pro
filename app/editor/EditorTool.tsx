@@ -3,46 +3,58 @@
 /**
  * EditorTool.tsx
  * Client component for the EXIF Editor page.
- * Includes UploadDropzone for selecting an image and fields for editing EXIF tags.
+ * Uses UploadDropzone for selecting an image and injectExifData to generate a clean,
+ * updated image Blob with customized EXIF metadata.
  */
 
 import { useState } from 'react';
+import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
+import { injectExifData, formatExifDate } from '@/app/lib/exifEditor';
 
 export default function EditorTool() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [author, setAuthor] = useState('Photographer');
-  const [copyright, setCopyright] = useState('© 2025 All Rights Reserved');
-  const [dateOriginal, setDateOriginal] = useState('2025:01:01 12:00:00');
+  const [copyright, setCopyright] = useState('© 2026 All Rights Reserved');
+  const [dateOriginal, setDateOriginal] = useState(formatExifDate());
   const [software, setSoftware] = useState('MetaZap Pro');
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleFilesSelected = (files: File[]) => {
     if (!files.length) return;
     const file = files[0];
+    if (!file || file.size === 0) return;
     setSelectedFile(file);
-    const url = URL.createObjectURL(file);
-    setDownloadUrl(url);
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
     if (!selectedFile) return;
-    const a = document.createElement('a');
-    a.href = downloadUrl || URL.createObjectURL(selectedFile);
-    a.download = `edited_${selectedFile.name}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    setIsSaving(true);
+    try {
+      const result = await injectExifData(selectedFile, {
+        author,
+        copyright,
+        dateOriginal,
+        software,
+        latitude: '',
+        longitude: '',
+      });
+      // Serve the newly generated clean/edited Blob
+      saveAs(result.blob, result.fileName);
+    } catch (err) {
+      console.error('Failed to update EXIF data:', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
-    if (downloadUrl) URL.revokeObjectURL(downloadUrl);
     setSelectedFile(null);
-    setDownloadUrl(null);
     setAuthor('Photographer');
     setCopyright('© 2026 All Rights Reserved');
-    setDateOriginal('2026:01:01 12:00:00');
+    setDateOriginal(formatExifDate());
     setSoftware('MetaZap Pro');
+    setIsSaving(false);
   };
 
   return (
@@ -71,6 +83,7 @@ export default function EditorTool() {
           onFilesSelected={handleFilesSelected}
           label="Drop an image here to edit metadata"
           description="JPEG, PNG, WebP — up to 20MB"
+          accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
         />
       ) : (
         <div className="space-y-6">
@@ -126,9 +139,10 @@ export default function EditorTool() {
           <div className="pt-2 flex gap-3">
             <button
               onClick={handleApply}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+              disabled={isSaving}
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
             >
-              Save & Download Photo
+              {isSaving ? 'Processing...' : 'Save & Download Photo'}
             </button>
             <button
               onClick={handleReset}

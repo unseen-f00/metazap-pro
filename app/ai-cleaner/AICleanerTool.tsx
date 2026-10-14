@@ -7,24 +7,35 @@
  */
 
 import { useState } from 'react';
+import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
-import { processImageFile } from '@/app/lib/metadataRemover';
+import { processImageFile, calculateSizeAnalytics, SizeAnalytics } from '@/app/lib/metadataRemover';
+import { triggerSuccessConfetti } from '@/app/lib/confetti';
+import FileSizeAnalyticsCard from '@/app/components/FileSizeAnalyticsCard';
 
 export default function AICleanerTool() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cleanedUrl, setCleanedUrl] = useState<string | null>(null);
+  const [cleanedBlob, setCleanedBlob] = useState<Blob | null>(null);
+  const [sizeAnalytics, setSizeAnalytics] = useState<SizeAnalytics | null>(null);
   const [isCleaning, setIsCleaning] = useState(false);
 
   const handleFilesSelected = async (files: File[]) => {
     if (!files.length) return;
     const file = files[0];
+    if (!file || file.size === 0) return;
     setSelectedFile(file);
     setIsCleaning(true);
 
     try {
       const cleanBlob = await processImageFile(file);
+      setCleanedBlob(cleanBlob);
       const url = URL.createObjectURL(cleanBlob);
       setCleanedUrl(url);
+
+      const analytics = calculateSizeAnalytics(file.size, cleanBlob.size);
+      setSizeAnalytics(analytics);
+      triggerSuccessConfetti();
     } catch (err) {
       console.error(err);
     } finally {
@@ -33,19 +44,26 @@ export default function AICleanerTool() {
   };
 
   const handleDownload = () => {
-    if (!cleanedUrl || !selectedFile) return;
-    const a = document.createElement('a');
-    a.href = cleanedUrl;
-    a.download = `cleaned_${selectedFile.name}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    if (!selectedFile) return;
+    const filename = `cleaned_${selectedFile.name}`;
+    if (cleanedBlob) {
+      saveAs(cleanedBlob, filename);
+    } else if (cleanedUrl) {
+      const a = document.createElement('a');
+      a.href = cleanedUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   };
 
   const handleReset = () => {
     if (cleanedUrl) URL.revokeObjectURL(cleanedUrl);
     setSelectedFile(null);
     setCleanedUrl(null);
+    setCleanedBlob(null);
+    setSizeAnalytics(null);
   };
 
   return (
@@ -62,6 +80,7 @@ export default function AICleanerTool() {
           onFilesSelected={handleFilesSelected}
           label="Drop AI-generated or edited images here"
           description="JPEG, PNG, WebP — up to 20MB per photo"
+          accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
         />
       ) : (
         <div className="space-y-6">
@@ -106,6 +125,11 @@ export default function AICleanerTool() {
               </button>
             </div>
           </div>
+
+          {/* File Size Analytics (Before vs After) */}
+          {sizeAnalytics && (
+            <FileSizeAnalyticsCard analytics={sizeAnalytics} />
+          )}
         </div>
       )}
     </div>

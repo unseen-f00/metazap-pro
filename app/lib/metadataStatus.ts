@@ -1,148 +1,284 @@
 /**
  * metadataStatus.ts
  * Generates accurate 'Before & After' metadata comparisons for images.
- * Scans binary headers and EXIF/PNG chunks client-side to report the exact
- * tags present before cleaning and the sanitized state after cleaning.
+ * Uses exifr to extract REAL EXIF, GPS, TIFF, IPTC, and XMP tags client-side.
+ * Reports exact detected tags as individual items for pill-tag rendering in UI.
  */
 
-import piexif from 'piexifjs';
+import exifr from 'exifr';
+
+export interface DetectedTagItem {
+  key: string;
+  label: string;
+  value: string;
+  category: 'camera' | 'gps' | 'date' | 'software' | 'lens' | 'technical' | 'chunk';
+}
 
 export interface BeforeAfterStatus {
   beforeLabel: string;
   beforeTagsCount: number;
   beforeDetails: string[];
+  detectedTagList: DetectedTagItem[];
   afterLabel: string;
   afterTagsCount: number;
   afterDetails: string[];
   cleanPercent: number; // e.g. 100%
 }
 
+const KNOWN_LABELS: Record<string, { label: string; category: DetectedTagItem['category'] }> = {
+  Make: { label: 'Camera Make', category: 'camera' },
+  Model: { label: 'Camera Model', category: 'camera' },
+  LensModel: { label: 'Lens Model', category: 'lens' },
+  LensMake: { label: 'Lens Make', category: 'lens' },
+  latitude: { label: 'GPS Latitude', category: 'gps' },
+  longitude: { label: 'GPS Longitude', category: 'gps' },
+  GPSLatitude: { label: 'GPS Latitude', category: 'gps' },
+  GPSLongitude: { label: 'GPS Longitude', category: 'gps' },
+  GPSAltitude: { label: 'GPS Altitude', category: 'gps' },
+  GPSPosition: { label: 'GPS Position', category: 'gps' },
+  DateTimeOriginal: { label: 'Date Taken', category: 'date' },
+  CreateDate: { label: 'Create Date', category: 'date' },
+  ModifyDate: { label: 'Modify Date', category: 'date' },
+  Software: { label: 'Software', category: 'software' },
+  Artist: { label: 'Artist / Author', category: 'camera' },
+  Copyright: { label: 'Copyright', category: 'technical' },
+  FNumber: { label: 'Aperture', category: 'lens' },
+  ExposureTime: { label: 'Exposure Time', category: 'camera' },
+  ISO: { label: 'ISO', category: 'camera' },
+  FocalLength: { label: 'Focal Length', category: 'lens' },
+  Flash: { label: 'Flash Mode', category: 'camera' },
+  WhiteBalance: { label: 'White Balance', category: 'camera' },
+  MeteringMode: { label: 'Metering Mode', category: 'camera' },
+  ExposureProgram: { label: 'Exposure Program', category: 'camera' },
+  ColorSpace: { label: 'Color Space', category: 'technical' },
+  Orientation: { label: 'Orientation', category: 'technical' },
+  XMPToolkit: { label: 'Adobe XMP Toolkit', category: 'software' },
+  description: { label: 'Description', category: 'technical' },
+  creator: { label: 'Creator', category: 'camera' },
+  ProfileDescription: { label: 'Color Profile', category: 'technical' },
+};
+
+function formatTagValue(key: string, val: unknown): string {
+  if (val === null || val === undefined) return '';
+  if (val instanceof Date) {
+    return val.toISOString().replace('T', ' ').substring(0, 19);
+  }
+  if (typeof val === 'number') {
+    if (key.toLowerCase().includes('latitude') || key.toLowerCase().includes('longitude')) {
+      return `${val.toFixed(5)}°`;
+    }
+    if (key === 'FNumber') {
+      return `f/${val}`;
+    }
+    if (key === 'ExposureTime') {
+      return val < 1 ? `1/${Math.round(1 / val)}s` : `${val}s`;
+    }
+    if (key === 'FocalLength') {
+      return `${val}mm`;
+    }
+    return String(val);
+  }
+  if (Array.isArray(val)) {
+    return val.map((v) => (typeof v === 'number' ? v.toFixed(2) : String(v))).slice(0, 3).join(', ');
+  }
+  const str = String(val).trim();
+  return str.length > 40 ? `${str.substring(0, 37)}...` : str;
+}
+
+function humanizeKey(key: string): string {
+  // Convert camelCase / PascalCase to Title Words
+  const humanized = key.replace(/([A-Z])/g, ' $1').trim();
+  return humanized.charAt(0).toUpperCase() + humanized.slice(1);
+}
+
 /**
- * Scan an uploaded image file before cleaning to determine the initial metadata footprint.
+ * Scan an uploaded image file before cleaning to determine the exact metadata tags present.
+ * Uses real exifr.parse() to extract all EXIF, GPS, TIFF, IPTC, and XMP entries.
  */
 export async function inspectMetadataBefore(
   file: File,
   toolType: string = 'general'
 ): Promise<BeforeAfterStatus> {
-  let tagCount = 0;
-  const detectedTags: string[] = [];
+  const detectedTagList: DetectedTagItem[] = [];
   const fileName = file.name.toLowerCase();
 
   try {
-    if (file.type.includes('jpeg') || file.type.includes('jpg') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = () => reject(new Error('Failed to read file'));
-        reader.readAsDataURL(file);
-      });
+    // 1. Parse image using exifr
+    const rawParsed = await exifr.parse(file, {
+      tiff: true,
+      xmp: true,
+      icc: false, // ICC is color space profile, avoid cluttering
+      iptc: true,
+      jfif: true,
+      gps: true,
+      makerNote: false, // Avoid huge binary maker note dumps
+      userComment: true,
+      mergeOutput: true,
+    });
 
+    if (rawParsed && typeof rawParsed === 'object') {
+      for (const [key, val] of Object.entries(rawParsed)) {
+        // Skip null, undefined, function, or internal binary buffer properties
+        if (
+          val === null ||
+          val === undefined ||
+          key === 'thumbnail' ||
+          key === 'MakerNote' ||
+          key === 'UserComment' ||
+          key.startsWith('APP')
+        ) {
+          continue;
+        }
+
+        const formattedVal = formatTagValue(key, val);
+        if (!formattedVal) continue;
+
+        const info = KNOWN_LABELS[key];
+        detectedTagList.push({
+          key,
+          label: info?.label || humanizeKey(key),
+          value: formattedVal,
+          category: info?.category || 'technical',
+        });
+      }
+    }
+
+    // 2. Extract GPS explicitly if not already in detectedTagList
+    try {
+      const gps = await exifr.gps(file);
+      if (gps && typeof gps.latitude === 'number' && typeof gps.longitude === 'number') {
+        const hasLat = detectedTagList.some((t) => t.key.toLowerCase().includes('latitude'));
+        if (!hasLat) {
+          detectedTagList.push({
+            key: 'latitude',
+            label: 'GPS Latitude',
+            value: `${gps.latitude.toFixed(5)}°`,
+            category: 'gps',
+          });
+          detectedTagList.push({
+            key: 'longitude',
+            label: 'GPS Longitude',
+            value: `${gps.longitude.toFixed(5)}°`,
+            category: 'gps',
+          });
+        }
+      }
+    } catch {
+      // Ignore GPS secondary parse error
+    }
+
+    // 3. For PNG files, inspect PNG binary chunks for ancillary markers
+    if (file.type.includes('png') || fileName.endsWith('.png')) {
       try {
-        const exifObj = piexif.load(dataUrl);
-        const zeroth = exifObj['0th'] || {};
-        const exifIFD = exifObj['Exif'] || {};
-        const gpsIFD = exifObj['GPS'] || {};
+        const buffer = await file.slice(0, 65536).arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        const str = new TextDecoder('latin1').decode(bytes);
 
-        const zerothKeys = Object.keys(zeroth);
-        const exifKeys = Object.keys(exifIFD);
-        const gpsKeys = Object.keys(gpsIFD);
-
-        tagCount = zerothKeys.length + exifKeys.length + gpsKeys.length;
-
-        if (zeroth[piexif.ImageIFD.Make] || zeroth[piexif.ImageIFD.Model]) {
-          const model = String(zeroth[piexif.ImageIFD.Model] || zeroth[piexif.ImageIFD.Make] || 'Camera Model');
-          detectedTags.push(`Camera: ${model.trim()}`);
+        if (str.includes('tEXt') && !detectedTagList.some((t) => t.key === 'tEXt')) {
+          detectedTagList.push({
+            key: 'tEXt',
+            label: 'PNG Chunk: tEXt',
+            value: 'Uncompressed text comments / timestamps',
+            category: 'chunk',
+          });
         }
-        if (gpsKeys.length > 0) {
-          detectedTags.push('GPS Coordinates (Latitude/Longitude)');
+        if (str.includes('iTXt') && !detectedTagList.some((t) => t.key === 'iTXt')) {
+          detectedTagList.push({
+            key: 'iTXt',
+            label: 'PNG Chunk: iTXt',
+            value: 'International text / AI prompts metadata',
+            category: 'chunk',
+          });
         }
-        if (exifIFD[piexif.ExifIFD.DateTimeOriginal]) {
-          detectedTags.push(`Date: ${String(exifIFD[piexif.ExifIFD.DateTimeOriginal]).trim()}`);
+        if (str.includes('zTXt') && !detectedTagList.some((t) => t.key === 'zTXt')) {
+          detectedTagList.push({
+            key: 'zTXt',
+            label: 'PNG Chunk: zTXt',
+            value: 'Deflate-compressed metadata stream',
+            category: 'chunk',
+          });
         }
-        if (zeroth[piexif.ImageIFD.Software]) {
-          detectedTags.push(`Software: ${String(zeroth[piexif.ImageIFD.Software]).trim()}`);
-        }
-        if (zeroth[piexif.ImageIFD.Artist]) {
-          detectedTags.push(`Artist: ${String(zeroth[piexif.ImageIFD.Artist]).trim()}`);
+        if (str.includes('eXIf') && !detectedTagList.some((t) => t.key === 'eXIf')) {
+          detectedTagList.push({
+            key: 'eXIf',
+            label: 'PNG Chunk: eXIf',
+            value: 'Embedded raw EXIF table directory',
+            category: 'chunk',
+          });
         }
       } catch {
-        // Fallback estimate if piexif load encounters non-standard header
-        tagCount = 12;
-        detectedTags.push('Standard EXIF Tags', 'Camera Hardware Info');
+        // Ignore chunk buffer error
       }
-    } else if (file.type.includes('png') || fileName.endsWith('.png')) {
-      // Scan PNG binary for chunk markers
-      const buffer = await file.slice(0, 65536).arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      const str = new TextDecoder('latin1').decode(bytes);
-
-      if (str.includes('tEXt')) {
-        tagCount += 4;
-        detectedTags.push('tEXt Metadata Chunk');
-      }
-      if (str.includes('iTXt')) {
-        tagCount += 6;
-        detectedTags.push('iTXt International Chunks (AI Prompts)');
-      }
-      if (str.includes('zTXt')) {
-        tagCount += 4;
-        detectedTags.push('zTXt Compressed Text Chunks');
-      }
-      if (str.includes('eXIf')) {
-        tagCount += 8;
-        detectedTags.push('eXIf Embedded Directory');
-      }
-      if (tagCount === 0) {
-        tagCount = 6;
-        detectedTags.push('PNG Ancillary Metadata Chunks');
-      }
-    } else if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
-      tagCount = 18;
-      detectedTags.push('Apple iOS Metadata Container', 'GPS Location Tags', 'Device Model');
-    } else {
-      tagCount = 14;
-      detectedTags.push('Image Metadata Headers', 'Capture Parameters');
     }
   } catch {
-    tagCount = 16;
-    detectedTags.push('Embedded EXIF Tags', 'Device Signature');
+    // If exifr encounters an unparseable header, fallback to inspecting file characteristics
   }
 
-  // Ensure minimum tag count representation if any metadata existed
-  if (tagCount === 0) tagCount = 8;
-  if (detectedTags.length === 0) {
-    detectedTags.push('Capture Settings', 'Camera Fingerprints');
+  const tagCount = detectedTagList.length;
+
+  // Build top 3 representative beforeDetails summary strings
+  const summaryDetails = detectedTagList.slice(0, 3).map((t) => `${t.label}: ${t.value}`);
+  if (summaryDetails.length === 0) {
+    if (tagCount === 0) {
+      summaryDetails.push('0 EXIF / GPS Tags Found', 'Clean Header Baseline');
+    } else {
+      summaryDetails.push('Embedded Capture Parameters', 'Camera Hardware Signature');
+    }
   }
+
+  const isJpeg = file.type === 'image/jpeg' || /\.(jpe?g)$/i.test(file.name);
 
   // Build tool-specific Before & After narratives
   switch (toolType) {
-    case 'gps':
+    case 'gps': {
+      const gpsTags = detectedTagList.filter((t) => t.category === 'gps');
+      const gpsCount = gpsTags.length;
       return {
-        beforeLabel: `Found Location & Hardware Tags (${tagCount} Total)`,
+        beforeLabel: gpsCount > 0
+          ? `${gpsCount} GPS Location Tags Detected (${tagCount} Total Tags)`
+          : `0 GPS Tags Detected (${tagCount} Other Tags Found)`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['GPS Coordinates: Latitude & Longitude', ...detectedTags.slice(0, 2)],
-        afterLabel: 'GPS Wiped (0 Location Tags Remaining)',
-        afterTagsCount: Math.max(0, tagCount - 4),
-        afterDetails: ['0 GPS Coordinates', 'Camera Model & Timestamp Safely Preserved'],
+        beforeDetails: gpsCount > 0
+          ? gpsTags.map((g) => `${g.label}: ${g.value}`)
+          : ['No Active GPS Coordinates Embedded', ...summaryDetails],
+        detectedTagList,
+        afterLabel: isJpeg
+          ? 'GPS Coordinates Removed (Camera & Timestamps Preserved)'
+          : 'Full Metadata Strip (Non-JPEG Format Fallback)',
+        afterTagsCount: isJpeg ? Math.max(0, tagCount - gpsCount) : 0,
+        afterDetails: isJpeg
+          ? ['0 GPS Coordinates', 'Camera Model, Lens & Timestamps Safely Preserved']
+          : ['0 GPS Coordinates', 'All Metadata Stripped (Canvas Fallback for Non-JPEG)'],
         cleanPercent: 100,
       };
+    }
 
-    case 'xmp':
+    case 'xmp': {
+      const xmpTags = detectedTagList.filter((t) => t.category === 'software' || t.key.toLowerCase().includes('xmp'));
       return {
-        beforeLabel: `Found Adobe XMP & Edit History (${tagCount} Tags)`,
+        beforeLabel: `${tagCount} Metadata & XMP Tags Detected`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['Adobe XMP XML Packet', ...detectedTags.slice(0, 2)],
-        afterLabel: '0 XMP Packets (Clean XML Header)',
-        afterTagsCount: 0,
-        afterDetails: ['0 Adobe XMP Packets', 'Standard Camera EXIF Preserved'],
+        beforeDetails: xmpTags.length > 0
+          ? xmpTags.map((x) => `${x.label}: ${x.value}`)
+          : ['Adobe XMP XML Packet', ...summaryDetails],
+        detectedTagList,
+        afterLabel: isJpeg
+          ? '0 XMP Packets (EXIF & Camera Hardware Preserved)'
+          : 'Full Metadata Strip (Non-JPEG Format Fallback)',
+        afterTagsCount: isJpeg ? Math.max(0, tagCount - (xmpTags.length || 1)) : 0,
+        afterDetails: isJpeg
+          ? ['0 Adobe XMP Packets', 'Camera EXIF & Hardware Details Preserved']
+          : ['0 XMP Packets', 'All Metadata Stripped (Canvas Fallback for Non-JPEG)'],
         cleanPercent: 100,
       };
+    }
 
     case 'canvas':
       return {
-        beforeLabel: `Hardware & Steganography Risk (${tagCount} Tags)`,
+        beforeLabel: `${tagCount} Tags & Raster Markers Detected`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['Embedded Color Profiles', 'Steganographic / C2PA Markers', ...detectedTags.slice(0, 2)],
+        beforeDetails: summaryDetails,
+        detectedTagList,
         afterLabel: '100% Fresh Pixels (0 Hidden Tags)',
         afterTagsCount: 0,
         afterDetails: ['Canvas Rasterized', '0 Invisible Watermarks', '0 C2PA Manifests'],
@@ -151,9 +287,10 @@ export async function inspectMetadataBefore(
 
     case 'png-chunks':
       return {
-        beforeLabel: `Found PNG Text Chunks (${tagCount} Metadata Blocks)`,
+        beforeLabel: `${tagCount} PNG Chunks & Tags Detected`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['tEXt / iTXt Ancillary Chunks', 'AI Generation History / Parameters'],
+        beforeDetails: summaryDetails,
+        detectedTagList,
         afterLabel: '0 Ancillary Chunks (Only IHDR & IDAT Kept)',
         afterTagsCount: 0,
         afterDetails: ['All Text Chunks Stripped', '100% Pixel Transparency Intact'],
@@ -162,9 +299,10 @@ export async function inspectMetadataBefore(
 
     case 'c2pa':
       return {
-        beforeLabel: 'C2PA Content Credentials Manifests Found',
+        beforeLabel: `${tagCount} Content Provenance & Tags Detected`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['JUMBF Container Box', 'Digital Asset Provenance Signatures'],
+        beforeDetails: summaryDetails,
+        detectedTagList,
         afterLabel: '0 C2PA Manifests (Signatures Destroyed)',
         afterTagsCount: 0,
         afterDetails: ['0 Cryptographic Signatures', 'Unlinked Provenance Hash'],
@@ -173,20 +311,27 @@ export async function inspectMetadataBefore(
 
     case 'ai-only':
       return {
-        beforeLabel: 'Found AI Generator Prompts & Parameters',
+        beforeLabel: `${tagCount} Generator Prompts & Parameters Detected`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['Diffusion Workflow Steps / Prompts', 'Generator Model Signatures'],
-        afterLabel: '0 AI Prompts (Camera Tags Preserved)',
-        afterTagsCount: Math.max(0, tagCount - 6),
-        afterDetails: ['0 AI Workflow Prompts', 'Authentic Photo Metadata Preserved'],
+        beforeDetails: summaryDetails,
+        detectedTagList,
+        afterLabel: isJpeg
+          ? '0 AI Prompts (Camera Hardware Tags Preserved)'
+          : 'Full Metadata Strip (Non-JPEG Format Fallback)',
+        afterTagsCount: isJpeg ? Math.max(0, tagCount - 2) : 0,
+        afterDetails: isJpeg
+          ? ['0 AI Workflow Prompts', 'Authentic Camera EXIF Preserved']
+          : ['0 AI Prompts', 'All Metadata Stripped (Canvas Fallback for Non-JPEG)'],
         cleanPercent: 100,
       };
 
     case 'heic-convert':
+    case 'heic-clean':
       return {
-        beforeLabel: `Apple HEIC Container (${tagCount} Tags)`,
+        beforeLabel: `${tagCount} Apple HEIC Container Tags Detected`,
         beforeTagsCount: tagCount,
-        beforeDetails: ['Apple iOS Device Metadata', 'iPhone GPS Location'],
+        beforeDetails: summaryDetails,
+        detectedTagList,
         afterLabel: 'Converted to Universal Clean JPG (0 Tags)',
         afterTagsCount: 0,
         afterDetails: ['Universal JPG Format', 'Zero Hidden Tracking Tags'],
@@ -195,10 +340,11 @@ export async function inspectMetadataBefore(
 
     default:
       return {
-        beforeLabel: `Found ${tagCount} EXIF & Location Tags`,
+        beforeLabel: tagCount > 0 ? `${tagCount} Tags Detected (Will Be Stripped)` : '0 Tags Detected (Clean Baseline)',
         beforeTagsCount: tagCount,
-        beforeDetails: detectedTags.slice(0, 3),
-        afterLabel: '0 Tags (Completely Clean & Safe)',
+        beforeDetails: summaryDetails,
+        detectedTagList,
+        afterLabel: '0 Tags (100% Sanitized & Safe)',
         afterTagsCount: 0,
         afterDetails: ['0 GPS Coordinates', '0 Camera Serial Numbers', '0 Software Edits'],
         cleanPercent: 100,

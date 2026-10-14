@@ -1,16 +1,21 @@
 /**
  * imageAnalyzer.ts — Client-Side Metadata & AI Analysis Engine
  *
- * Provides 5 distinct client-side analysis and scanning operations:
- * 1. analyzeDeepMetadata: Extracts and structures all EXIF, XMP, and PNG chunks
- * 2. calculateMetadataStructure: Computes byte overhead, dimensions, resolution & metadata percentage
- * 3. analyzePhotoPrivacy: Computes a 0-100 Privacy Risk Score with color-coded threat findings
- * 4. checkC2paCredentials: Scans for C2PA manifests and JUMBF cryptographic boxes
- * 5. scanAiSignatures: Scans for AI prompts, workflows, and generator signatures (Midjourney, Stable Diffusion, DALL-E)
+ * Uses robust client-side libraries:
+ * 1. exifr: comprehensive extraction of EXIF, GPS, TIFF, XMP, IPTC, and ICC tags
+ * 2. piexifjs: binary JPEG segment analysis and parsing
+ *
+ * Provides:
+ * - analyzeDeepMetadata: Windows File Properties categorized extraction + GPS coordinates
+ * - calculateMetadataStructure: Computes file size vs cleaned blob size, difference, tags found/removed
+ * - analyzePhotoPrivacy: Evaluates 0-100 Privacy Risk Score based on real extracted tags
+ * - checkC2paCredentials: Scans for C2PA manifests and JUMBF boxes
+ * - scanAiSignatures: Detects AI generation tags (Midjourney, DALL-E, Stable Diffusion)
  *
  * 100% Client-Side — Zero Server Communication.
  */
 
+import exifr from 'exifr';
 import piexif from 'piexifjs';
 
 export interface TagItem {
@@ -24,6 +29,30 @@ export interface MetadataSection {
   tags: TagItem[];
 }
 
+export interface WindowsPropertyDetails {
+  cameraMake?: string;
+  cameraModel?: string;
+  cameraCombined?: string;
+  fStop?: string;
+  iso?: string;
+  exposureTime?: string;
+  lensInfo?: string;
+  software?: string;
+  dateTaken?: string;
+  author?: string;
+  copyright?: string;
+  focalLength?: string;
+  dimensions?: string;
+  resolution?: string;
+  colorSpace?: string;
+  gps?: {
+    latitude: number;
+    longitude: number;
+    altitude?: number;
+    formatted: string;
+  };
+}
+
 export interface DeepMetadataResult {
   hasMetadata: boolean;
   sections: MetadataSection[];
@@ -35,14 +64,22 @@ export interface DeepMetadataResult {
     format: string;
     totalTags: number;
   };
+  details: WindowsPropertyDetails;
+  rawTags: Record<string, string>;
 }
 
 export interface MetadataCalculationResult {
   fileSizeBytes: number;
   fileSizeFormatted: string;
+  cleanedSizeBytes: number;
+  cleanedSizeFormatted: string;
   metadataSizeBytes: number;
   metadataSizeFormatted: string;
   metadataPercentage: number;
+  totalTagsFound: number;
+  tagsRemovedCount: number;
+  spaceSavedBytes: number;
+  spaceSavedFormatted: string;
   dimensions: {
     width: number;
     height: number;
@@ -78,6 +115,7 @@ export interface AiSignatureIndicator {
   source: string;
   label: string;
   snippet: string;
+  confidence?: 'high' | 'medium' | 'low';
 }
 
 export interface AiScanResult {
@@ -85,36 +123,32 @@ export interface AiScanResult {
   probability: number;
   engineName?: string;
   indicators: AiSignatureIndicator[];
+  detectionMode?: string;
+  inspectionNote?: string;
 }
 
-/** Helper: Read file as ArrayBuffer */
-function readFileBuffer(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(new Error('Failed to read file as ArrayBuffer'));
-    reader.readAsArrayBuffer(file);
-  });
+export interface ExactMetadataMeasurement {
+  metadataBytes: number;
+  detectedSegments: { name: string; bytes: number }[];
 }
 
-/** Helper: Read file as Base64 Data URL */
-function readFileBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(new Error('Failed to read file as Data URL'));
-    reader.readAsDataURL(file);
-  });
+/** Helper: Format byte counts into human-readable strings */
+export function formatBytes(bytes: number): string {
+  if (!bytes || bytes <= 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-/** Helper: Get image dimensions */
+/** Helper: Get image natural pixel dimensions */
 function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
       URL.revokeObjectURL(url);
-      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      resolve({ width: img.naturalWidth || 0, height: img.naturalHeight || 0 });
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -124,13 +158,40 @@ function getImageDimensions(file: File): Promise<{ width: number; height: number
   });
 }
 
-/** Helper: Format byte counts */
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+/** Helper: Format Exposure Time nicely (e.g. 0.0083333 -> "1/120s") */
+function formatExposureTime(val: unknown): string | undefined {
+  if (val === undefined || val === null) return undefined;
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number') {
+    if (val === 0) return '0s';
+    if (val < 1) {
+      const denominator = Math.round(1 / val);
+      return `1/${denominator}s`;
+    }
+    return `${val}s`;
+  }
+  return String(val);
+}
+
+/** Helper: Format F-Stop (e.g. 1.8 -> "f/1.8") */
+function formatFStop(val: unknown): string | undefined {
+  if (val === undefined || val === null) return undefined;
+  if (typeof val === 'string') {
+    return val.startsWith('f/') ? val : `f/${val}`;
+  }
+  if (typeof val === 'number') {
+    return `f/${val % 1 === 0 ? val : val.toFixed(1)}`;
+  }
+  return String(val);
+}
+
+/** Helper: Format Date/Time cleanly */
+function formatDate(val: unknown): string | undefined {
+  if (!val) return undefined;
+  if (val instanceof Date) {
+    return val.toISOString().replace('T', ' ').substring(0, 19);
+  }
+  return String(val);
 }
 
 // =========================================================================
@@ -138,353 +199,634 @@ export function formatBytes(bytes: number): string {
 // =========================================================================
 export async function analyzeDeepMetadata(file: File): Promise<DeepMetadataResult> {
   const sections: MetadataSection[] = [];
-  let totalTags = 0;
-  let camera: string | undefined;
-  let date: string | undefined;
-  let location: string | undefined;
-  let software: string | undefined;
+  const rawTagsMap: Record<string, string> = {};
 
-  const buffer = await readFileBuffer(file);
-  const bytes = new Uint8Array(buffer);
+  // Extract all tags via exifr
+  let rawParsed: Record<string, unknown> = {};
+  try {
+    const parsed = await exifr.parse(file, {
+      tiff: true,
+      xmp: true,
+      icc: true,
+      iptc: true,
+      jfif: true,
+      gps: true,
+      interop: true,
+      translateKeys: true,
+      translateValues: true,
+      reviveValues: true,
+      sanitize: false,
+      mergeOutput: true,
+    });
+    if (parsed && typeof parsed === 'object') {
+      rawParsed = parsed as Record<string, unknown>;
+    }
+  } catch {
+    // File has no parseable headers or unsupported container
+  }
 
-  // 1. Check EXIF via piexif for JPEG
-  if (file.type === 'image/jpeg') {
+  // Extract specific GPS coordinates via exifr.gps()
+  let gpsCoords: { latitude: number; longitude: number; altitude?: number } | null = null;
+  try {
+    const gps = await exifr.gps(file);
+    if (gps && typeof gps.latitude === 'number' && typeof gps.longitude === 'number') {
+      gpsCoords = {
+        latitude: gps.latitude,
+        longitude: gps.longitude,
+        altitude: typeof (gps as { altitude?: number }).altitude === 'number' ? (gps as { altitude?: number }).altitude : undefined,
+      };
+    }
+  } catch {
+    // GPS not available
+  }
+
+  // Populate rawTagsMap
+  for (const [key, value] of Object.entries(rawParsed)) {
+    if (value !== undefined && value !== null) {
+      if (typeof value === 'object' && !(value instanceof Date)) {
+        try {
+          rawTagsMap[key] = JSON.stringify(value);
+        } catch {
+          rawTagsMap[key] = '[Complex Object]';
+        }
+      } else {
+        rawTagsMap[key] = String(value);
+      }
+    }
+  }
+
+  // Extract key Windows File Properties fields
+  const cameraMake = rawParsed.Make ? String(rawParsed.Make).trim() : undefined;
+  const cameraModel = rawParsed.Model ? String(rawParsed.Model).trim() : undefined;
+  const cameraCombined =
+    cameraMake && cameraModel
+      ? cameraModel.toLowerCase().includes(cameraMake.toLowerCase())
+        ? cameraModel
+        : `${cameraMake} ${cameraModel}`
+      : cameraModel || cameraMake || undefined;
+
+  const fStop = formatFStop(rawParsed.FNumber ?? rawParsed.ApertureValue);
+  const iso = rawParsed.ISO ? String(rawParsed.ISO) : rawParsed.ISOSpeedRatings ? String(rawParsed.ISOSpeedRatings) : undefined;
+  const exposureTime = formatExposureTime(rawParsed.ExposureTime ?? rawParsed.ShutterSpeedValue);
+  
+  const lensInfo = rawParsed.LensModel
+    ? String(rawParsed.LensModel)
+    : rawParsed.LensInfo
+    ? String(rawParsed.LensInfo)
+    : rawParsed.LensMake
+    ? String(rawParsed.LensMake)
+    : undefined;
+
+  const software = rawParsed.Software ? String(rawParsed.Software) : undefined;
+  const dateTaken = formatDate(rawParsed.DateTimeOriginal ?? rawParsed.CreateDate ?? rawParsed.ModifyDate);
+  const author = rawParsed.Artist
+    ? String(rawParsed.Artist)
+    : rawParsed.XPAuthor
+    ? String(rawParsed.XPAuthor)
+    : rawParsed.Creator
+    ? String(rawParsed.Creator)
+    : rawParsed.byline
+    ? String(rawParsed.byline)
+    : undefined;
+
+  const copyright = rawParsed.Copyright ? String(rawParsed.Copyright) : undefined;
+  const focalLength = rawParsed.FocalLength ? `${rawParsed.FocalLength} mm` : undefined;
+
+  const width = rawParsed.ImageWidth || rawParsed.ExifImageWidth;
+  const height = rawParsed.ImageHeight || rawParsed.ExifImageHeight;
+  const dimensionsStr = width && height ? `${width} × ${height} px` : undefined;
+
+  const xRes = rawParsed.XResolution;
+  const yRes = rawParsed.YResolution;
+  const resolutionStr = xRes && yRes ? `${xRes} × ${yRes} DPI` : xRes ? `${xRes} DPI` : undefined;
+  const colorSpace = rawParsed.ColorSpace ? String(rawParsed.ColorSpace) : undefined;
+
+  // Build categorized sections (Windows File Properties style)
+  // Section 1: Device & Camera Hardware
+  const deviceTags: TagItem[] = [];
+  if (cameraMake) deviceTags.push({ label: 'Camera Manufacturer', value: cameraMake });
+  if (cameraModel) deviceTags.push({ label: 'Camera Model', value: cameraModel });
+  if (lensInfo) deviceTags.push({ label: 'Lens Specification', value: lensInfo });
+  if (software) deviceTags.push({ label: 'Software / Firmware', value: software });
+  if (rawParsed.SerialNumber || rawParsed.BodySerialNumber) {
+    deviceTags.push({
+      label: 'Camera Serial Number',
+      value: String(rawParsed.SerialNumber || rawParsed.BodySerialNumber),
+      isSensitive: true,
+    });
+  }
+  if (rawParsed.LensSerialNumber) {
+    deviceTags.push({
+      label: 'Lens Serial Number',
+      value: String(rawParsed.LensSerialNumber),
+      isSensitive: true,
+    });
+  }
+  if (deviceTags.length > 0) {
+    sections.push({ category: 'Device & Camera Hardware', tags: deviceTags });
+  }
+
+  // Section 2: Exposure & Optical Settings
+  const photoTags: TagItem[] = [];
+  if (fStop) photoTags.push({ label: 'Aperture (F-Stop)', value: fStop });
+  if (exposureTime) photoTags.push({ label: 'Exposure Time (Shutter)', value: exposureTime });
+  if (iso) photoTags.push({ label: 'ISO Sensitivity', value: iso });
+  if (focalLength) photoTags.push({ label: 'Focal Length', value: focalLength });
+  if (rawParsed.FocalLengthIn35mmFormat) {
+    photoTags.push({ label: '35mm Equivalent Focal Length', value: `${rawParsed.FocalLengthIn35mmFormat} mm` });
+  }
+  if (rawParsed.Flash) photoTags.push({ label: 'Flash State', value: String(rawParsed.Flash) });
+  if (rawParsed.MeteringMode) photoTags.push({ label: 'Metering Mode', value: String(rawParsed.MeteringMode) });
+  if (rawParsed.ExposureProgram) photoTags.push({ label: 'Exposure Program', value: String(rawParsed.ExposureProgram) });
+  if (rawParsed.WhiteBalance) photoTags.push({ label: 'White Balance', value: String(rawParsed.WhiteBalance) });
+  if (photoTags.length > 0) {
+    sections.push({ category: 'Exposure & Optical Settings', tags: photoTags });
+  }
+
+  // Section 3: GPS & Geolocation Coordinates
+  const gpsTags: TagItem[] = [];
+  let locationSummary: string | undefined;
+  if (gpsCoords) {
+    const latStr = `${gpsCoords.latitude.toFixed(6)}°`;
+    const lonStr = `${gpsCoords.longitude.toFixed(6)}°`;
+    gpsTags.push({ label: 'Latitude', value: latStr, isSensitive: true });
+    gpsTags.push({ label: 'Longitude', value: lonStr, isSensitive: true });
+    if (gpsCoords.altitude !== undefined) {
+      gpsTags.push({ label: 'Altitude', value: `${gpsCoords.altitude.toFixed(1)} m above sea level`, isSensitive: true });
+    }
+    locationSummary = `${latStr}, ${lonStr}`;
+  }
+  if (gpsTags.length > 0) {
+    sections.push({ category: 'Location & Geolocation (GPS)', tags: gpsTags });
+  }
+
+  // Section 4: Image & File Properties
+  const fileTags: TagItem[] = [];
+  if (dimensionsStr) fileTags.push({ label: 'Pixel Dimensions', value: dimensionsStr });
+  if (resolutionStr) fileTags.push({ label: 'Resolution Density', value: resolutionStr });
+  if (colorSpace) fileTags.push({ label: 'Color Space Profile', value: colorSpace });
+  if (rawParsed.Orientation) fileTags.push({ label: 'Orientation', value: String(rawParsed.Orientation) });
+  if (rawParsed.BitsPerSample) fileTags.push({ label: 'Bit Depth', value: `${rawParsed.BitsPerSample} bits` });
+  if (fileTags.length > 0) {
+    sections.push({ category: 'Image & File Properties', tags: fileTags });
+  }
+
+  // Section 5: Origin & Authorship
+  const originTags: TagItem[] = [];
+  if (author) originTags.push({ label: 'Author / Artist', value: author, isSensitive: true });
+  if (copyright) originTags.push({ label: 'Copyright Notice', value: copyright });
+  if (dateTaken) originTags.push({ label: 'Date/Time Taken', value: dateTaken, isSensitive: true });
+  if (rawParsed.CreateDate && String(rawParsed.CreateDate) !== dateTaken) {
+    originTags.push({ label: 'Date/Time Digitized', value: formatDate(rawParsed.CreateDate) || '' });
+  }
+  if (originTags.length > 0) {
+    sections.push({ category: 'Origin & Copyright', tags: originTags });
+  }
+
+  // Check piexif fallback for older JPEGs if exifr was sparse
+  if (sections.length === 0 && file.type === 'image/jpeg') {
     try {
-      const base64 = await readFileBase64(file);
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((res, rej) => {
+        reader.onload = () => res(reader.result as string);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
       const exifObj = piexif.load(base64);
-
-      if (exifObj) {
-        // Camera & Hardware (0th IFD)
-        const cameraTags: TagItem[] = [];
-        if (exifObj['0th']) {
-          const make = exifObj['0th'][piexif.ImageIFD.Make];
-          const model = exifObj['0th'][piexif.ImageIFD.Model];
-          const soft = exifObj['0th'][piexif.ImageIFD.Software];
-          const artist = exifObj['0th'][piexif.ImageIFD.Artist];
-          const copyright = exifObj['0th'][piexif.ImageIFD.Copyright];
-
-          if (make) cameraTags.push({ label: 'Camera Make', value: String(make) });
-          if (model) {
-            cameraTags.push({ label: 'Camera Model', value: String(model) });
-            camera = `${make ? `${make} ` : ''}${model}`;
-          }
-          if (soft) {
-            cameraTags.push({ label: 'Software / Firmware', value: String(soft) });
-            software = String(soft);
-          }
-          if (artist) cameraTags.push({ label: 'Artist / Author', value: String(artist), isSensitive: true });
-          if (copyright) cameraTags.push({ label: 'Copyright', value: String(copyright) });
-        }
-        if (cameraTags.length > 0) {
-          sections.push({ category: 'Camera & Device Hardware', tags: cameraTags });
-          totalTags += cameraTags.length;
-        }
-
-        // GPS & Location (GPS IFD)
-        const gpsTags: TagItem[] = [];
-        if (exifObj.GPS) {
-          const lat = exifObj.GPS[piexif.GPSIFD.GPSLatitude];
-          const latRef = exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef];
-          const lon = exifObj.GPS[piexif.GPSIFD.GPSLongitude];
-          const lonRef = exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef];
-          const alt = exifObj.GPS[piexif.GPSIFD.GPSAltitude];
-
-          if (lat && lon) {
-            const latDeg = Array.isArray(lat) ? `${lat[0]?.[0] || 0}° ${lat[1]?.[0] || 0}' ${latRef || 'N'}` : String(lat);
-            const lonDeg = Array.isArray(lon) ? `${lon[0]?.[0] || 0}° ${lon[1]?.[0] || 0}' ${lonRef || 'E'}` : String(lon);
-            gpsTags.push({ label: 'GPS Latitude', value: latDeg, isSensitive: true });
-            gpsTags.push({ label: 'GPS Longitude', value: lonDeg, isSensitive: true });
-            location = `${latDeg}, ${lonDeg}`;
-          }
-          if (alt) {
-            const altVal = Array.isArray(alt) ? `${(alt[0] / (alt[1] || 1)).toFixed(1)} m` : String(alt);
-            gpsTags.push({ label: 'GPS Altitude', value: altVal, isSensitive: true });
-          }
-        }
-        if (gpsTags.length > 0) {
-          sections.push({ category: 'GPS & Location Data', tags: gpsTags });
-          totalTags += gpsTags.length;
-        }
-
-        // Capture Settings & Dates (Exif IFD)
-        const captureTags: TagItem[] = [];
-        if (exifObj.Exif) {
-          const dateOrig = exifObj.Exif[piexif.ExifIFD.DateTimeOriginal];
-          const dateDigitized = exifObj.Exif[piexif.ExifIFD.DateTimeDigitized];
-          const exposure = exifObj.Exif[piexif.ExifIFD.ExposureTime];
-          const fNumber = exifObj.Exif[piexif.ExifIFD.FNumber];
-          const iso = exifObj.Exif[piexif.ExifIFD.ISOSpeedRatings];
-          const lensModel = exifObj.Exif[piexif.ExifIFD.LensModel];
-          const userComment = exifObj.Exif[piexif.ExifIFD.UserComment];
-
-          if (dateOrig) {
-            captureTags.push({ label: 'Date/Time Original', value: String(dateOrig), isSensitive: true });
-            date = String(dateOrig);
-          }
-          if (dateDigitized) captureTags.push({ label: 'Date/Time Digitized', value: String(dateDigitized) });
-          if (exposure) {
-            const expVal = Array.isArray(exposure) ? `1/${Math.round((exposure[1] || 1) / (exposure[0] || 1))}s` : String(exposure);
-            captureTags.push({ label: 'Exposure Time', value: expVal });
-          }
-          if (fNumber) {
-            const fVal = Array.isArray(fNumber) ? `f/${(fNumber[0] / (fNumber[1] || 1)).toFixed(1)}` : String(fNumber);
-            captureTags.push({ label: 'Aperture (F-Stop)', value: fVal });
-          }
-          if (iso) captureTags.push({ label: 'ISO Speed', value: String(iso) });
-          if (lensModel) captureTags.push({ label: 'Lens Model', value: String(lensModel) });
-          if (userComment) captureTags.push({ label: 'User Comment', value: String(userComment) });
-        }
-        if (captureTags.length > 0) {
-          sections.push({ category: 'Exposure & Capture Settings', tags: captureTags });
-          totalTags += captureTags.length;
+      if (exifObj && exifObj['0th']) {
+        const fallbackTags: TagItem[] = [];
+        const make = exifObj['0th'][piexif.ImageIFD.Make];
+        const model = exifObj['0th'][piexif.ImageIFD.Model];
+        if (make) fallbackTags.push({ label: 'Make', value: String(make) });
+        if (model) fallbackTags.push({ label: 'Model', value: String(model) });
+        if (fallbackTags.length > 0) {
+          sections.push({ category: 'Basic EXIF (Legacy)', tags: fallbackTags });
         }
       }
     } catch {
-      // EXIF parse error / absent
-    }
-
-    // Check for XMP in JPEG
-    const decoder = new TextDecoder('latin1');
-    const headerStr = decoder.decode(bytes.slice(0, Math.min(bytes.length, 65536)));
-    if (headerStr.includes('http://ns.adobe.com/xap/1.0/')) {
-      sections.push({
-        category: 'Adobe XMP Packet',
-        tags: [
-          { label: 'XMP Status', value: 'Embedded Adobe XMP XML Data Detected', isSensitive: true },
-          { label: 'Namespace', value: 'http://ns.adobe.com/xap/1.0/' },
-        ],
-      });
-      totalTags += 2;
+      // Ignored
     }
   }
 
-  // 2. Check PNG chunks
-  if (file.type === 'image/png') {
-    const pngTags: TagItem[] = [];
-    let offset = 8;
-    while (offset < bytes.length) {
-      if (offset + 8 > bytes.length) break;
-      const dataView = new DataView(buffer, offset);
-      const chunkDataLength = dataView.getUint32(0);
-      const chunkType = String.fromCharCode(
-        bytes[offset + 4],
-        bytes[offset + 5],
-        bytes[offset + 6],
-        bytes[offset + 7]
-      );
+  const totalTags = Object.keys(rawTagsMap).length;
+  const hasMetadata = totalTags > 0 || sections.length > 0;
 
-      if (chunkType === 'tEXt' || chunkType === 'iTXt' || chunkType === 'zTXt') {
-        const payload = bytes.slice(offset + 8, offset + 8 + chunkDataLength);
-        const decoder = new TextDecoder('latin1');
-        const text = decoder.decode(payload);
-        const nullIdx = text.indexOf('\0');
-        const key = nullIdx !== -1 ? text.substring(0, nullIdx) : chunkType;
-        const val = nullIdx !== -1 ? text.substring(nullIdx + 1).trim() : text;
-        pngTags.push({
-          label: `PNG Chunk (${key || chunkType})`,
-          value: val.length > 80 ? `${val.substring(0, 80)}...` : val || 'Embedded Data',
-        });
-      }
-
-      offset += 4 + 4 + chunkDataLength + 4;
-      if (chunkType === 'IEND') break;
-    }
-
-    if (pngTags.length > 0) {
-      sections.push({ category: 'PNG Text Chunks & Metadata', tags: pngTags });
-      totalTags += pngTags.length;
-    }
-  }
-
-  // File metadata fallback
-  sections.unshift({
-    category: 'File System Information',
-    tags: [
-      { label: 'File Name', value: file.name },
-      { label: 'File Size', value: formatBytes(file.size) },
-      { label: 'MIME Type', value: file.type || 'Unknown' },
-      { label: 'Last Modified', value: new Date(file.lastModified).toLocaleString() },
-    ],
-  });
+  const details: WindowsPropertyDetails = {
+    cameraMake,
+    cameraModel,
+    cameraCombined,
+    fStop,
+    iso,
+    exposureTime,
+    lensInfo,
+    software,
+    dateTaken,
+    author,
+    copyright,
+    focalLength,
+    dimensions: dimensionsStr,
+    resolution: resolutionStr,
+    colorSpace,
+    gps: gpsCoords
+      ? {
+          latitude: gpsCoords.latitude,
+          longitude: gpsCoords.longitude,
+          altitude: gpsCoords.altitude,
+          formatted: `${gpsCoords.latitude.toFixed(6)}°, ${gpsCoords.longitude.toFixed(6)}°`,
+        }
+      : undefined,
+  };
 
   return {
-    hasMetadata: totalTags > 0,
+    hasMetadata,
     sections,
     summary: {
-      camera,
-      date,
-      location,
+      camera: cameraCombined,
+      date: dateTaken,
+      location: locationSummary,
       software,
-      format: file.type || 'image',
+      format: file.type.split('/')[1]?.toUpperCase() || 'IMAGE',
       totalTags,
     },
+    details,
+    rawTags: rawTagsMap,
   };
 }
 
 // =========================================================================
-// 2. STATS & STRUCTURE CALCULATOR (/calculate-metadata)
+// 2. DATA CALCULATOR & ANALYTICS (/calculate-metadata)
 // =========================================================================
-export async function calculateMetadataStructure(file: File): Promise<MetadataCalculationResult> {
-  const dimensions = await getImageDimensions(file);
-  const buffer = await readFileBuffer(file);
-  const bytes = new Uint8Array(buffer);
 
+/** Helper: Measure exact JPEG metadata marker segments (APP0-APP15, COM) */
+function measureJpegMetadataBytes(bytes: Uint8Array): ExactMetadataMeasurement {
+  const detectedSegments: { name: string; bytes: number }[] = [];
   let metadataBytes = 0;
 
-  // Calculate JPEG overhead (APP0-APP15, COM markers)
-  if (file.type === 'image/jpeg') {
-    let offset = 2;
-    while (offset < bytes.length) {
-      if (bytes[offset] !== 0xFF) break;
-      const marker = bytes[offset + 1];
-      if (marker === 0xDA || marker === 0xD9) break; // Start of Scan (pixels)
-
-      if (offset + 4 > bytes.length) break;
-      const length = (bytes[offset + 2] << 8) | bytes[offset + 3];
-      const segmentSize = 2 + length;
-
-      // APP markers (0xE0 - 0xEF) and COM (0xFE)
-      if ((marker >= 0xE0 && marker <= 0xEF) || marker === 0xFE) {
-        metadataBytes += segmentSize;
-      }
-      offset += segmentSize;
-    }
-  } else if (file.type === 'image/png') {
-    // Calculate PNG overhead (tEXt, iTXt, zTXt, eXIf, tIME, pHYs)
-    let offset = 8;
-    const METADATA_CHUNK_TYPES = new Set(['tEXt', 'zTXt', 'iTXt', 'eXIf', 'tIME', 'pHYs', 'iCCP']);
-    while (offset < bytes.length) {
-      if (offset + 8 > bytes.length) break;
-      const dataView = new DataView(buffer, offset);
-      const chunkDataLength = dataView.getUint32(0);
-      const chunkType = String.fromCharCode(
-        bytes[offset + 4],
-        bytes[offset + 5],
-        bytes[offset + 6],
-        bytes[offset + 7]
-      );
-      const totalChunkSize = 4 + 4 + chunkDataLength + 4;
-      if (METADATA_CHUNK_TYPES.has(chunkType)) {
-        metadataBytes += totalChunkSize;
-      }
-      offset += totalChunkSize;
-      if (chunkType === 'IEND') break;
-    }
+  if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
+    return { metadataBytes: 0, detectedSegments };
   }
 
-  // Fallback calculation for minimal overhead
-  if (metadataBytes === 0 && file.size > 0) {
-    metadataBytes = Math.min(Math.round(file.size * 0.015), 1024);
+  let offset = 2;
+  while (offset < bytes.length - 1) {
+    if (bytes[offset] !== 0xff) {
+      offset++;
+      continue;
+    }
+
+    const marker = bytes[offset + 1];
+
+    // Skip fill bytes
+    if (marker === 0xff || marker === 0x00) {
+      offset++;
+      continue;
+    }
+
+    // SOS (Start of Scan 0xDA) or EOI (0xD9) - pixel entropy scan begins
+    if (marker === 0xda || marker === 0xd9) {
+      break;
+    }
+
+    // Standalone markers without length: RST0-RST7 (0xD0-0xD7), SOI (0xD8), TEM (0x01)
+    if ((marker >= 0xd0 && marker <= 0xd7) || marker === 0x01) {
+      offset += 2;
+      continue;
+    }
+
+    if (offset + 3 >= bytes.length) break;
+    const segmentPayloadLen = (bytes[offset + 2] << 8) | bytes[offset + 3];
+    const fullSegmentSize = 2 + segmentPayloadLen; // 2 marker bytes + payload length
+
+    // APP0 to APP15 (0xE0 - 0xEF) or COM (0xFE)
+    const isAppMarker = marker >= 0xe0 && marker <= 0xef;
+    const isComment = marker === 0xfe;
+
+    if (isAppMarker || isComment) {
+      let segmentName = isComment ? 'COM (Comment)' : `APP${marker - 0xe0}`;
+      if (marker === 0xe1 && offset + 8 < bytes.length) {
+        const id = String.fromCharCode(...bytes.slice(offset + 4, offset + 8));
+        if (id.startsWith('Exif')) segmentName = 'APP1 (EXIF / GPS / TIFF)';
+        else if (id.startsWith('http')) segmentName = 'APP1 (Adobe XMP)';
+      } else if (marker === 0xe2 && offset + 8 < bytes.length) {
+        const id = String.fromCharCode(...bytes.slice(offset + 4, offset + 8));
+        if (id.startsWith('ICC_')) segmentName = 'APP2 (ICC Color Profile)';
+      } else if (marker === 0xed) {
+        segmentName = 'APP13 (Photoshop IPTC)';
+      }
+
+      detectedSegments.push({ name: segmentName, bytes: fullSegmentSize });
+      metadataBytes += fullSegmentSize;
+    }
+
+    offset += fullSegmentSize;
   }
 
-  const metadataPercentage = file.size > 0 ? parseFloat(((metadataBytes / file.size) * 100).toFixed(2)) : 0;
+  return { metadataBytes, detectedSegments };
+}
+
+/** Helper: Measure exact PNG ancillary metadata chunks (tEXt, zTXt, iTXt, eXIf, iCCP, pHYs, etc.) */
+function measurePngMetadataBytes(bytes: Uint8Array): ExactMetadataMeasurement {
+  const detectedSegments: { name: string; bytes: number }[] = [];
+  let metadataBytes = 0;
+
+  const pngSig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  if (bytes.length < 8) return { metadataBytes: 0, detectedSegments };
+  for (let i = 0; i < 8; i++) {
+    if (bytes[i] !== pngSig[i]) return { metadataBytes: 0, detectedSegments };
+  }
+
+  let offset = 8;
+  const criticalChunks = new Set(['IHDR', 'PLTE', 'IDAT', 'IEND']);
+
+  while (offset + 8 <= bytes.length) {
+    const chunkDataLength =
+      ((bytes[offset] << 24) >>> 0) +
+      (bytes[offset + 1] << 16) +
+      (bytes[offset + 2] << 8) +
+      bytes[offset + 3];
+
+    const typeStr = String.fromCharCode(
+      bytes[offset + 4],
+      bytes[offset + 5],
+      bytes[offset + 6],
+      bytes[offset + 7]
+    );
+
+    const totalChunkBytes = 12 + chunkDataLength; // 4 len + 4 type + data + 4 crc
+
+    if (!criticalChunks.has(typeStr)) {
+      let desc = typeStr;
+      if (typeStr === 'tEXt' || typeStr === 'iTXt' || typeStr === 'zTXt') {
+        desc = `${typeStr} (Text / AI Prompts)`;
+      } else if (typeStr === 'eXIf') {
+        desc = 'eXIf (EXIF Metadata)';
+      } else if (typeStr === 'iCCP') {
+        desc = 'iCCP (ICC Color Profile)';
+      } else if (typeStr === 'pHYs') {
+        desc = 'pHYs (Physical Dimensions)';
+      } else if (typeStr === 'tIME') {
+        desc = 'tIME (Timestamp)';
+      }
+
+      detectedSegments.push({ name: desc, bytes: totalChunkBytes });
+      metadataBytes += totalChunkBytes;
+    }
+
+    offset += totalChunkBytes;
+    if (typeStr === 'IEND') break;
+  }
+
+  return { metadataBytes, detectedSegments };
+}
+
+/** Helper: Measure exact WebP metadata chunks (EXIF, XMP, ICCP) */
+function measureWebpMetadataBytes(bytes: Uint8Array): ExactMetadataMeasurement {
+  const detectedSegments: { name: string; bytes: number }[] = [];
+  let metadataBytes = 0;
+
+  if (bytes.length < 12) return { metadataBytes: 0, detectedSegments };
+  const riff = String.fromCharCode(...bytes.slice(0, 4));
+  const webp = String.fromCharCode(...bytes.slice(8, 12));
+  if (riff !== 'RIFF' || webp !== 'WEBP') return { metadataBytes: 0, detectedSegments };
+
+  let offset = 12;
+  const metadataFourCCs: Record<string, string> = {
+    'EXIF': 'EXIF (Camera / GPS Data)',
+    'XMP ': 'XMP (Adobe Extensible Metadata)',
+    'ICCP': 'ICCP (Color Profile)',
+  };
+
+  while (offset + 8 <= bytes.length) {
+    const fourCC = String.fromCharCode(...bytes.slice(offset, offset + 4));
+    const chunkLen =
+      bytes[offset + 4] |
+      (bytes[offset + 5] << 8) |
+      (bytes[offset + 6] << 16) |
+      (bytes[offset + 7] << 24);
+
+    const paddedLen = chunkLen + (chunkLen % 2); // RIFF chunks are 2-byte aligned
+    const totalChunkBytes = 8 + paddedLen;
+
+    if (metadataFourCCs[fourCC]) {
+      detectedSegments.push({ name: metadataFourCCs[fourCC], bytes: totalChunkBytes });
+      metadataBytes += totalChunkBytes;
+    }
+
+    offset += totalChunkBytes;
+  }
+
+  return { metadataBytes, detectedSegments };
+}
+
+/**
+ * Measure exact metadata segment byte lengths directly from binary container headers.
+ * 100% Client-Side, bit-accurate, zero canvas re-rendering.
+ */
+export async function measureExactMetadataBytes(file: File): Promise<ExactMetadataMeasurement> {
+  try {
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    // 1. JPEG
+    if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xd8) {
+      return measureJpegMetadataBytes(bytes);
+    }
+
+    // 2. PNG
+    if (
+      bytes.length >= 8 &&
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47
+    ) {
+      return measurePngMetadataBytes(bytes);
+    }
+
+    // 3. WebP (RIFF)
+    if (
+      bytes.length >= 12 &&
+      bytes[0] === 0x52 && // 'R'
+      bytes[1] === 0x49 && // 'I'
+      bytes[2] === 0x46 && // 'F'
+      bytes[3] === 0x46 // 'F'
+    ) {
+      return measureWebpMetadataBytes(bytes);
+    }
+
+    return { metadataBytes: 0, detectedSegments: [] };
+  } catch {
+    return { metadataBytes: 0, detectedSegments: [] };
+  }
+}
+
+export async function calculateMetadataStructure(file: File): Promise<MetadataCalculationResult> {
+  const fileSizeBytes = file.size;
+  const fileSizeFormatted = formatBytes(fileSizeBytes);
+
+  // Read actual dimensions
+  const dims = await getImageDimensions(file);
   const megapixels =
-    dimensions.width && dimensions.height
-      ? `${((dimensions.width * dimensions.height) / 1000000).toFixed(1)} MP`
+    dims.width > 0 && dims.height > 0
+      ? `${((dims.width * dims.height) / 1_000_000).toFixed(1)} MP`
       : 'Unknown';
 
+  // Count true extracted tags via exifr
+  let totalTagsFound = 0;
+  try {
+    const parsed = await exifr.parse(file, {
+      tiff: true,
+      xmp: true,
+      icc: true,
+      iptc: true,
+      jfif: true,
+      gps: true,
+    });
+    if (parsed && typeof parsed === 'object') {
+      totalTagsFound = Object.keys(parsed).length;
+    }
+  } catch {
+    totalTagsFound = 0;
+  }
+
+  // Calculate exact metadata bytes directly from binary container headers (Zero Canvas re-rendering)
+  const exactMeta = await measureExactMetadataBytes(file);
+  let metadataSizeBytes = exactMeta.metadataBytes;
+
+  // Fallback estimation for container formats lacking standard APP/chunk blocks if tags were detected
+  if (metadataSizeBytes === 0 && totalTagsFound > 0) {
+    metadataSizeBytes = Math.min(Math.round(fileSizeBytes * 0.05), Math.max(totalTagsFound * 96, 512));
+  }
+
+  // Clamp metadata size to file size
+  if (metadataSizeBytes > fileSizeBytes) {
+    metadataSizeBytes = fileSizeBytes;
+  }
+
+  const spaceSavedBytes = metadataSizeBytes;
+  const cleanedSizeBytes = Math.max(1, fileSizeBytes - spaceSavedBytes);
+
+  const cleanedSizeFormatted = formatBytes(cleanedSizeBytes);
+  const metadataSizeFormatted = formatBytes(metadataSizeBytes);
+  const spaceSavedFormatted = formatBytes(spaceSavedBytes);
+
+  const metadataPercentage =
+    fileSizeBytes > 0 ? parseFloat(((spaceSavedBytes / fileSizeBytes) * 100).toFixed(1)) : 0;
+
   return {
-    fileSizeBytes: file.size,
-    fileSizeFormatted: formatBytes(file.size),
-    metadataSizeBytes: metadataBytes,
-    metadataSizeFormatted: formatBytes(metadataBytes),
+    fileSizeBytes,
+    fileSizeFormatted,
+    cleanedSizeBytes,
+    cleanedSizeFormatted,
+    metadataSizeBytes,
+    metadataSizeFormatted,
     metadataPercentage,
-    dimensions,
+    totalTagsFound,
+    tagsRemovedCount: totalTagsFound,
+    spaceSavedBytes,
+    spaceSavedFormatted,
+    dimensions: dims,
     megapixels,
     mimeType: file.type || 'image/jpeg',
-    formatName: file.type.split('/')[1]?.toUpperCase() || 'IMAGE',
+    formatName: (file.type.split('/')[1] || 'JPEG').toUpperCase(),
     dpi: 72,
   };
 }
 
 // =========================================================================
-// 3. PHOTO PRIVACY RISK ANALYZER (/photo-privacy-analyzer)
+// 3. PRIVACY ANALYZER (/photo-privacy-analyzer)
 // =========================================================================
 export async function analyzePhotoPrivacy(file: File): Promise<PrivacyAnalysisResult> {
   const findings: PrivacyFinding[] = [];
   let score = 0;
 
+  // 1. Check GPS Geolocation (Critical Risk)
   try {
-    if (file.type === 'image/jpeg') {
-      const base64 = await readFileBase64(file);
-      const exifObj = piexif.load(base64);
+    const gps = await exifr.gps(file);
+    if (gps && typeof gps.latitude === 'number' && typeof gps.longitude === 'number') {
+      score += 45;
+      findings.push({
+        level: 'high',
+        title: 'Precise GPS Location Coordinates Embedded',
+        description:
+          'Your exact geographic coordinates (home, office, or private location) are stamped into this photo.',
+        tagValue: `${gps.latitude.toFixed(6)}°, ${gps.longitude.toFixed(6)}°`,
+      });
+    }
+  } catch {
+    // No GPS
+  }
 
-      if (exifObj) {
-        // 1. GPS Coordinates (High Risk - Red)
-        if (exifObj.GPS && Object.keys(exifObj.GPS).length > 0) {
-          const lat = exifObj.GPS[piexif.GPSIFD.GPSLatitude];
-          const lon = exifObj.GPS[piexif.GPSIFD.GPSLongitude];
-          if (lat || lon) {
-            score += 55;
-            findings.push({
-              level: 'high',
-              title: 'Exact GPS Location Coordinates Detected',
-              description: 'Your photo embeds precise latitude and longitude that point straight to where you stood.',
-              tagValue: 'GPSIFD: Latitude / Longitude active',
-            });
-          }
-        }
+  // 2. Parse EXIF & XMP
+  try {
+    const parsed = (await exifr.parse(file, {
+      tiff: true,
+      xmp: true,
+      gps: true,
+    })) as Record<string, unknown> | undefined;
 
-        // 2. Device Serial Numbers (High Risk - Red)
-        if (exifObj.Exif && exifObj.Exif[piexif.ExifIFD.BodySerialNumber]) {
-          score += 25;
-          findings.push({
-            level: 'high',
-            title: 'Camera Body Serial Number Embedded',
-            description: 'A permanent hardware serial number is stamped in the file, allowing trackers to link photos across websites.',
-            tagValue: String(exifObj.Exif[piexif.ExifIFD.BodySerialNumber]),
-          });
-        }
+    if (parsed) {
+      // Hardware Serial Number
+      if (parsed.SerialNumber || parsed.BodySerialNumber || parsed.LensSerialNumber) {
+        score += 20;
+        findings.push({
+          level: 'high',
+          title: 'Unique Camera/Lens Hardware Serial Number',
+          description:
+            'A permanent physical serial number is embedded, allowing investigators to track all photos taken with your equipment.',
+          tagValue: `Serial: ${String(parsed.SerialNumber || parsed.BodySerialNumber || parsed.LensSerialNumber)}`,
+        });
+      }
 
-        // 3. Date & Time Original (Medium Risk - Yellow)
-        if (exifObj.Exif && exifObj.Exif[piexif.ExifIFD.DateTimeOriginal]) {
-          score += 15;
-          findings.push({
-            level: 'medium',
-            title: 'Exact Date & Capture Timestamp Found',
-            description: 'Reveals the exact minute and second this photo was captured, potentially exposing your daily routine.',
-            tagValue: String(exifObj.Exif[piexif.ExifIFD.DateTimeOriginal]),
-          });
-        }
+      // Author / Creator
+      const author = parsed.Artist || parsed.XPAuthor || parsed.Creator || parsed.byline;
+      if (author) {
+        score += 15;
+        findings.push({
+          level: 'medium',
+          title: 'Personal Creator / Author Identity',
+          description: 'Your real name or photographer tag is written directly in the file metadata.',
+          tagValue: `Author: ${String(author)}`,
+        });
+      }
 
-        // 4. Author / Artist Name (Medium Risk - Yellow)
-        if (exifObj['0th'] && exifObj['0th'][piexif.ImageIFD.Artist]) {
-          score += 10;
-          findings.push({
-            level: 'medium',
-            title: 'Creator / Author Name Stamped',
-            description: 'Contains personal or copyright author tags identifying you by name.',
-            tagValue: String(exifObj['0th'][piexif.ImageIFD.Artist]),
-          });
-        }
+      // Date Taken
+      if (parsed.DateTimeOriginal || parsed.CreateDate) {
+        score += 10;
+        findings.push({
+          level: 'low',
+          title: 'Exact Capture Timestamp',
+          description: 'The exact year, minute, and second you took this photo is recorded.',
+          tagValue: `Timestamp: ${formatDate(parsed.DateTimeOriginal || parsed.CreateDate)}`,
+        });
+      }
 
-        // 5. Camera Model & Make (Low Risk)
-        if (exifObj['0th'] && exifObj['0th'][piexif.ImageIFD.Model]) {
-          score += 5;
-          findings.push({
-            level: 'low',
-            title: 'Camera Device Model Exposed',
-            description: 'Shows the exact brand and model of phone or camera used to capture this image.',
-            tagValue: String(exifObj['0th'][piexif.ImageIFD.Model]),
-          });
-        }
+      // Software / Device Info
+      if (parsed.Software || parsed.Model) {
+        score += 10;
+        findings.push({
+          level: 'low',
+          title: 'Hardware Model & Processing Software',
+          description: 'Reveals the exact camera or smartphone model and operating system version.',
+          tagValue: `${String(parsed.Model || '')} ${parsed.Software ? `· ${String(parsed.Software)}` : ''}`.trim(),
+        });
       }
     }
   } catch {
-    // Clean or unparseable
+    // No parseable EXIF
   }
 
-  // Determine overall risk level
+  // Clamp score
   score = Math.min(100, Math.max(0, score));
-  let riskLevel: 'high' | 'medium' | 'safe' = 'safe';
-  let summaryMessage = 'Safe — Zero sensitive GPS or personal identification tags detected.';
 
-  if (score >= 50) {
+  let riskLevel: 'high' | 'medium' | 'safe' = 'safe';
+  let summaryMessage = 'Photo is Safe: Minimal or no private tracking metadata detected.';
+
+  if (score >= 45) {
     riskLevel = 'high';
-    summaryMessage = 'High Risk — Precise GPS coordinates or hardware serial tags expose your physical location.';
-  } else if (score >= 15) {
+    summaryMessage = 'High Privacy Threat: Sensitive location or hardware tracking tags found!';
+  } else if (score >= 20) {
     riskLevel = 'medium';
-    summaryMessage = 'Medium Risk — Capture timestamps, author names, or camera profiles detected.';
+    summaryMessage = 'Medium Risk: Author identity or capture timeline tags detected.';
   }
 
   return {
@@ -496,182 +838,242 @@ export async function analyzePhotoPrivacy(file: File): Promise<PrivacyAnalysisRe
 }
 
 // =========================================================================
-// 4. C2PA / CONTENT CREDENTIALS READER (/c2pa-checker)
+// 4. C2PA & CONTENT CREDENTIALS SCANNER
 // =========================================================================
 export async function checkC2paCredentials(file: File): Promise<C2paCheckResult> {
-  const buffer = await readFileBuffer(file);
+  const buffer = await file.arrayBuffer();
   const bytes = new Uint8Array(buffer);
-  const decoder = new TextDecoder('latin1');
-  const sample = decoder.decode(bytes.slice(0, Math.min(bytes.length, 131072)));
-
   const details: string[] = [];
-  let hasC2pa = false;
 
-  // Search for JUMBF signature ('jumb' in ASCII: 0x6A, 0x75, 0x6D, 0x62)
-  for (let i = 0; i < Math.min(bytes.length - 4, 65536); i++) {
+  // Look for JUMBF signature ("jumb" in ASCII: 0x6A, 0x75, 0x6D, 0x62)
+  let foundJumbf = false;
+  for (let i = 0; i < bytes.length - 8; i++) {
     if (
-      bytes[i] === 0x6A &&
+      bytes[i] === 0x6a &&
       bytes[i + 1] === 0x75 &&
-      bytes[i + 2] === 0x6D &&
+      bytes[i + 2] === 0x6d &&
       bytes[i + 3] === 0x62
     ) {
-      hasC2pa = true;
-      details.push('Found JUMBF (JPEG Universal Metadata Box Format) container');
+      foundJumbf = true;
+      details.push(`Found JUMBF Box at byte offset ${i.toLocaleString()}`);
       break;
     }
   }
 
-  if (sample.includes('c2pa') || sample.includes('adobe:c2pa') || sample.includes('http://c2pa.org/')) {
-    hasC2pa = true;
-    details.push('Detected Coalition for Content Provenance and Authenticity (C2PA) namespace');
-  }
-
-  if (sample.includes('c2ma') || sample.includes('contentCredentials')) {
-    hasC2pa = true;
-    details.push('Embedded Content Credentials cryptographic manifest detected');
-  }
-
-  if (hasC2pa) {
-    return {
-      hasC2pa: true,
-      status: 'detected',
-      manifestType: 'C2PA Cryptographic Content Credentials Manifest',
-      details,
-    };
+  // Look for C2PA XMP references
+  const decoder = new TextDecoder('latin1');
+  const textSample = decoder.decode(bytes.slice(0, Math.min(bytes.length, 131072)));
+  if (textSample.includes('c2pa') || textSample.includes('contentauth')) {
+    details.push('Detected C2PA / Content Credentials manifest XML packet');
+    foundJumbf = true;
   }
 
   return {
-    hasC2pa: false,
-    status: 'clean',
-    details: ['No C2PA manifests, JUMBF boxes, or Content Credentials detected in this file.'],
+    hasC2pa: foundJumbf,
+    status: foundJumbf ? 'detected' : 'clean',
+    manifestType: foundJumbf ? 'C2PA JUMBF Manifest' : undefined,
+    details: details.length > 0 ? details : ['No C2PA or cryptographic provenance blocks found.'],
   };
 }
 
 // =========================================================================
-// 5. AI METADATA SIGNATURE SCANNER (/ai-image-checker & /ai-watermark-checker)
+// 5. AI SIGNATURE SCANNER
 // =========================================================================
 export async function scanAiSignatures(file: File): Promise<AiScanResult> {
-  const indicators: AiSignatureIndicator[] = [];
-  let isAiDetected = false;
-  let probability = 0;
-  let detectedEngine: string | undefined;
-
-  const AI_TARGETS = [
-    { name: 'Midjourney', key: 'midjourney' },
-    { name: 'DALL-E', key: 'dall-e' },
-    { name: 'DALL-E', key: 'dalle' },
-    { name: 'Stable Diffusion', key: 'stable diffusion' },
-    { name: 'Stable Diffusion', key: 'stablediffusion' },
-    { name: 'ComfyUI', key: 'comfyui' },
-    { name: 'Automatic1111', key: 'automatic1111' },
-    { name: 'NovelAI', key: 'novelai' },
-    { name: 'Civitai', key: 'civitai' },
-    { name: 'Fooocus', key: 'fooocus' },
-    { name: 'InvokeAI', key: 'invokeai' },
-    { name: 'FLUX.1', key: 'flux' },
-    { name: 'Adobe Firefly', key: 'firefly' },
-  ];
-
-  const buffer = await readFileBuffer(file);
+  const buffer = await file.arrayBuffer();
   const bytes = new Uint8Array(buffer);
-  const decoder = new TextDecoder('latin1');
-  const fileTextSample = decoder.decode(bytes.slice(0, Math.min(bytes.length, 131072))).toLowerCase();
 
-  // 1. Scan for generator keywords in whole binary header
-  for (const target of AI_TARGETS) {
-    if (fileTextSample.includes(target.key)) {
-      isAiDetected = true;
-      probability = Math.max(probability, 95);
-      if (!detectedEngine) detectedEngine = target.name;
-      indicators.push({
-        source: 'Binary Header Tag',
-        label: `${target.name} Signature`,
-        snippet: `Matched "${target.key}" in file header metadata`,
-      });
+  // Scan up to 256KB to inspect headers and metadata chunks
+  const scanLength = Math.min(bytes.length, 262144);
+  const sampleSlice = bytes.slice(0, scanLength);
+
+  // Decode with both latin1 (preserves byte indices) and utf-8 (preserves JSON / unicode characters)
+  const latin1Text = new TextDecoder('latin1').decode(sampleSlice);
+  let utf8Text = '';
+  try {
+    utf8Text = new TextDecoder('utf-8', { fatal: false }).decode(sampleSlice);
+  } catch {
+    utf8Text = latin1Text;
+  }
+
+  const textSample = latin1Text + '\n' + utf8Text;
+  const indicators: AiSignatureIndicator[] = [];
+  const detectedEngines = new Set<string>();
+  let strongSignals = 0;
+  let mediumSignals = 0;
+
+  // 1. Stable Diffusion / Automatic1111 / WebUI
+  const hasSdParams =
+    textSample.includes('Steps:') &&
+    (textSample.includes('CFG scale:') || textSample.includes('Sampler:') || textSample.includes('Seed:'));
+  const hasSdPrompt =
+    textSample.includes('parameters') &&
+    (textSample.includes('Negative prompt:') || textSample.includes('Model:') || textSample.includes('Clip skip'));
+
+  if (hasSdParams || hasSdPrompt) {
+    strongSignals += 2;
+    detectedEngines.add('Stable Diffusion / Automatic1111');
+
+    let snippet = 'Found diffusion generation parameters (Steps, Sampler, CFG Scale, Seed) in container text header.';
+    const stepIdx = textSample.indexOf('Steps:');
+    if (stepIdx !== -1) {
+      const excerpt = textSample.slice(Math.max(0, stepIdx - 20), Math.min(textSample.length, stepIdx + 120)).trim();
+      if (excerpt) snippet = excerpt.replace(/[\x00-\x1F\x7F]/g, ' ');
+    }
+
+    indicators.push({
+      source: 'Stable Diffusion',
+      label: 'Diffusion Generation Parameters',
+      snippet,
+      confidence: 'high',
+    });
+  }
+
+  // 2. ComfyUI Workflow Graphs
+  const hasComfyNodes =
+    (textSample.includes('KSampler') || textSample.includes('CheckpointLoaderSimple')) &&
+    (textSample.includes('extra_pnginfo') || textSample.includes('"class_type"') || textSample.includes('"workflow"'));
+
+  if (hasComfyNodes) {
+    strongSignals += 2;
+    detectedEngines.add('ComfyUI Node Workflow');
+    indicators.push({
+      source: 'ComfyUI',
+      label: 'ComfyUI Node Graph Execution Metadata',
+      snippet: 'Found full node execution graph (KSampler, VAE, Checkpoint) in PNG iTXt chunk.',
+      confidence: 'high',
+    });
+  }
+
+  // 3. Midjourney
+  const hasMjVersion =
+    textSample.includes('--v 4') ||
+    textSample.includes('--v 5') ||
+    textSample.includes('--v 6') ||
+    textSample.includes('--niji');
+  const hasMjParams = textSample.includes('--ar ') || textSample.includes('--stylize ') || textSample.includes('--chaos ');
+  const hasMjName = textSample.includes('Midjourney') || textSample.includes('/imagine');
+
+  if (hasMjVersion || (hasMjParams && hasMjName)) {
+    strongSignals += 2;
+    detectedEngines.add('Midjourney');
+
+    let snippet = 'Found Midjourney generation parameters (--v, --ar, --stylize) inside metadata chunk.';
+    const vIdx = textSample.search(/--v\s+[456]/);
+    if (vIdx !== -1) {
+      const excerpt = textSample.slice(Math.max(0, vIdx - 30), Math.min(textSample.length, vIdx + 80)).trim();
+      if (excerpt) snippet = excerpt.replace(/[\x00-\x1F\x7F]/g, ' ');
+    }
+
+    indicators.push({
+      source: 'Midjourney',
+      label: 'Midjourney Prompt & Version Flag',
+      snippet,
+      confidence: 'high',
+    });
+  } else if (hasMjName) {
+    mediumSignals += 1;
+    detectedEngines.add('Midjourney');
+    indicators.push({
+      source: 'Midjourney',
+      label: 'Midjourney Generator Tag',
+      snippet: 'Found Midjourney keyword marker in file header.',
+      confidence: 'medium',
+    });
+  }
+
+  // 4. OpenAI DALL-E
+  const hasDalleName = textSample.toLowerCase().includes('dall-e') || textSample.includes('DALL·E');
+  const hasOpenAiTag = textSample.includes('OpenAI') || textSample.includes('generation_id');
+
+  if (hasDalleName && hasOpenAiTag) {
+    strongSignals += 2;
+    detectedEngines.add('OpenAI DALL-E');
+    indicators.push({
+      source: 'OpenAI',
+      label: 'DALL-E Generative Metadata Tag',
+      snippet: 'Found OpenAI DALL-E generation ID and synthetic provenance header.',
+      confidence: 'high',
+    });
+  } else if (hasDalleName || hasOpenAiTag) {
+    mediumSignals += 1;
+    detectedEngines.add('OpenAI DALL-E');
+    indicators.push({
+      source: 'OpenAI',
+      label: 'OpenAI Generator Marker',
+      snippet: 'Found OpenAI generative marker in image metadata.',
+      confidence: 'medium',
+    });
+  }
+
+  // 5. Civitai / Checkpoint Models
+  if (textSample.includes('civitai:') || textSample.includes('Civitai Resources')) {
+    mediumSignals += 1;
+    indicators.push({
+      source: 'Civitai',
+      label: 'Civitai Model & LoRA Resource Link',
+      snippet: 'Found Civitai model hashes and training resource identifiers embedded in metadata.',
+      confidence: 'medium',
+    });
+  }
+
+  // 6. Adobe Firefly / Content Credentials Synthetic Provenance
+  if (
+    textSample.includes('digitalSourceType/trainedAlgorithmicMedia') ||
+    (textSample.includes('Firefly') && textSample.includes('Adobe'))
+  ) {
+    strongSignals += 1;
+    detectedEngines.add('Adobe Firefly');
+    indicators.push({
+      source: 'Adobe Firefly',
+      label: 'Trained Algorithmic Media Provenance',
+      snippet: 'Found Adobe C2PA digitalSourceType flag declaring trained algorithmic media.',
+      confidence: 'high',
+    });
+  }
+
+  // 7. Fooocus
+  if (textSample.includes('Fooocus') && textSample.includes('sharpness')) {
+    strongSignals += 2;
+    detectedEngines.add('Fooocus');
+    indicators.push({
+      source: 'Fooocus',
+      label: 'Fooocus Inpainting / Diffusion Settings',
+      snippet: 'Found Fooocus pipeline configuration in image text dictionary.',
+      confidence: 'high',
+    });
+  }
+
+  // Dynamic Probability Calculation based on verified signals
+  let probability = 0;
+  const isAiDetected = indicators.length > 0;
+
+  if (isAiDetected) {
+    if (strongSignals >= 4) {
+      probability = 99;
+    } else if (strongSignals >= 2) {
+      probability = 95;
+    } else if (strongSignals === 1 && mediumSignals >= 1) {
+      probability = 90;
+    } else if (strongSignals === 1) {
+      probability = 85;
+    } else if (mediumSignals >= 2) {
+      probability = 80;
+    } else {
+      probability = 70;
     }
   }
 
-  // 2. Scan for Diffusion parameter structures (prompt, negative prompt, steps, sampler, cfg scale)
-  const PARAM_KEYWORDS = ['negative prompt', 'steps:', 'sampler:', 'cfg scale:', 'seed:', 'lora:', 'model hash:'];
-  let paramMatches = 0;
-  for (const param of PARAM_KEYWORDS) {
-    if (fileTextSample.includes(param)) {
-      paramMatches++;
-      indicators.push({
-        source: 'Generation Parameter',
-        label: 'Diffusion Parameter Tag',
-        snippet: `Detected workflow marker "${param}"`,
-      });
-    }
-  }
-
-  if (paramMatches >= 2) {
-    isAiDetected = true;
-    probability = Math.max(probability, 90);
-    if (!detectedEngine) detectedEngine = 'Stable Diffusion / ComfyUI Pipeline';
-  }
-
-  // 3. Scan EXIF fields if JPEG
-  if (file.type === 'image/jpeg') {
-    try {
-      const base64 = await readFileBase64(file);
-      const exifObj = piexif.load(base64);
-      if (exifObj && exifObj['0th']) {
-        const software = String(exifObj['0th'][piexif.ImageIFD.Software] || '').toLowerCase();
-        for (const target of AI_TARGETS) {
-          if (software.includes(target.key)) {
-            isAiDetected = true;
-            probability = 99;
-            detectedEngine = target.name;
-            indicators.push({
-              source: 'EXIF Software Tag',
-              label: `${target.name} Application Stamp`,
-              snippet: software,
-            });
-          }
-        }
-      }
-    } catch {
-      // Ignore EXIF load errors
-    }
-  }
-
-  // 4. Scan PNG chunks if PNG
-  if (file.type === 'image/png') {
-    let offset = 8;
-    while (offset < bytes.length) {
-      if (offset + 8 > bytes.length) break;
-      const dataView = new DataView(buffer, offset);
-      const chunkDataLength = dataView.getUint32(0);
-      const chunkType = String.fromCharCode(
-        bytes[offset + 4],
-        bytes[offset + 5],
-        bytes[offset + 6],
-        bytes[offset + 7]
-      );
-
-      if (chunkType === 'tEXt' || chunkType === 'iTXt' || chunkType === 'zTXt') {
-        const payload = bytes.slice(offset + 8, offset + 8 + chunkDataLength);
-        const text = decoder.decode(payload).toLowerCase();
-        if (text.includes('parameters') || text.includes('prompt') || text.includes('workflow')) {
-          isAiDetected = true;
-          probability = Math.max(probability, 95);
-          indicators.push({
-            source: `PNG ${chunkType} Chunk`,
-            label: 'AI Prompt / Workflow Chunk',
-            snippet: text.length > 80 ? `${text.substring(0, 80)}...` : text,
-          });
-        }
-      }
-      offset += 4 + 4 + chunkDataLength + 4;
-      if (chunkType === 'IEND') break;
-    }
-  }
+  const engineName =
+    detectedEngines.size > 0 ? Array.from(detectedEngines).join(' / ') : undefined;
 
   return {
     isAiDetected,
-    probability: isAiDetected ? Math.max(75, probability) : 0,
-    engineName: detectedEngine,
+    probability,
+    engineName,
     indicators,
+    detectionMode: 'container_metadata_signatures',
+    inspectionNote:
+      'Container Metadata Inspection: Analysis is conducted by inspecting embedded metadata container segments (PNG iTXt/tEXt chunks, JPEG APP1 XMP/Exif, and workflow parameters). Forensic steganographic pixel frequency analysis is not performed.',
   };
 }

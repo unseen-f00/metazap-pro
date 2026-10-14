@@ -36,11 +36,26 @@ export default function GlobalFooter() {
               <Link href="/batch" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 Batch Processor
               </Link>
-              <Link href="/metadata-editor" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                EXIF Editor
+            </nav>
+
+            <nav className="flex flex-col gap-2.5" aria-label="Tools and converters">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
+                Tools &amp; Converters
+              </span>
+              <Link href="/compress" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                Photo Compressor
               </Link>
-              <Link href="/contact" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                Contact
+              <Link href="/crop" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                Social Media Cropper
+              </Link>
+              <Link href="/png-to-jpg" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                PNG to JPG
+              </Link>
+              <Link href="/jpg-to-png" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                JPG to PNG
+              </Link>
+              <Link href="/image-to-webp" className="text-xs md:text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                Image to WebP
               </Link>
             </nav>
 

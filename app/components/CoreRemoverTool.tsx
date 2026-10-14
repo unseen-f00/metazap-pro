@@ -10,11 +10,15 @@
  */
 
 import { useState, useEffect } from 'react';
+import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
 import ProcessingStepper from '@/app/components/ProcessingStepper';
 import BeforeAfterStatusCard from '@/app/components/BeforeAfterStatusCard';
 import { inspectMetadataBefore, BeforeAfterStatus } from '@/app/lib/metadataStatus';
 import { triggerSuccessConfetti } from '@/app/lib/confetti';
+import FileSizeAnalyticsCard from '@/app/components/FileSizeAnalyticsCard';
+import { calculateSizeAnalytics, SizeAnalytics } from '@/app/lib/metadataRemover';
+import { verifyCleanBlob } from '@/app/utils/metadataTester';
 import {
   stripGeneralMetadata,
   stripGpsMetadata,
@@ -25,6 +29,7 @@ import {
   stripPngMetadataChunks,
   removeC2paCredentials,
   stripAiOnlyMetadata,
+  isSelectiveJpegSupported,
 } from '@/app/lib/imageProcessor';
 
 export type CoreRemoverType =
@@ -46,6 +51,7 @@ interface CoreRemoverConfig {
   filePrefix: string;
   step3Label: string;
   step3Desc: string;
+  accept: string;
 }
 
 const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
@@ -57,6 +63,8 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'clean_',
     step3Label: 'Stripping All EXIF & Tags',
     step3Desc: 'Wiping all EXIF, GPS, camera details & text chunks',
+    accept:
+      'image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif',
   },
   gps: {
     dropzoneLabel: 'Drop photos here to selectively remove GPS',
@@ -66,6 +74,8 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'nogps_',
     step3Label: 'Wiping GPS IFD Location Tags',
     step3Desc: 'Deleting latitude & longitude, preserving camera & date',
+    accept:
+      'image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif',
   },
   xmp: {
     dropzoneLabel: 'Drop photos here to remove Adobe XMP metadata',
@@ -75,6 +85,7 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'noxmp_',
     step3Label: 'Stripping XMP XML Packets',
     step3Desc: 'Removing Adobe edit history while preserving basic EXIF',
+    accept: 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
   },
   canvas: {
     dropzoneLabel: 'Drop photos here for Deep Clean / Canvas Re-rendering',
@@ -84,6 +95,8 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'deepclean_',
     step3Label: 'HTML5 Canvas Re-Rendering',
     step3Desc: 'Regenerating fresh raster pixels & neutralizing steganography',
+    accept:
+      'image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp',
   },
   'heic-clean': {
     dropzoneLabel: 'Drop Apple HEIC / HEIF photos here to clean metadata',
@@ -93,6 +106,7 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'clean_heic_',
     step3Label: 'Parsing HEIC & Stripping Metadata',
     step3Desc: 'Decoding Apple HEIC container & wiping private GPS tags',
+    accept: 'image/heic,image/heif,.heic,.heif',
   },
   'heic-convert': {
     dropzoneLabel: 'Drop Apple HEIC photos here to convert to clean JPG',
@@ -102,6 +116,7 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'converted_',
     step3Label: 'Converting HEIC to Universal JPG',
     step3Desc: 'Exporting pristine JPG blob devoid of Apple tracking tags',
+    accept: 'image/heic,image/heif,.heic,.heif',
   },
   'png-chunks': {
     dropzoneLabel: 'Drop PNG images here to strip text chunks & AI prompts',
@@ -111,6 +126,7 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'clean_png_',
     step3Label: 'Pruning PNG Binary Text Chunks',
     step3Desc: 'Stripping tEXt, iTXt & zTXt while preserving IHDR & IDAT',
+    accept: 'image/png,.png',
   },
   c2pa: {
     dropzoneLabel: 'Drop images here to remove C2PA Content Credentials',
@@ -120,6 +136,7 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'noc2pa_',
     step3Label: 'Neutralizing C2PA & JUMBF Manifests',
     step3Desc: 'Wiping cryptographic signatures & Content Credentials',
+    accept: 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
   },
   'ai-only': {
     dropzoneLabel: 'Drop AI artwork here to selectively strip prompts & workflows',
@@ -129,6 +146,7 @@ const configs: Record<CoreRemoverType, CoreRemoverConfig> = {
     filePrefix: 'no_ai_meta_',
     step3Label: 'Filtering AI Prompt & Generator Tags',
     step3Desc: 'Scrubbing diffusion parameters, keeping authentic camera tags',
+    accept: 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
   },
 };
 
@@ -136,8 +154,10 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [cleanedUrl, setCleanedUrl] = useState<string | null>(null);
+  const [cleanedBlob, setCleanedBlob] = useState<Blob | null>(null);
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
   const [beforeAfter, setBeforeAfter] = useState<BeforeAfterStatus | null>(null);
+  const [sizeAnalytics, setSizeAnalytics] = useState<SizeAnalytics | null>(null);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -153,25 +173,50 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
     };
   }, [previewUrl, cleanedUrl]);
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
   const handleFilesSelected = async (files: File[]) => {
     if (!files.length) return;
     const file = files[0];
+
+    // Mobile & empty file validation
+    if (!file || file.size === 0) {
+      setErrorMessage('Selected file is empty or corrupted (0 bytes). Please select a valid photo.');
+      return;
+    }
+
+    // Strict tool-type enforcement
+    if (toolType === 'png-chunks') {
+      const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+      if (!isPng) {
+        setErrorMessage(`Invalid format: "${file.name}" is not a PNG file. The PNG Metadata Remover strictly accepts only PNG (.png) images.`);
+        return;
+      }
+    } else if (toolType === 'heic-clean' || toolType === 'heic-convert') {
+      const isHeic = file.type.includes('heic') || file.type.includes('heif') || /\.(heic|heif)$/i.test(file.name);
+      if (!isHeic) {
+        setErrorMessage(`Invalid format: "${file.name}" is not an Apple HEIC/HEIF photo. Please upload a .heic or .heif file.`);
+        return;
+      }
+    }
+
     setSelectedFile(file);
     setIsProcessing(true);
     setErrorMessage(null);
     setCurrentStep(1);
-    setProgressPercent(15);
+    setProgressPercent(20);
 
     // Generate instant live preview
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
 
-    // Read natural dimensions
+    // Read natural dimensions safely on mobile
     const img = new Image();
     img.onload = () => {
-      setDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+      }
+    };
+    img.onerror = () => {
+      setDimensions(null);
     };
     img.src = objectUrl;
 
@@ -179,17 +224,13 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
       // Step 1: Reading File & Inspecting initial metadata
       const initialMetadata = await inspectMetadataBefore(file, toolType);
       setBeforeAfter(initialMetadata);
-
-      await sleep(350);
       setCurrentStep(2);
-      setProgressPercent(40);
+      setProgressPercent(45);
 
-      // Step 2: Analyzing Tags
-      await sleep(400);
+      // Step 2 & 3: Stripping Data via actual processing engine (HTML5 Canvas method)
       setCurrentStep(3);
-      setProgressPercent(70);
+      setProgressPercent(75);
 
-      // Step 3: Stripping Data via actual processing engine
       let resultBlob: Blob;
       switch (toolType) {
         case 'general':
@@ -223,13 +264,21 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
           resultBlob = await stripGeneralMetadata(file);
       }
 
-      await sleep(350);
-      // Step 4: Finalizing
+      // Step 4: Finalizing & calculating analytics
       setCurrentStep(4);
-      setProgressPercent(95);
-      await sleep(250);
       setProgressPercent(100);
 
+      const analytics = calculateSizeAnalytics(file.size, resultBlob.size);
+      setSizeAnalytics(analytics);
+
+      // Automated QA verification: assert targeted tags are wiped and preserved tags intact
+      const isSelective =
+        (toolType === 'gps' || toolType === 'xmp' || toolType === 'ai-only') &&
+        isSelectiveJpegSupported(file);
+      await verifyCleanBlob(resultBlob, { toolType, isSelectiveJpeg: isSelective });
+
+      // Store clean blob and preview URL
+      setCleanedBlob(resultBlob);
       const url = URL.createObjectURL(resultBlob);
       setCleanedUrl(url);
 
@@ -242,10 +291,8 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
     }
   };
 
-  const handleDownload = () => {
-    if (!cleanedUrl || !selectedFile) return;
-    const a = document.createElement('a');
-    a.href = cleanedUrl;
+  const handleDownload = async () => {
+    if (!selectedFile) return;
     let outName = selectedFile.name;
     if (toolType === 'heic-clean' || toolType === 'heic-convert') {
       outName = outName.replace(/\.hei[cf]$/i, '.jpg');
@@ -253,10 +300,23 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
         outName += '.jpg';
       }
     }
-    a.download = `${config.filePrefix}${outName}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const downloadFilename = `${config.filePrefix}${outName}`;
+
+    // Serve the newly generated clean Blob with verification
+    if (cleanedBlob) {
+      const isSelective =
+        (toolType === 'gps' || toolType === 'xmp' || toolType === 'ai-only') &&
+        isSelectiveJpegSupported(selectedFile);
+      await verifyCleanBlob(cleanedBlob, { toolType, isSelectiveJpeg: isSelective });
+      saveAs(cleanedBlob, downloadFilename);
+    } else if (cleanedUrl) {
+      const a = document.createElement('a');
+      a.href = cleanedUrl;
+      a.download = downloadFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   };
 
   const handleReset = () => {
@@ -265,6 +325,8 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
     setSelectedFile(null);
     setPreviewUrl(null);
     setCleanedUrl(null);
+    setCleanedBlob(null);
+    setSizeAnalytics(null);
     setDimensions(null);
     setBeforeAfter(null);
     setErrorMessage(null);
@@ -280,6 +342,7 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
           onFilesSelected={handleFilesSelected}
           label={config.dropzoneLabel}
           description={config.dropzoneDescription}
+          accept={config.accept}
         />
       ) : isProcessing ? (
         <div className="space-y-6">
@@ -356,6 +419,17 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
                   Your image has been processed 100% locally on your machine. All sensitive headers, tracking markers, and private tags have been removed while keeping the original visual clarity intact.
                 </p>
 
+                {selectedFile &&
+                  (toolType === 'gps' || toolType === 'xmp' || toolType === 'ai-only') &&
+                  !isSelectiveJpegSupported(selectedFile) && (
+                    <div className="mt-3.5 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-medium flex items-center gap-2">
+                      <span className="text-base shrink-0">⚠️</span>
+                      <span>
+                        Selective stripping is fully supported for JPEGs. Other formats will undergo full metadata stripping.
+                      </span>
+                    </div>
+                  )}
+
                 {errorMessage && (
                   <p className="text-xs text-rose-600 dark:text-rose-400 font-medium mt-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-2.5 rounded-lg">
                     {errorMessage}
@@ -386,6 +460,11 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
               </div>
             </div>
           </div>
+
+          {/* File Size Analytics (Before vs After) */}
+          {sizeAnalytics && (
+            <FileSizeAnalyticsCard analytics={sizeAnalytics} />
+          )}
 
           {/* 'Before & After' Metadata Status Comparison */}
           {beforeAfter && (

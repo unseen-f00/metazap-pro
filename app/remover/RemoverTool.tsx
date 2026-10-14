@@ -7,24 +7,42 @@
  */
 
 import { useState } from 'react';
+import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
-import { processImageFile } from '@/app/lib/metadataRemover';
+import { processImageFile, calculateSizeAnalytics, SizeAnalytics } from '@/app/lib/metadataRemover';
+import { triggerSuccessConfetti } from '@/app/lib/confetti';
+import FileSizeAnalyticsCard from '@/app/components/FileSizeAnalyticsCard';
+import BeforeAfterStatusCard from '@/app/components/BeforeAfterStatusCard';
+import { inspectMetadataBefore, BeforeAfterStatus } from '@/app/lib/metadataStatus';
+import { verifyCleanBlob } from '@/app/utils/metadataTester';
 
 export default function RemoverTool() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cleanedUrl, setCleanedUrl] = useState<string | null>(null);
+  const [cleanedBlob, setCleanedBlob] = useState<Blob | null>(null);
+  const [sizeAnalytics, setSizeAnalytics] = useState<SizeAnalytics | null>(null);
+  const [beforeAfter, setBeforeAfter] = useState<BeforeAfterStatus | null>(null);
   const [isCleaning, setIsCleaning] = useState(false);
 
   const handleFilesSelected = async (files: File[]) => {
     if (!files.length) return;
     const file = files[0];
+    if (!file || file.size === 0) return;
     setSelectedFile(file);
     setIsCleaning(true);
 
     try {
+      const initialStatus = await inspectMetadataBefore(file);
+      setBeforeAfter(initialStatus);
+
       const cleanBlob = await processImageFile(file);
+      setCleanedBlob(cleanBlob);
       const url = URL.createObjectURL(cleanBlob);
       setCleanedUrl(url);
+
+      const analytics = calculateSizeAnalytics(file.size, cleanBlob.size);
+      setSizeAnalytics(analytics);
+      triggerSuccessConfetti();
     } catch (err) {
       console.error('Error cleaning file:', err);
     } finally {
@@ -32,20 +50,29 @@ export default function RemoverTool() {
     }
   };
 
-  const handleDownload = () => {
-    if (!cleanedUrl || !selectedFile) return;
-    const a = document.createElement('a');
-    a.href = cleanedUrl;
-    a.download = `cleaned_${selectedFile.name}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  const handleDownload = async () => {
+    if (!selectedFile) return;
+    const filename = `cleaned_${selectedFile.name}`;
+    if (cleanedBlob) {
+      await verifyCleanBlob(cleanedBlob);
+      saveAs(cleanedBlob, filename);
+    } else if (cleanedUrl) {
+      const a = document.createElement('a');
+      a.href = cleanedUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   };
 
   const handleReset = () => {
     if (cleanedUrl) URL.revokeObjectURL(cleanedUrl);
     setSelectedFile(null);
     setCleanedUrl(null);
+    setCleanedBlob(null);
+    setSizeAnalytics(null);
+    setBeforeAfter(null);
   };
 
   return (
@@ -54,7 +81,8 @@ export default function RemoverTool() {
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
           label="Drop photos here to remove metadata"
-          description="JPEG, PNG, WebP, TIFF — up to 20MB"
+          description="JPEG, PNG, WebP, TIFF, HEIC — up to 20MB"
+          accept="image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif"
         />
       ) : (
         <div className="space-y-6">
@@ -70,7 +98,7 @@ export default function RemoverTool() {
                 </p>
                 {cleanedUrl && (
                   <span className="inline-block mt-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-100/70 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
-                    ✓ Cleaned & Ready
+                    ✓ Cleaned &amp; Ready
                   </span>
                 )}
               </div>
@@ -102,6 +130,16 @@ export default function RemoverTool() {
               </button>
             </div>
           </div>
+
+          {/* File Size Analytics (Before vs After) */}
+          {sizeAnalytics && (
+            <FileSizeAnalyticsCard analytics={sizeAnalytics} />
+          )}
+
+          {/* Before & After Metadata Comparison with Exact Tag List */}
+          {beforeAfter && (
+            <BeforeAfterStatusCard status={beforeAfter} fileName={selectedFile.name} />
+          )}
         </div>
       )}
     </div>

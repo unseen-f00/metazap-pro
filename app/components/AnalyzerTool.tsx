@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
 import ProcessingStepper from '@/app/components/ProcessingStepper';
 import {
@@ -78,10 +79,10 @@ const configs: Record<AnalyzerType, AnalyzerConfig> = {
     step3Desc: 'Searching headers for AI models, prompts, and diffusion parameters',
   },
   'ai-watermark': {
-    dropzoneLabel: 'Drop image here to detect invisible AI watermarks',
-    dropzoneDescription: 'Detects synthetic markers, C2PA manifests, and steganographic indicators',
-    step3Label: 'Scanning Synthetic & Watermark Markers',
-    step3Desc: 'Checking for watermarks, synthetic stamps, and provenance metadata',
+    dropzoneLabel: 'Drop image here to scan for AI prompts & metadata signatures',
+    dropzoneDescription: 'Scans container headers (PNG iTXt, JPEG APP1, XMP) for AI workflows & manifests',
+    step3Label: 'Scanning Container Metadata Signatures',
+    step3Desc: 'Inspecting header chunks for AI models, prompts, parameters, and manifests',
   },
 };
 
@@ -101,6 +102,8 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
   const [privacyResult, setPrivacyResult] = useState<PrivacyAnalysisResult | null>(null);
   const [c2paResult, setC2paResult] = useState<C2paCheckResult | null>(null);
   const [aiResult, setAiResult] = useState<AiScanResult | null>(null);
+  const [searchTagQuery, setSearchTagQuery] = useState('');
+  const [viewerTab, setViewerTab] = useState<'properties' | 'raw'>('properties');
 
   const config = configs[toolType];
 
@@ -110,8 +113,6 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
     };
   }, [previewUrl]);
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
   const handleFilesSelected = async (files: File[]) => {
     if (!files.length) return;
     const file = files[0];
@@ -120,20 +121,16 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
     setPreviewUrl(objectUrl);
     setIsProcessing(true);
     setCurrentStep(1);
-    setProgressPercent(15);
+    setProgressPercent(25);
 
     try {
-      // Step 1: Reading File
-      await sleep(300);
       setCurrentStep(2);
-      setProgressPercent(40);
+      setProgressPercent(50);
 
-      // Step 2: Binary Parsing
-      await sleep(350);
       setCurrentStep(3);
       setProgressPercent(75);
 
-      // Step 3: Run specific analyzer
+      // Run specific real analyzer
       if (toolType === 'viewer') {
         const res = await analyzeDeepMetadata(file);
         setViewerResult(res);
@@ -151,11 +148,8 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
         setAiResult(res);
       }
 
-      await sleep(350);
-      // Step 4: Finalizing Report
+      // Finalize Report
       setCurrentStep(4);
-      setProgressPercent(95);
-      await sleep(200);
       setProgressPercent(100);
     } catch {
       // Clean fallback
@@ -169,14 +163,7 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
     setIsCleaning(true);
     try {
       const cleanBlob = await stripGeneralMetadata(selectedFile);
-      const url = URL.createObjectURL(cleanBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `clean_${selectedFile.name}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      saveAs(cleanBlob, `clean_${selectedFile.name}`);
       triggerSuccessConfetti();
     } finally {
       setIsCleaning(false);
@@ -192,6 +179,8 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
     setPrivacyResult(null);
     setC2paResult(null);
     setAiResult(null);
+    setSearchTagQuery('');
+    setViewerTab('properties');
     setIsProcessing(false);
     setCurrentStep(1);
     setProgressPercent(0);
@@ -204,6 +193,7 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           onFilesSelected={handleFilesSelected}
           label={config.dropzoneLabel}
           description={config.dropzoneDescription}
+          accept="image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif"
         />
       ) : isProcessing ? (
         <div className="space-y-6">
@@ -275,58 +265,235 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           {/* 1. Deep Metadata Viewer View */}
           {toolType === 'viewer' && viewerResult && (
             <div className="space-y-6">
-              {/* Quick Summary Pill Row */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 p-3.5 rounded-xl">
-                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Camera</p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-1 truncate">
-                    {viewerResult.summary.camera || 'Not Recorded'}
-                  </p>
+              {/* Windows File Properties Overview Cards */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🗂️</span>
+                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                      Windows File Properties Summary
+                    </h3>
+                  </div>
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    {viewerResult.summary.totalTags} Total Tags Found
+                  </span>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 p-3.5 rounded-xl">
-                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date Taken</p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-1 truncate">
-                    {viewerResult.summary.date || 'Not Recorded'}
-                  </p>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 p-3.5 rounded-xl">
-                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">GPS Coordinates</p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-1 truncate">
-                    {viewerResult.summary.location ? '📍 Detected' : 'None Found'}
-                  </p>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 p-3.5 rounded-xl">
-                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Tags Found</p>
-                  <p className="text-xs font-bold text-indigo-700 dark:text-indigo-400 mt-1">
-                    {viewerResult.summary.totalTags} tags
-                  </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {/* Camera Maker / Model */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>📷</span> Camera Maker &amp; Model
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.cameraCombined || 'Not Recorded'}>
+                      {viewerResult.details.cameraCombined || 'Not Recorded'}
+                    </p>
+                  </div>
+
+                  {/* F-Stop (Aperture) */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>🔘</span> F-Stop (Aperture)
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 font-mono">
+                      {viewerResult.details.fStop || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* ISO Speed */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>⚡</span> ISO Speed
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 font-mono">
+                      {viewerResult.details.iso || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Exposure Time */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>⏱️</span> Exposure Time
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 font-mono">
+                      {viewerResult.details.exposureTime || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Lens Info */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>🔭</span> Lens Specification
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.lensInfo || 'Standard Lens'}>
+                      {viewerResult.details.lensInfo || 'Standard Lens'}
+                    </p>
+                  </div>
+
+                  {/* Software */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>💻</span> Software / Firmware
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.software || 'Camera OS'}>
+                      {viewerResult.details.software || 'Camera OS'}
+                    </p>
+                  </div>
+
+                  {/* Date Taken */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>🕒</span> Date Taken
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.dateTaken || 'No timestamp'}>
+                      {viewerResult.details.dateTaken || 'No timestamp'}
+                    </p>
+                  </div>
+
+                  {/* Author / Artist */}
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <span>👤</span> Author / Artist
+                    </p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.author || 'Anonymous'}>
+                      {viewerResult.details.author || 'Anonymous'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Categorized Metadata Tables */}
-              <div className="space-y-4">
-                {viewerResult.sections.map((sec, sIdx) => (
-                  <div key={sIdx} className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
-                    <div className="bg-slate-100/70 dark:bg-slate-800/80 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                      <span className="font-semibold text-xs text-slate-800 dark:text-slate-200 uppercase tracking-wide">
-                        {sec.category}
-                      </span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                        {sec.tags.length} {sec.tags.length === 1 ? 'entry' : 'entries'}
-                      </span>
+              {/* GPS Geolocation & Mini Map Section */}
+              {viewerResult.details.gps && (
+                <div className="p-4 sm:p-5 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">📍</span>
+                      <div>
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                          GPS Geolocation Pinpoint
+                        </h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {viewerResult.details.gps.formatted}
+                          {viewerResult.details.gps.altitude !== undefined
+                            ? ` · ${viewerResult.details.gps.altitude.toFixed(1)}m elevation`
+                            : ''}
+                        </p>
+                      </div>
                     </div>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {sec.tags.map((tag, tIdx) => (
-                        <div key={tIdx} className="px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                          <span className="font-medium text-slate-600 dark:text-slate-400 sm:w-1/3 truncate">{tag.label}</span>
-                          <span className={`sm:w-2/3 break-all ${tag.isSensitive ? 'font-semibold text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'}`}>
-                            {tag.value}
-                          </span>
-                        </div>
-                      ))}
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`https://www.google.com/maps?q=${viewerResult.details.gps.latitude},${viewerResult.details.gps.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                      >
+                        <span>Open in Google Maps</span>
+                        <span>↗</span>
+                      </a>
                     </div>
                   </div>
-                ))}
+
+                  {/* Interactive Mini Map Frame */}
+                  <div className="w-full h-56 sm:h-64 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xs bg-slate-100 dark:bg-slate-800">
+                    <iframe
+                      title="OpenStreetMap Mini Map"
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight={0}
+                      marginWidth={0}
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${viewerResult.details.gps.longitude - 0.008}%2C${viewerResult.details.gps.latitude - 0.008}%2C${viewerResult.details.gps.longitude + 0.008}%2C${viewerResult.details.gps.latitude + 0.008}&layer=mapnik&marker=${viewerResult.details.gps.latitude}%2C${viewerResult.details.gps.longitude}`}
+                      className="w-full h-full border-0"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Categorized Metadata Tables & Raw Tags Explorer */}
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setViewerTab('properties')}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        viewerTab === 'properties'
+                          ? 'bg-indigo-600 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                      }`}
+                    >
+                      Windows File Properties
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewerTab('raw')}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        viewerTab === 'raw'
+                          ? 'bg-indigo-600 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                      }`}
+                    >
+                      Raw Tags Directory ({Object.keys(viewerResult.rawTags).length})
+                    </button>
+                  </div>
+
+                  {viewerTab === 'raw' && (
+                    <input
+                      type="text"
+                      value={searchTagQuery}
+                      onChange={(e) => setSearchTagQuery(e.target.value)}
+                      placeholder="Search any tag (e.g. Flash, Lens, ISO)..."
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64"
+                    />
+                  )}
+                </div>
+
+                {viewerTab === 'properties' ? (
+                  <div className="space-y-4">
+                    {viewerResult.sections.map((sec, sIdx) => (
+                      <div key={sIdx} className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
+                        <div className="bg-slate-100/70 dark:bg-slate-800/80 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                          <span className="font-semibold text-xs text-slate-800 dark:text-slate-200 uppercase tracking-wide">
+                            {sec.category}
+                          </span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                            {sec.tags.length} {sec.tags.length === 1 ? 'entry' : 'entries'}
+                          </span>
+                        </div>
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                          {sec.tags.map((tag, tIdx) => (
+                            <div key={tIdx} className="px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                              <span className="font-medium text-slate-600 dark:text-slate-400 sm:w-1/3 truncate">{tag.label}</span>
+                              <span className={`sm:w-2/3 break-all ${tag.isSensitive ? 'font-semibold text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'}`}>
+                                {tag.value}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
+                    <div className="max-h-96 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 font-mono text-xs">
+                      {Object.entries(viewerResult.rawTags)
+                        .filter(([k, v]) =>
+                          searchTagQuery
+                            ? k.toLowerCase().includes(searchTagQuery.toLowerCase()) ||
+                              v.toLowerCase().includes(searchTagQuery.toLowerCase())
+                            : true
+                        )
+                        .map(([k, v], rIdx) => (
+                          <div key={rIdx} className="px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                            <span className="text-indigo-600 dark:text-indigo-400 font-semibold sm:w-1/3 truncate">{k}</span>
+                            <span className="text-slate-700 dark:text-slate-300 sm:w-2/3 break-all">{v}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -334,33 +501,76 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           {/* 2. Calculator View */}
           {toolType === 'calculator' && calcResult && (
             <div className="space-y-6">
+              {/* Highlight Metrics */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="paper-card p-4 sm:p-5 bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 rounded-2xl shadow-xs">
+                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
+                    <span>🏷️</span> Total Tags Found
+                  </div>
+                  <p className="text-3xl font-black text-slate-900 dark:text-white mt-2">
+                    {calcResult.totalTagsFound}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    EXIF, GPS, XMP, &amp; TIFF metadata headers
+                  </p>
+                </div>
+
+                <div className="paper-card p-4 sm:p-5 bg-amber-50/60 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 rounded-2xl shadow-xs">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+                    <span>✂️</span> Tags Removed / Wipeable
+                  </div>
+                  <p className="text-3xl font-black text-amber-700 dark:text-amber-400 mt-2">
+                    {calcResult.tagsRemovedCount}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    Ready to be permanently wiped
+                  </p>
+                </div>
+
+                <div className="paper-card p-4 sm:p-5 bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl shadow-xs">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
+                    <span>📉</span> Space Saved
+                  </div>
+                  <p className="text-3xl font-black text-emerald-700 dark:text-emerald-400 mt-2">
+                    {calcResult.spaceSavedFormatted}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    {calcResult.metadataPercentage}% header bloat eliminated
+                  </p>
+                </div>
+              </div>
+
+              {/* Before vs After Size Breakdown */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="paper-card p-4 bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
-                  <p className="text-xs text-indigo-700 dark:text-indigo-400 font-semibold uppercase tracking-wider">Total File Size</p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{calcResult.fileSizeFormatted}</p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{calcResult.fileSizeBytes.toLocaleString()} bytes</p>
+                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Original File Size</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 font-mono">{calcResult.fileSizeFormatted}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.fileSizeBytes.toLocaleString()} bytes</p>
                 </div>
-                <div className="paper-card p-4 bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40">
-                  <p className="text-xs text-amber-800 dark:text-amber-300 font-semibold uppercase tracking-wider">Metadata Overhead</p>
-                  <p className="text-2xl font-black text-amber-700 dark:text-amber-400 mt-1">{calcResult.metadataSizeFormatted}</p>
-                  <p className="text-[11px] text-amber-900/70 dark:text-amber-400/80 mt-0.5">{calcResult.metadataPercentage}% of total file</p>
+
+                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider">Cleaned File Size</p>
+                  <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 font-mono">{calcResult.cleanedSizeFormatted}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.cleanedSizeBytes.toLocaleString()} bytes</p>
                 </div>
-                <div className="paper-card p-4 bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40">
-                  <p className="text-xs text-emerald-800 dark:text-emerald-300 font-semibold uppercase tracking-wider">Visual Dimensions</p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">
+
+                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Visual Dimensions</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 font-mono">
                     {calcResult.dimensions.width > 0 ? `${calcResult.dimensions.width} × ${calcResult.dimensions.height}` : 'N/A'}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{calcResult.megapixels}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.megapixels}</p>
                 </div>
-                <div className="paper-card p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Format &amp; Density</p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{calcResult.formatName}</p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{calcResult.dpi} DPI standard</p>
+
+                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Format &amp; Density</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-1">{calcResult.formatName}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.dpi} DPI</p>
                 </div>
               </div>
 
               {/* Progress representation */}
-              <div className="paper-card p-5 border border-slate-200 dark:border-slate-800">
+              <div className="paper-card p-5 border border-slate-200 dark:border-slate-800 rounded-2xl">
                 <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-200 mb-2">
                   <span>Visual Image Pixels: {(100 - calcResult.metadataPercentage).toFixed(1)}%</span>
                   <span className="text-amber-700 dark:text-amber-400">Metadata Overhead: {calcResult.metadataPercentage}%</span>
@@ -376,7 +586,7 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                   />
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
-                  Wiping metadata from this image will save approximately <strong>{calcResult.metadataSizeFormatted}</strong> of storage without touching image resolution.
+                  Wiping metadata from this image will save approximately <strong>{calcResult.spaceSavedFormatted}</strong> ({calcResult.metadataPercentage}%) of storage without touching image resolution.
                 </p>
               </div>
             </div>
@@ -502,7 +712,7 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                 </div>
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider mb-1 bg-white/70 dark:bg-slate-900/70 border border-current">
-                    {aiResult.isAiDetected ? `${aiResult.probability}% AI Match` : 'Authentic Camera Photo'}
+                    {aiResult.isAiDetected ? `${aiResult.probability}% Confidence match` : 'Authentic Camera Photo'}
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">
                     {aiResult.isAiDetected
@@ -517,6 +727,17 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                 </div>
               </div>
 
+              {/* Honest Container Inspection Mode Disclaimer */}
+              <div className="p-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/30 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-2.5">
+                <span className="shrink-0 text-base leading-none">ℹ️</span>
+                <div className="space-y-0.5">
+                  <span className="font-bold">Container Metadata Inspection Mode:</span>{' '}
+                  <span>
+                    Scans container text headers (PNG iTXt/tEXt chunks, JPEG APP1 XMP/Exif markers, and workflow parameter dictionaries) for AI generation settings. Forensic pixel-frequency steganography (such as Google SynthID) is not evaluated.
+                  </span>
+                </div>
+              </div>
+
               {aiResult.indicators.length > 0 && (
                 <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-white dark:bg-slate-900 shadow-xs space-y-3">
                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Detected AI Signatures &amp; Prompts</p>
@@ -525,9 +746,20 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                       <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 rounded-lg text-xs space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-slate-800 dark:text-slate-200">{ind.label}</span>
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                            {ind.source}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            {ind.confidence && (
+                              <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                                ind.confidence === 'high'
+                                  ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300'
+                                  : 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300'
+                              }`}>
+                                {ind.confidence}
+                              </span>
+                            )}
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                              {ind.source}
+                            </span>
+                          </div>
                         </div>
                         <p className="text-slate-600 dark:text-slate-300 break-all font-mono text-[11px]">{ind.snippet}</p>
                       </div>

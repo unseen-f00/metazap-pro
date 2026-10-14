@@ -12,8 +12,10 @@ import { useState, useRef, useEffect } from 'react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
-import { processImageFile } from '@/app/lib/metadataRemover';
+import { processImageFile, calculateSizeAnalytics, SizeAnalytics } from '@/app/lib/metadataRemover';
 import { triggerSuccessConfetti } from '@/app/lib/confetti';
+import FileSizeAnalyticsCard from '@/app/components/FileSizeAnalyticsCard';
+import { verifyCleanBlob } from '@/app/utils/metadataTester';
 
 export interface BatchFileItem {
   id: string;
@@ -23,6 +25,9 @@ export interface BatchFileItem {
   cleanedUrl: string | null;
   status: 'pending' | 'reading' | 'stripping' | 'finalizing' | 'done' | 'error';
   errorMessage?: string;
+  originalSize: number;
+  cleanedSize?: number;
+  sizeAnalytics?: SizeAnalytics;
 }
 
 const STATUS_LABELS: Record<BatchFileItem['status'], { text: string; color: string }> = {
@@ -37,6 +42,7 @@ const STATUS_LABELS: Record<BatchFileItem['status'], { text: string; color: stri
 export default function BatchTool() {
   const [items, setItems] = useState<BatchFileItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeProcessingIndex, setActiveProcessingIndex] = useState<number | null>(null);
   const [isZipping, setIsZipping] = useState(false);
   const [zipSuccess, setZipSuccess] = useState(false);
   const itemsRef = useRef<BatchFileItem[]>([]);
@@ -63,6 +69,7 @@ export default function BatchTool() {
       cleanedBlob: null,
       cleanedUrl: null,
       status: 'pending',
+      originalSize: file.size,
     }));
 
     setItems((prev) => [...prev, ...newItems]);
@@ -76,32 +83,26 @@ export default function BatchTool() {
 
     const currentItems = [...items];
 
+    // Strictly sequential processing loop (one by one) to prevent mobile browser memory exhaustion
     for (let i = 0; i < currentItems.length; i++) {
       if (currentItems[i].status === 'done') continue;
 
-      // Stage 1: Reading
-      currentItems[i] = { ...currentItems[i], status: 'reading' };
-      setItems([...currentItems]);
-      await new Promise((r) => setTimeout(r, 200));
-
-      // Stage 2: Stripping
+      setActiveProcessingIndex(i);
       currentItems[i] = { ...currentItems[i], status: 'stripping' };
       setItems([...currentItems]);
-      await new Promise((r) => setTimeout(r, 250));
 
       try {
+        // True client-side HTML5 canvas stripping with 1.0 quality & active GPU texture disposal
         const cleanBlob = await processImageFile(currentItems[i].file);
-
-        // Stage 3: Finalizing
-        currentItems[i] = { ...currentItems[i], status: 'finalizing' };
-        setItems([...currentItems]);
-        await new Promise((r) => setTimeout(r, 150));
-
         const cleanUrl = URL.createObjectURL(cleanBlob);
+        const analytics = calculateSizeAnalytics(currentItems[i].file.size, cleanBlob.size);
+
         currentItems[i] = {
           ...currentItems[i],
           cleanedBlob: cleanBlob,
           cleanedUrl: cleanUrl,
+          cleanedSize: cleanBlob.size,
+          sizeAnalytics: analytics,
           status: 'done',
         };
       } catch (err: unknown) {
@@ -116,16 +117,18 @@ export default function BatchTool() {
       setItems([...currentItems]);
     }
 
+    setActiveProcessingIndex(null);
     setIsProcessing(false);
 
     // Trigger celebratory success confetti
     triggerSuccessConfetti();
   };
 
-  const handleDownloadSingle = (item: BatchFileItem) => {
+  const handleDownloadSingle = async (item: BatchFileItem) => {
     if (!item.cleanedBlob && !item.cleanedUrl) return;
     const blobToSave = item.cleanedBlob || undefined;
     if (blobToSave) {
+      await verifyCleanBlob(blobToSave);
       saveAs(blobToSave, `cleaned_${item.file.name}`);
     } else if (item.cleanedUrl) {
       const a = document.createElement('a');
@@ -153,6 +156,7 @@ export default function BatchTool() {
 
       for (const item of finishedItems) {
         if (!item.cleanedBlob) continue;
+        await verifyCleanBlob(item.cleanedBlob);
         let baseName = item.file.name;
         if (nameCounts[baseName]) {
           const count = nameCounts[baseName]++;
@@ -202,6 +206,7 @@ export default function BatchTool() {
     });
     setItems([]);
     setIsProcessing(false);
+    setActiveProcessingIndex(null);
     setIsZipping(false);
     setZipSuccess(false);
   };
@@ -210,6 +215,12 @@ export default function BatchTool() {
   const inProgressCount = items.filter((i) => ['reading', 'stripping', 'finalizing'].includes(i.status)).length;
   const progressPercent = items.length ? Math.round((completedCount / items.length) * 100) : 0;
   const allCompleted = items.length > 0 && completedCount === items.length;
+
+  // Batch analytics computation
+  const finishedItems = items.filter((item) => item.status === 'done' && item.cleanedBlob);
+  const totalOriginalBytes = finishedItems.reduce((acc, i) => acc + i.originalSize, 0);
+  const totalCleanedBytes = finishedItems.reduce((acc, i) => acc + (i.cleanedSize || i.originalSize), 0);
+  const batchAnalytics = finishedItems.length > 0 ? calculateSizeAnalytics(totalOriginalBytes, totalCleanedBytes) : null;
 
   return (
     <div className="paper-card p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800">
@@ -242,7 +253,8 @@ export default function BatchTool() {
           maxFiles={25}
           multiple={true}
           label="Drop multiple photos here (up to 25 files)"
-          description="JPEG, PNG, WebP, TIFF, GIF — all processed 100% in your browser"
+          description="JPEG, PNG, WebP, TIFF, GIF, HEIC — all processed 100% in your browser"
+          accept="image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif"
         />
       ) : (
         <div className="space-y-6">
@@ -278,6 +290,14 @@ export default function BatchTool() {
             </div>
           )}
 
+          {/* Batch File Size Analytics Card */}
+          {batchAnalytics && (
+            <FileSizeAnalyticsCard
+              analytics={batchAnalytics}
+              title={`Batch Size Savings (${finishedItems.length} Cleaned Images)`}
+            />
+          )}
+
           {/* Batch Status Bar */}
           <div className="bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
@@ -285,7 +305,12 @@ export default function BatchTool() {
                 {isProcessing ? (
                   <>
                     <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-ping"></span>
-                    <span>Processing file queue in browser...</span>
+                    <span>
+                      Processed {completedCount} of {items.length} images...
+                      {activeProcessingIndex !== null && items[activeProcessingIndex]
+                        ? ` (Cleaning "${items[activeProcessingIndex].file.name}")`
+                        : ''}
+                    </span>
                   </>
                 ) : allCompleted ? (
                   <>
@@ -465,6 +490,13 @@ export default function BatchTool() {
                           <span className="uppercase">{item.file.type.split('/')[1] || 'IMAGE'}</span>
                         </div>
                       </div>
+
+                      {/* File Size Analytics (Before vs After) */}
+                      {item.sizeAnalytics && (
+                        <div className="mb-2.5">
+                          <FileSizeAnalyticsCard compact analytics={item.sizeAnalytics} />
+                        </div>
+                      )}
                     </div>
 
                     {/* Status & Action Footer */}

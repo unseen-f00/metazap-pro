@@ -1,17 +1,37 @@
 /**
  * exifEditor.ts
  * 100% Client-Side EXIF Metadata Editor & Injector.
- * Allows reading, modifying, and embedding Author, Copyright, DateTimeOriginal,
- * and Software tags into images using piexifjs without server communication.
+ *
+ * Uses:
+ * 1. exifr: To accurately read existing Author, Copyright, Date, Software, and GPS coordinates.
+ * 2. piexifjs: To rebuild the binary EXIF segment and inject it back into original JPEG files
+ *    WITHOUT re-compressing image pixels, preserving 100% maximum visual quality.
+ *
+ * Provides graceful fallback to Canvas stripping for PNG and unsupported formats.
  */
 
 import piexif from 'piexifjs';
+import exifr from 'exifr';
+import { stripMetadataWithCanvas, formatFileSize } from '@/app/lib/metadataRemover';
 
 export interface ExifEditorFields {
   author: string;
   copyright: string;
   dateOriginal: string;
   software: string;
+  latitude: string;
+  longitude: string;
+}
+
+export interface ExifEditorResult {
+  blob: Blob;
+  fileName: string;
+  originalSize: number;
+  editedSize: number;
+  sizeDiffBytes: number;
+  sizeDiffFormatted: string;
+  tagsCount: number;
+  isJpeg: boolean;
 }
 
 /**
@@ -29,98 +49,37 @@ export function formatExifDate(date: Date = new Date()): string {
 }
 
 /**
- * Reads existing EXIF fields from an uploaded image file.
- * Returns populated fields if found, or sensible default suggestions.
+ * Convert decimal degrees (e.g. 37.7749) to EXIF DMS rational tuples
  */
-export async function readExifForEditor(file: File): Promise<ExifEditorFields> {
-  const defaults: ExifEditorFields = {
-    author: '',
-    copyright: `© ${new Date().getFullYear()} All Rights Reserved`,
-    dateOriginal: formatExifDate(),
-    software: 'ImageClean EXIF Editor',
+export function decimalToDms(
+  coord: number,
+  isLat: boolean
+): { ref: string; dms: [[number, number], [number, number], [number, number]] } {
+  const ref = isLat ? (coord >= 0 ? 'N' : 'S') : coord >= 0 ? 'E' : 'W';
+  const abs = Math.abs(coord);
+  const deg = Math.floor(abs);
+  const minFloat = (abs - deg) * 60;
+  const min = Math.floor(minFloat);
+  const sec = Math.round((minFloat - min) * 60 * 100);
+  return {
+    ref,
+    dms: [
+      [deg, 1],
+      [min, 1],
+      [sec, 100],
+    ],
   };
-
-  if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
-    return defaults;
-  }
-
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const dataUrl = e.target?.result as string;
-        if (!dataUrl) {
-          resolve(defaults);
-          return;
-        }
-
-        const exifObj = piexif.load(dataUrl);
-        const zeroth = exifObj['0th'] || {};
-        const exifIFD = exifObj['Exif'] || {};
-
-        const author = typeof zeroth[piexif.ImageIFD.Artist] === 'string'
-          ? (zeroth[piexif.ImageIFD.Artist] as string)
-          : defaults.author;
-
-        const copyright = typeof zeroth[piexif.ImageIFD.Copyright] === 'string'
-          ? (zeroth[piexif.ImageIFD.Copyright] as string)
-          : defaults.copyright;
-
-        const software = typeof zeroth[piexif.ImageIFD.Software] === 'string'
-          ? (zeroth[piexif.ImageIFD.Software] as string)
-          : defaults.software;
-
-        const dateOriginal = typeof exifIFD[piexif.ExifIFD.DateTimeOriginal] === 'string'
-          ? (exifIFD[piexif.ExifIFD.DateTimeOriginal] as string)
-          : defaults.dateOriginal;
-
-        resolve({ author, copyright, dateOriginal, software });
-      } catch {
-        // If file doesn't have an EXIF header yet, return standard defaults
-        resolve(defaults);
-      }
-    };
-    reader.onerror = () => resolve(defaults);
-    reader.readAsDataURL(file);
-  });
 }
 
 /**
- * Converts a non-JPEG image file (PNG, WebP, etc.) to a JPEG Data URL via HTML5 Canvas
- * so that standard EXIF segments can be injected.
+ * Helper: Read file as Data URL
  */
-async function fileToJpegDataUrl(file: File): Promise<string> {
+function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-
-    img.onload = () => {
-      URL.revokeObjectURL(objectUrl);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth || img.width;
-      canvas.height = img.naturalHeight || img.height;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject(new Error('Canvas context could not be created'));
-        return;
-      }
-
-      // Draw white background for transparency in PNGs
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-
-      const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-      resolve(jpegDataUrl);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
-      reject(new Error('Failed to load image for canvas conversion'));
-    };
-
-    img.src = objectUrl;
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('Failed to read file as Data URL'));
+    reader.readAsDataURL(file);
   });
 }
 
@@ -140,28 +99,97 @@ function dataUrlToBlob(dataUrl: string): Blob {
 }
 
 /**
- * Injects or updates EXIF tags (Author, Copyright, DateTimeOriginal, Software)
- * into an image file, completely client-side.
+ * Reads existing EXIF fields from an uploaded image file using exifr.
+ * Extracts Author, Copyright, Date Taken, Software, and GPS coordinates.
+ */
+export async function readExifForEditor(
+  file: File
+): Promise<{ fields: ExifEditorFields; isJpeg: boolean; totalExistingTags: number }> {
+  const isJpeg =
+    file.type === 'image/jpeg' ||
+    /\.(jpe?g)$/i.test(file.name);
+
+  const defaults: ExifEditorFields = {
+    author: '',
+    copyright: '',
+    dateOriginal: formatExifDate(),
+    software: 'MetaZap Pro Metadata Studio',
+    latitude: '',
+    longitude: '',
+  };
+
+  let totalExistingTags = 0;
+
+  try {
+    const parsed = (await exifr.parse(file, {
+      tiff: true,
+      xmp: true,
+      gps: true,
+    })) as Record<string, unknown> | undefined;
+
+    if (parsed && typeof parsed === 'object') {
+      totalExistingTags = Object.keys(parsed).length;
+
+      const author = parsed.Artist || parsed.XPAuthor || parsed.Creator || '';
+      const copyright = parsed.Copyright || '';
+      const software = parsed.Software || defaults.software;
+      const dateOriginal = parsed.DateTimeOriginal
+        ? String(parsed.DateTimeOriginal)
+        : defaults.dateOriginal;
+
+      let lat = '';
+      let lon = '';
+      try {
+        const gps = await exifr.gps(file);
+        if (gps && typeof gps.latitude === 'number' && typeof gps.longitude === 'number') {
+          lat = gps.latitude.toFixed(6);
+          lon = gps.longitude.toFixed(6);
+        }
+      } catch {
+        // No GPS
+      }
+
+      return {
+        fields: {
+          author: String(author),
+          copyright: String(copyright),
+          dateOriginal: String(dateOriginal),
+          software: String(software),
+          latitude: lat,
+          longitude: lon,
+        },
+        isJpeg,
+        totalExistingTags,
+      };
+    }
+  } catch {
+    // Return standard defaults if no EXIF found
+  }
+
+  return { fields: defaults, isJpeg, totalExistingTags };
+}
+
+/**
+ * Injects or updates EXIF tags (Author, Copyright, DateTimeOriginal, Software, GPS)
+ * into a JPEG file completely client-side via piexifjs without re-compressing pixels.
  */
 export async function injectExifData(
   file: File,
   fields: ExifEditorFields
-): Promise<{ blob: Blob; fileName: string }> {
-  let targetDataUrl: string;
+): Promise<ExifEditorResult> {
+  const isJpeg =
+    file.type === 'image/jpeg' ||
+    /\.(jpe?g)$/i.test(file.name);
 
-  if (file.type.includes('jpeg') || file.type.includes('jpg')) {
-    targetDataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = () => reject(new Error('Failed to read JPEG file'));
-      reader.readAsDataURL(file);
-    });
-  } else {
-    // Convert to high-quality JPEG first
-    targetDataUrl = await fileToJpegDataUrl(file);
+  if (!isJpeg) {
+    throw new Error(
+      'DIRECT_JPEG_ONLY: EXIF header injection without pixel recompression is strictly supported for JPEG images.'
+    );
   }
 
-  // Load existing EXIF or create a clean dictionary
+  const targetDataUrl = await readFileAsDataUrl(file);
+
+  // Initialize clean or loaded EXIF dictionary
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let exifObj: any = {
     '0th': {},
@@ -178,47 +206,103 @@ export async function injectExifData(
       exifObj = loaded;
     }
   } catch {
-    // Start with fresh object if no valid EXIF segment exists
+    // If no existing EXIF segment, start fresh
   }
 
   if (!exifObj['0th']) exifObj['0th'] = {};
   if (!exifObj['Exif']) exifObj['Exif'] = {};
+  if (!exifObj['GPS']) exifObj['GPS'] = {};
 
-  // Inject user-defined fields
+  let tagsCount = 0;
+
+  // 1. Author / Artist (0th IFD)
   if (fields.author.trim()) {
     exifObj['0th'][piexif.ImageIFD.Artist] = fields.author.trim();
+    tagsCount++;
   } else {
     delete exifObj['0th'][piexif.ImageIFD.Artist];
   }
 
+  // 2. Copyright (0th IFD)
   if (fields.copyright.trim()) {
     exifObj['0th'][piexif.ImageIFD.Copyright] = fields.copyright.trim();
+    tagsCount++;
   } else {
     delete exifObj['0th'][piexif.ImageIFD.Copyright];
   }
 
+  // 3. Software / Program Name (0th IFD)
   if (fields.software.trim()) {
     exifObj['0th'][piexif.ImageIFD.Software] = fields.software.trim();
+    tagsCount++;
   } else {
     delete exifObj['0th'][piexif.ImageIFD.Software];
   }
 
+  // 4. Date Taken / DateTimeOriginal (Exif IFD)
   if (fields.dateOriginal.trim()) {
     exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] = fields.dateOriginal.trim();
-    // Also mirror to DateTimeDigitized and DateTime if desirable
     exifObj['Exif'][piexif.ExifIFD.DateTimeDigitized] = fields.dateOriginal.trim();
     exifObj['0th'][piexif.ImageIFD.DateTime] = fields.dateOriginal.trim();
+    tagsCount += 3;
+  } else {
+    delete exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal];
+    delete exifObj['Exif'][piexif.ExifIFD.DateTimeDigitized];
+    delete exifObj['0th'][piexif.ImageIFD.DateTime];
   }
 
-  // Encode EXIF binary bytes
+  // 5. GPS Geolocation Coordinates (GPS IFD)
+  const latNum = parseFloat(fields.latitude);
+  const lonNum = parseFloat(fields.longitude);
+  const hasValidGps = !isNaN(latNum) && !isNaN(lonNum) && latNum >= -90 && latNum <= 90 && lonNum >= -180 && lonNum <= 180;
+
+  if (hasValidGps) {
+    const latDms = decimalToDms(latNum, true);
+    const lonDms = decimalToDms(lonNum, false);
+    exifObj['GPS'][piexif.GPSIFD.GPSVersionID] = [2, 2, 0, 0];
+    exifObj['GPS'][piexif.GPSIFD.GPSLatitudeRef] = latDms.ref;
+    exifObj['GPS'][piexif.GPSIFD.GPSLatitude] = latDms.dms;
+    exifObj['GPS'][piexif.GPSIFD.GPSLongitudeRef] = lonDms.ref;
+    exifObj['GPS'][piexif.GPSIFD.GPSLongitude] = lonDms.dms;
+    tagsCount += 5;
+  } else {
+    delete exifObj['GPS'][piexif.GPSIFD.GPSVersionID];
+    delete exifObj['GPS'][piexif.GPSIFD.GPSLatitudeRef];
+    delete exifObj['GPS'][piexif.GPSIFD.GPSLatitude];
+    delete exifObj['GPS'][piexif.GPSIFD.GPSLongitudeRef];
+    delete exifObj['GPS'][piexif.GPSIFD.GPSLongitude];
+  }
+
+  // Encode binary EXIF string
   const exifBytes = piexif.dump(exifObj);
 
-  // Insert into target JPEG
+  // Inject into original JPEG — RAW PIXELS ARE 100% PRESERVED WITHOUT RECOMPRESSION
   const updatedDataUrl = piexif.insert(exifBytes, targetDataUrl);
   const blob = dataUrlToBlob(updatedDataUrl);
 
   const baseName = file.name.replace(/\.[^/.]+$/, '');
   const fileName = `edited_${baseName}.jpg`;
 
-  return { blob, fileName };
+  const originalSize = file.size;
+  const editedSize = blob.size;
+  const sizeDiffBytes = Math.abs(editedSize - originalSize);
+  const sizeDiffFormatted = formatFileSize(sizeDiffBytes);
+
+  return {
+    blob,
+    fileName,
+    originalSize,
+    editedSize,
+    sizeDiffBytes,
+    sizeDiffFormatted,
+    tagsCount,
+    isJpeg: true,
+  };
+}
+
+/**
+ * Fallback: Canvas-based metadata stripping for PNG and non-JPEG files
+ */
+export async function stripFallbackCanvas(file: File): Promise<Blob> {
+  return stripMetadataWithCanvas(file, { quality: 1.0 });
 }

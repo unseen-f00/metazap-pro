@@ -11,18 +11,22 @@
  */
 
 import { useState, useEffect } from 'react';
+import { saveAs } from 'file-saver';
 import UploadDropzone from '@/app/components/UploadDropzone';
 import ProcessingStepper from '@/app/components/ProcessingStepper';
 import BeforeAfterStatusCard from '@/app/components/BeforeAfterStatusCard';
-import { processImageFile } from '@/app/lib/metadataRemover';
+import { processImageFile, calculateSizeAnalytics, SizeAnalytics } from '@/app/lib/metadataRemover';
 import { inspectMetadataBefore, BeforeAfterStatus } from '@/app/lib/metadataStatus';
 import { triggerSuccessConfetti } from '@/app/lib/confetti';
+import FileSizeAnalyticsCard from '@/app/components/FileSizeAnalyticsCard';
+import { verifyCleanBlob } from '@/app/utils/metadataTester';
 
 interface CleanedFileState {
   file: File;
   previewUrl: string;
   cleanedBlob: Blob | null;
   cleanedUrl: string | null;
+  sizeAnalytics?: SizeAnalytics;
   beforeAfter: BeforeAfterStatus | null;
   isProcessing: boolean;
   status: 'idle' | 'processing' | 'done' | 'error';
@@ -44,8 +48,6 @@ export default function HomeClientTool() {
     };
   }, [selectedFiles]);
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
   const handleFilesSelected = async (files: File[]) => {
     const newItems: CleanedFileState[] = files.map((file) => ({
       file,
@@ -66,7 +68,7 @@ export default function HomeClientTool() {
 
   const runSteppedProcessing = async (items: CleanedFileState[]) => {
     setCurrentStep(1);
-    setProgressPercent(15);
+    setProgressPercent(20);
 
     // Inspect metadata for each item
     for (let i = 0; i < items.length; i++) {
@@ -78,10 +80,8 @@ export default function HomeClientTool() {
       }
     }
 
-    await sleep(350);
     setCurrentStep(2);
-    setProgressPercent(45);
-    await sleep(400);
+    setProgressPercent(50);
 
     setCurrentStep(3);
     setProgressPercent(75);
@@ -91,10 +91,12 @@ export default function HomeClientTool() {
       try {
         const cleanBlob = await processImageFile(updated[i].file);
         const cleanUrl = URL.createObjectURL(cleanBlob);
+        const analytics = calculateSizeAnalytics(updated[i].file.size, cleanBlob.size);
         updated[i] = {
           ...updated[i],
           cleanedBlob: cleanBlob,
           cleanedUrl: cleanUrl,
+          sizeAnalytics: analytics,
           isProcessing: false,
           status: 'done',
         };
@@ -108,10 +110,7 @@ export default function HomeClientTool() {
       }
     }
 
-    await sleep(350);
     setCurrentStep(4);
-    setProgressPercent(95);
-    await sleep(250);
     setProgressPercent(100);
 
     setSelectedFiles(updated);
@@ -120,14 +119,19 @@ export default function HomeClientTool() {
     triggerSuccessConfetti();
   };
 
-  const handleDownload = (item: CleanedFileState) => {
-    if (!item.cleanedUrl) return;
-    const a = document.createElement('a');
-    a.href = item.cleanedUrl;
-    a.download = `cleaned_${item.file.name}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  const handleDownload = async (item: CleanedFileState) => {
+    const filename = `cleaned_${item.file.name}`;
+    if (item.cleanedBlob) {
+      await verifyCleanBlob(item.cleanedBlob);
+      saveAs(item.cleanedBlob, filename);
+    } else if (item.cleanedUrl) {
+      const a = document.createElement('a');
+      a.href = item.cleanedUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   };
 
   const handleReset = () => {
@@ -180,6 +184,7 @@ export default function HomeClientTool() {
           onFilesSelected={handleFilesSelected}
           label="Drop your photos here or tap to browse"
           description="JPEG, PNG, WebP, TIFF, GIF, HEIC — up to 20MB per photo"
+          accept="image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif"
         />
       ) : isAnyProcessing ? (
         <div className="space-y-6">
@@ -284,6 +289,11 @@ export default function HomeClientTool() {
                   </div>
                 </div>
               </div>
+
+              {/* File Size Analytics (Before vs After) */}
+              {item.sizeAnalytics && (
+                <FileSizeAnalyticsCard analytics={item.sizeAnalytics} />
+              )}
 
               {/* 'Before & After' Metadata Status */}
               {item.beforeAfter && (
