@@ -33,7 +33,7 @@ The **Image Metadata Remover** is a clean, modern Next.js application built with
 
 ```bash
 # Clone the repository
-git clone https://github.com/ankit008-mishra/image-metadata-remover.git
+git clone https://github.com/unseen-f00/image-metadata-remover.git
 cd image-metadata-remover
 
 # Install dependencies
