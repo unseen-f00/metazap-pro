@@ -90,8 +90,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      </head> <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649623506369592"
-     crossorigin="anonymous"></script> <head/>
+      </head> <meta name="google-adsense-account" content="ca-pub-1649623506369592"> <head/>
       lang="en"
       suppressHydrationWarning
       className={`${inter.variable} ${merriweather.variable} h-full antialiased`}
