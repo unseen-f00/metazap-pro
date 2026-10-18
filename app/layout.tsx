@@ -6,8 +6,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${merriweather.variable} h-full antialiased`}
     >
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649623506369592"
-     crossorigin="anonymous"></script>
+        <meta name="google-adsense-account" content="ca-pub-1649623506369592" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649623506369592"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="min-h-full flex flex-col bg-[#fafafa] dark:bg-[#090d16] text-slate-900 dark:text-slate-100 transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
@@ -21,9 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <GlobalFooter />
         </ThemeProvider>
       </body>
-    </html>
-  );
-}
     </html>
   );
 }
