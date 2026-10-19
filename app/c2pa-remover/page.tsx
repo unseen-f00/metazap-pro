@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-amber-400"></span>
-          C2PA Provenance Stripper · Neutralizes AI Manifests
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. XI // PROVENANCE PURGE &amp; MANIFEST STRIPPING
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           C2PA Remover
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Strip C2PA provenance credentials, JUMBF manifest blocks, and cryptographic AI generation tags from your images in seconds.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Surgical decoupling of JUMBF provenance containers, Adobe Content Credentials manifests, and cryptographic AI tracking headers.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>CONTAINER: JUMBF EXCLUSION</span>
+          <span className="opacity-40">/</span>
+          <span>CRYPTOGRAPHIC MANIFEST: PURGED</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED OPERATION</span>
+        </div>
+      </header>
 
       {/* Interactive Tool with Transparent Progress Stepper */}
       <CoreRemoverTool toolType="c2pa" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DISPATCH // CORPORATE WATERMARKING</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               What is C2PA? (The invisible government passport)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imagine every time you draw a picture or take a snapshot of a flower, a giant robot stamps an invisible official passport onto the back of your paper. That passport lists who made the drawing, what brand of crayons were used, what digital tools were clicked, and whether a computer robot helped you draw the trees.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Big tech corporations call this &ldquo;C2PA Content Credentials.&rdquo; It is a metadata specification that embeds digital tracking manifests directly inside image files.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Whenever you export a picture from modern software or AI platforms, C2PA records the application name, editing history, and cryptographic signatures in special JUMBF boxes.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our C2PA Remover takes away that digital tracking passport so your photo is treated as a pure, clean image that belongs to you and nobody else!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Imagine every time you draw a picture or take a snapshot of a flower, a giant robot stamps an invisible official passport onto the back of your paper. That passport lists who made the drawing, what brand of crayons were used, what digital tools were clicked, and whether a computer robot helped you draw the trees.
+              </p>
+              <p>
+                Big tech corporations call this &ldquo;C2PA Content Credentials.&rdquo; It is a metadata specification that embeds digital tracking manifests directly inside image files.
+              </p>
+              <p>
+                Whenever you export a picture from modern software or AI platforms, C2PA records the application name, editing history, and cryptographic signatures in special JUMBF boxes.
+              </p>
+              <p>
+                Our C2PA Remover takes away that digital tracking passport so your photo is treated as a pure, clean image that belongs to you and nobody else!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">TECHNICAL RESYNTHESIS // SHATTERING HASHES</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               How our deep clean destroys cryptographic stamps
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              You cannot simply scratch off a C2PA stamp with a normal eraser because it is locked with high-tech cryptographic math and woven into the pixel colors.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              If you try to delete just a piece of the tag, the file gets confused and might not open at all. Normal metadata tools do not know how to handle these advanced manifests.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool uses HTML5 Canvas Re-Rendering to trace your picture onto a fresh, brand new canvas in browser memory. It applies subtle pixel micro-smoothing that shatters invisible watermark patterns.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Then it exports a brand-new image file that has zero ties to the old C2PA manifest. Your picture looks completely beautiful, but the digital tracking passport is gone forever!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                You cannot simply scratch off a C2PA stamp with a normal eraser because it is locked with high-tech cryptographic math and woven into the pixel colors.
+              </p>
+              <p>
+                If you try to delete just a piece of the tag, the file gets confused and might not open at all. Normal metadata tools do not know how to handle these advanced manifests.
+              </p>
+              <p>
+                Our tool uses HTML5 Canvas Re-Rendering to trace your picture onto a fresh, brand new canvas in browser memory. It applies subtle pixel micro-smoothing that shatters invisible watermark patterns.
+              </p>
+              <p>
+                Then it exports a brand-new image file that has zero ties to the old C2PA manifest. Your picture looks completely beautiful, but the digital tracking passport is gone forever!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Learn how C2PA Content Credentials work and why removing them gives you total digital freedom.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

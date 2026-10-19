@@ -52,16 +52,16 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          General Metadata Stripper · 100% Client-Side
-        </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20">
+      {/* Editorial Header */}
+      <div className="text-center mb-10 max-w-3xl mx-auto">
+        <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-2">
+          TOOL NO. 01 // GENERAL SANITIZER
+        </span>
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 mb-4">
           Photo Metadata Remover
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+        <p className="text-base sm:text-lg text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
           Remove hidden camera details, GPS location coordinates, and timestamps from your photos before posting them online. Clean, simple, and safe.
         </p>
       </div>
@@ -69,41 +69,47 @@ export default function Page() {
       {/* General Metadata Remover Tool */}
       <CoreRemoverTool toolType="general" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
+      <section className="max-w-4xl mx-auto mt-20 space-y-12">
+        {/* Explanatory Sections */}
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              How photo metadata removal works (Peeling off secret stickers)
+          <div className="editorial-card p-6 md:p-8 space-y-4 border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
+              THE MECHANISM // STICKER PEELING
+            </span>
+            <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              How photo metadata removal works
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Whenever you buy a new notebook or lunchbox for school, the store slaps a price sticker, a barcode label, and an inventory tag onto the front cover. Digital photos have the exact same kind of stickers, but they are invisible to your naked eyes.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               When you drop your picture into our tool, our software acts like a gentle pair of fingernails sliding under the edge of those stickers. It reads the file header from front to back, identifies every single tag chunk, and peels them away one by one.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               The camera model sticker, the date stamp sticker, and the GPS location sticker are all gently lifted off the file and dropped into the recycling bin.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Once all the tags are cleared away, the tool saves the clean photo as a fresh file. The original image pixels stay completely untouched, while the sneaky stickers are gone forever!
             </p>
           </div>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Why every digital picture carries a hidden pocket
+          <div className="editorial-card p-6 md:p-8 space-y-4 border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
+              ORIGINS // ARCHIVAL HERITAGE
+            </span>
+            <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              Why every picture carries a hidden pocket
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Imagine wearing a warm winter coat with a secret inside pocket you never knew about. Inside that pocket, someone tucked a business card with your name, a clock showing what time you left your house, and a map showing everywhere you walked today.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               That is exactly how modern smartphones and digital cameras are designed to work. Camera manufacturers created metadata decades ago to help professional photographers organize thousands of photos in darkrooms and digital libraries.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               While that was helpful for camera clubs in the 1990s, today almost everyone shares photos on public social media, forums, and chat apps. Carrying that hidden pocket into public places means strangers can look inside whenever they want.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Emptying that pocket with our tool ensures that when you show someone a picture of your dinner, your artwork, or your pet, they only see the picture—and nothing else!
             </p>
           </div>
@@ -111,28 +117,31 @@ export default function Page() {
 
         {/* FAQs */}
         <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
+          <div className="text-center mb-8 pb-4 border-b border-stone-200 dark:border-stone-800">
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+              QUESTIONS &amp; ANSWERS
+            </span>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              Frequently Asked Questions
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
+            <p className="text-stone-500 dark:text-stone-400 text-xs sm:text-sm">
               Simple answers to help you understand how photo metadata works and why wiping it matters.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900 shadow-2xs hover:border-stone-400 dark:hover:border-stone-700 transition-all overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer px-6 py-4 font-serif font-bold text-stone-900 dark:text-stone-100 select-none flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-850 transition-colors">
+                  <span className="text-sm sm:text-base pr-4">{item.q}</span>
+                  <span className="font-mono text-xs text-stone-400 group-open:rotate-180 transition-transform duration-150 shrink-0">
+                    ▼
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-6 pb-6 pt-3 text-stone-600 dark:text-stone-400 text-xs sm:text-sm leading-relaxed border-t border-stone-100 dark:border-stone-800 space-y-3 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -142,6 +151,6 @@ export default function Page() {
           </div>
         </div>
       </section>
-    </section>
+    </div>
   );
 }

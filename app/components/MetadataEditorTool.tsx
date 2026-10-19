@@ -232,25 +232,25 @@ export default function MetadataEditorTool() {
     parsedLon <= 180;
 
   return (
-    <div className="paper-card p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800">
-      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="editorial-card p-6 md:p-10 mb-12">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-hairline">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-200 rounded-full text-xs font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 mb-2">
-            <span>✏️ EXIF TAG CUSTOMIZER &amp; GPS INJECTOR</span>
+          <div className="editorial-kicker mb-2">
+            MANUAL AUTHORING // EXIF HEADER INJECTOR
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-[family-name:var(--font-merriweather)]">
-            Manual EXIF Metadata Editor
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk">
+            EXIF Metadata Editor &amp; GPS Injector
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Read, customize, or inject author credits, copyright, timestamps, and GPS coordinates directly into JPEG headers.
+          <p className="text-sm text-ink/70 dark:text-chalk/70 mt-1 font-sans">
+            Read, customize, or inject author credits, copyright declarations, timestamps, and GPS coordinates directly into JPEG headers.
           </p>
         </div>
         {selectedFile && !isAnalyzing && (
           <button
             onClick={handleReset}
-            className="self-start md:self-auto text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="self-start md:self-auto text-xs font-mono font-medium text-ink/80 dark:text-chalk/80 border border-hairline hover:bg-hairline/30 px-3.5 py-2 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <span>↺</span> Upload Different Image
+            <span>↺</span> UPLOAD DIFFERENT ASSET
           </button>
         )}
       </div>
@@ -265,50 +265,50 @@ export default function MetadataEditorTool() {
         />
       ) : isAnalyzing ? (
         <div className="p-8 flex flex-col items-center justify-center gap-3">
-          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            Reading image metadata with exifr...
+          <div className="w-6 h-6 border-2 border-stone-900 dark:border-stone-100 border-t-transparent rounded-full animate-spin"></div>
+          <p className="font-mono text-xs text-ink/70 dark:text-chalk/70">
+            PARSING BINARY APP MARKERS VIA EXIFR...
           </p>
         </div>
       ) : (
         <div className="space-y-6">
           {/* File summary preview bar */}
-          <div className="border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/70 dark:bg-slate-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
+          <div className="border border-hairline rounded-lg p-4 bg-surface-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
               {previewUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="w-14 h-14 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
+                  className="w-14 h-14 object-cover rounded-md border border-hairline shadow-2xs shrink-0"
                 />
               )}
               <div className="min-w-0">
-                <p className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                <p className="font-mono font-semibold text-xs sm:text-sm text-ink dark:text-chalk truncate">
                   {selectedFile.name}
                 </p>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 mt-0.5">
                   <span>{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                   {dimensions && (
                     <>
-                      <span>•</span>
+                      <span className="opacity-40">/</span>
                       <span>
                         {dimensions.width} × {dimensions.height} px
                       </span>
                     </>
                   )}
-                  <span>•</span>
-                  <span className="font-semibold text-indigo-700 dark:text-indigo-300">
-                    {totalExistingTags} Tags Detected
+                  <span className="opacity-40">/</span>
+                  <span className="font-semibold text-ink dark:text-chalk">
+                    {totalExistingTags} TAGS FOUND
                   </span>
-                  <span>•</span>
+                  <span className="opacity-40">/</span>
                   {isJpeg ? (
-                    <span className="text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 px-2 py-0.5 rounded border border-emerald-200 text-[11px] font-semibold">
-                      ✓ Direct JPEG EXIF Support
+                    <span className="text-emerald-700 dark:text-emerald-300 font-semibold">
+                      ✓ DIRECT JPEG EXIF
                     </span>
                   ) : (
-                    <span className="text-amber-700 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 px-2 py-0.5 rounded border border-amber-200 text-[11px] font-semibold">
-                      Non-JPEG Format
+                    <span className="text-amber-700 dark:text-amber-300 font-semibold">
+                      NON-JPEG FORMAT
                     </span>
                   )}
                 </div>
@@ -320,57 +320,57 @@ export default function MetadataEditorTool() {
               <button
                 type="button"
                 onClick={handleSetCurrentDate}
-                className="text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-900/60 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                className="text-xs font-mono text-ink dark:text-chalk border border-hairline bg-surface hover:bg-hairline/30 px-3 py-1.5 rounded-md transition-colors cursor-pointer"
                 title="Update timestamp to right now"
               >
-                🕒 Set Today&apos;s Time
+                SET CURRENT TIME
               </button>
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 dark:bg-rose-950/60 dark:border-rose-800 dark:text-rose-300 dark:hover:bg-rose-900/60 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                className="text-xs font-mono text-rose-700 dark:text-rose-300 border border-hairline bg-surface hover:bg-rose-500/10 px-3 py-1.5 rounded-md transition-colors cursor-pointer"
                 title="Wipe all form inputs"
               >
-                🗑️ Clear All
+                CLEAR ALL
               </button>
               {initialFields && (
                 <button
                   type="button"
                   onClick={handleRestoreInitial}
-                  className="text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 dark:border-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  className="text-xs font-mono text-ink/70 dark:text-chalk/70 border border-hairline bg-surface hover:bg-hairline/30 px-3 py-1.5 rounded-md transition-colors cursor-pointer"
                   title="Restore original extracted values"
                 >
-                  ↺ Restore Original
+                  RESTORE ORIGINAL
                 </button>
               )}
             </div>
           </div>
 
-          {/* Graceful Fallback Notice for Non-JPEG Files */}
+          {/* Fallback Notice for Non-JPEG Files */}
           {!isJpeg && (
-            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-amber-900 dark:text-amber-200 space-y-3">
+            <div className="p-4 rounded-lg bg-surface-subtle border border-hairline text-ink dark:text-chalk space-y-3 font-mono text-xs">
               <div className="flex items-start gap-2.5">
-                <span className="text-xl">⚠️</span>
+                <span className="text-xs">[NOTICE]</span>
                 <div>
-                  <h4 className="font-bold text-xs sm:text-sm">
+                  <h4 className="font-bold uppercase tracking-wider">
                     JPEG-Only Direct EXIF Header Injection
                   </h4>
-                  <p className="text-xs text-amber-800 dark:text-amber-300 mt-1 leading-relaxed">
+                  <p className="text-ink/70 dark:text-chalk/70 mt-1 leading-relaxed font-sans text-xs">
                     Direct binary EXIF header injection without re-compressing pixels is exclusively supported for JPEG files. PNG and WebP files do not use standard EXIF APP1 markers. You can strip all metadata chunks from this image using our client-side Canvas engine instead.
                   </p>
                 </div>
               </div>
-              <div className="pt-2 border-t border-amber-200/80 dark:border-amber-800 flex items-center gap-3">
+              <div className="pt-2 border-t border-hairline flex items-center gap-3">
                 <button
                   type="button"
                   onClick={handleFallbackCanvasStrip}
                   disabled={isStrippingFallback}
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-stone-900 text-stone-100 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 text-xs font-mono font-bold tracking-wider uppercase rounded-md transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                 >
                   {isStrippingFallback ? (
-                    <span>Stripping Metadata...</span>
+                    <span>STRIPPING METADATA...</span>
                   ) : (
-                    <span>✨ Deep Clean / Strip via Canvas Instead</span>
+                    <span>STRIP VIA CANVAS INSTEAD</span>
                   )}
                 </button>
               </div>
@@ -381,7 +381,7 @@ export default function MetadataEditorTool() {
           <div className="grid md:grid-cols-2 gap-5">
             {/* Author */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-mono uppercase tracking-wider text-ink/70 dark:text-chalk/70">
                 Author / Artist / Creator
               </label>
               <input
@@ -389,16 +389,16 @@ export default function MetadataEditorTool() {
                 value={fields.author}
                 onChange={(e) => setFields({ ...fields, author: e.target.value })}
                 placeholder="e.g., Alex Morgan Photography"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
+                className="w-full px-3.5 py-2.5 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                Mapped to EXIF <code className="text-slate-600 dark:text-slate-300 font-mono">ImageIFD.Artist</code>.
+              <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50">
+                Mapped to EXIF <code className="font-mono text-ink/80 dark:text-chalk/80">ImageIFD.Artist</code>.
               </p>
             </div>
 
             {/* Copyright */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-mono uppercase tracking-wider text-ink/70 dark:text-chalk/70">
                 Copyright Notice
               </label>
               <input
@@ -406,16 +406,16 @@ export default function MetadataEditorTool() {
                 value={fields.copyright}
                 onChange={(e) => setFields({ ...fields, copyright: e.target.value })}
                 placeholder="e.g., © 2026 Alex Morgan. All rights reserved."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
+                className="w-full px-3.5 py-2.5 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                Mapped to EXIF <code className="text-slate-600 dark:text-slate-300 font-mono">ImageIFD.Copyright</code>.
+              <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50">
+                Mapped to EXIF <code className="font-mono text-ink/80 dark:text-chalk/80">ImageIFD.Copyright</code>.
               </p>
             </div>
 
             {/* DateTimeOriginal */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-mono uppercase tracking-wider text-ink/70 dark:text-chalk/70">
                 Date &amp; Time (DateTimeOriginal)
               </label>
               <input
@@ -423,16 +423,16 @@ export default function MetadataEditorTool() {
                 value={fields.dateOriginal}
                 onChange={(e) => setFields({ ...fields, dateOriginal: e.target.value })}
                 placeholder="YYYY:MM:DD HH:MM:SS"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm font-mono"
+                className="w-full px-3.5 py-2.5 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                Standard format: <code className="text-slate-600 dark:text-slate-300 font-mono">YYYY:MM:DD HH:MM:SS</code>.
+              <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50">
+                Standard format: <code className="font-mono text-ink/80 dark:text-chalk/80">YYYY:MM:DD HH:MM:SS</code>.
               </p>
             </div>
 
             {/* Software */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-mono uppercase tracking-wider text-ink/70 dark:text-chalk/70">
                 Software / Program Name
               </label>
               <input
@@ -440,23 +440,23 @@ export default function MetadataEditorTool() {
                 value={fields.software}
                 onChange={(e) => setFields({ ...fields, software: e.target.value })}
                 placeholder="e.g., MetaZap Pro Metadata Studio"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
+                className="w-full px-3.5 py-2.5 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                Mapped to EXIF <code className="text-slate-600 dark:text-slate-300 font-mono">ImageIFD.Software</code>.
+              <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50">
+                Mapped to EXIF <code className="font-mono text-ink/80 dark:text-chalk/80">ImageIFD.Software</code>.
               </p>
             </div>
           </div>
 
           {/* GPS Coordinates Section */}
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
+          <div className="p-5 rounded-lg border border-hairline bg-surface-subtle space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <span>📍</span>
-                  <span>GPS Geolocation Coordinates</span>
+                <div className="editorial-kicker mb-1">COORDINATE MAPPING // GPS IFD</div>
+                <h3 className="font-mono text-xs sm:text-sm font-bold text-ink dark:text-chalk">
+                  Geolocation Coordinates
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="font-sans text-xs text-ink/70 dark:text-chalk/70 mt-0.5">
                   Embed custom location coordinates or clear GPS tags to remove physical location tracking.
                 </p>
               </div>
@@ -466,24 +466,21 @@ export default function MetadataEditorTool() {
                   type="button"
                   onClick={handleGetCurrentLocation}
                   disabled={geoLocating}
-                  className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 border border-hairline bg-surface hover:bg-hairline/30 text-ink dark:text-chalk text-xs font-mono font-medium rounded-md transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   {geoLocating ? (
-                    <span>Locating...</span>
+                    <span>LOCATING...</span>
                   ) : (
-                    <>
-                      <span>🎯</span>
-                      <span>Use Current Location</span>
-                    </>
+                    <span>GET CURRENT GPS</span>
                   )}
                 </button>
                 {(fields.latitude || fields.longitude) && (
                   <button
                     type="button"
                     onClick={handleClearGps}
-                    className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                    className="px-2.5 py-1.5 border border-hairline bg-surface hover:bg-rose-500/10 text-rose-700 dark:text-rose-300 rounded-md text-xs font-mono transition-colors cursor-pointer"
                   >
-                    Clear GPS
+                    CLEAR GPS
                   </button>
                 )}
               </div>
@@ -491,7 +488,7 @@ export default function MetadataEditorTool() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="block text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400">
+                <label className="block text-[10px] font-mono uppercase text-ink/70 dark:text-chalk/70">
                   Latitude (-90 to +90)
                 </label>
                 <input
@@ -499,12 +496,12 @@ export default function MetadataEditorTool() {
                   value={fields.latitude}
                   onChange={(e) => setFields({ ...fields, latitude: e.target.value })}
                   placeholder="e.g. 37.774929"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400">
+                <label className="block text-[10px] font-mono uppercase text-ink/70 dark:text-chalk/70">
                   Longitude (-180 to +180)
                 </label>
                 <input
@@ -512,14 +509,14 @@ export default function MetadataEditorTool() {
                   value={fields.longitude}
                   onChange={(e) => setFields({ ...fields, longitude: e.target.value })}
                   placeholder="e.g. -122.419416"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk"
                 />
               </div>
             </div>
 
             {/* Interactive Mini Map Preview if GPS coordinates are valid */}
             {hasValidGps && (
-              <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 mt-3">
+              <div className="rounded-lg overflow-hidden border border-hairline bg-surface mt-3">
                 <div className="relative w-full h-48 sm:h-56">
                   <iframe
                     title="GPS Mini Map Preview"
@@ -533,17 +530,17 @@ export default function MetadataEditorTool() {
                     className="w-full h-full border-0"
                   />
                 </div>
-                <div className="p-2.5 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <span className="font-mono text-slate-700 dark:text-slate-300">
-                    📍 {parsedLat.toFixed(6)}°, {parsedLon.toFixed(6)}°
+                <div className="p-2.5 bg-surface-subtle border-t border-hairline flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                  <span className="text-ink dark:text-chalk">
+                    MAP PIN: {parsedLat.toFixed(6)}°, {parsedLon.toFixed(6)}°
                   </span>
                   <a
                     href={`https://www.google.com/maps?q=${parsedLat},${parsedLon}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-semibold flex items-center gap-1"
+                    className="text-xs text-ink/70 dark:text-chalk/70 hover:text-ink dark:hover:text-chalk font-semibold flex items-center gap-1"
                   >
-                    <span>View on Google Maps</span>
+                    <span>OPEN GOOGLE MAPS</span>
                     <span>↗</span>
                   </a>
                 </div>
@@ -552,90 +549,88 @@ export default function MetadataEditorTool() {
           </div>
 
           {errorMessage && (
-            <div className="p-4 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-700 dark:text-rose-300 text-xs font-medium">
-              ⚠️ {errorMessage}
+            <div className="p-4 bg-rose-500/10 border border-rose-500/40 rounded-lg text-rose-700 dark:text-rose-300 text-xs font-mono">
+              [ERROR] {errorMessage}
             </div>
           )}
 
           {/* Data Calculator & Analytics on success */}
           {lastResult && (
-            <div className="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-4">
+            <div className="p-5 rounded-lg border border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/20 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🎉</span>
-                  <h4 className="text-sm font-bold text-emerald-950 dark:text-emerald-100">
-                    EXIF Metadata Successfully Updated &amp; Injected!
+                <div>
+                  <h4 className="font-serif text-sm font-bold text-ink dark:text-chalk">
+                    EXIF Metadata Successfully Updated &amp; Injected
                   </h4>
+                  <p className="font-mono text-[11px] text-ink/70 dark:text-chalk/70 mt-0.5">
+                    Binary EXIF container rebuilt with zero loss to pixel clarity.
+                  </p>
                 </div>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200">
-                  100% Quality Preserved
+                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-500/40 text-emerald-800 dark:text-emerald-300">
+                  100% QUALITY PRESERVED
                 </span>
               </div>
 
               {/* Analytics metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-200/70 dark:border-emerald-800/70 shadow-2xs">
-                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                <div className="bg-surface p-3 rounded-md border border-hairline font-mono">
+                  <span className="text-[10px] uppercase text-ink/60 dark:text-chalk/60 block">
                     Original Size
                   </span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-100 font-mono">
+                  <span className="text-sm font-bold text-ink dark:text-chalk">
                     {formatFileSize(lastResult.originalSize)}
                   </span>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-200/70 dark:border-emerald-800/70 shadow-2xs">
-                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                <div className="bg-surface p-3 rounded-md border border-hairline font-mono">
+                  <span className="text-[10px] uppercase text-emerald-600 dark:text-emerald-400 block">
                     Edited Size
                   </span>
-                  <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300 font-mono">
+                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                     {formatFileSize(lastResult.editedSize)}
                   </span>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-200/70 dark:border-emerald-800/70 shadow-2xs">
-                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
-                    Size Difference
+                <div className="bg-surface p-3 rounded-md border border-hairline font-mono">
+                  <span className="text-[10px] uppercase text-ink/60 dark:text-chalk/60 block">
+                    Size Delta
                   </span>
-                  <span className="text-sm font-bold text-indigo-700 dark:text-indigo-400 font-mono">
+                  <span className="text-sm font-bold text-ink dark:text-chalk">
                     {lastResult.sizeDiffFormatted}
                   </span>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-200/70 dark:border-emerald-800/70 shadow-2xs">
-                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
-                    Tags Modified
+                <div className="bg-surface p-3 rounded-md border border-hairline font-mono">
+                  <span className="text-[10px] uppercase text-ink/60 dark:text-chalk/60 block">
+                    Tags Injected
                   </span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-100 font-mono">
+                  <span className="text-sm font-bold text-ink dark:text-chalk">
                     {lastResult.tagsCount} Tags
                   </span>
                 </div>
               </div>
-
-              <p className="text-xs text-emerald-800 dark:text-emerald-300">
-                ✓ Image pixels were unmodified. Only the binary EXIF container was rewritten and inserted into your file.
-              </p>
             </div>
           )}
 
           {/* Action buttons */}
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-3">
+          <div className="pt-4 border-t border-hairline flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={handleApplyAndDownload}
               disabled={isApplying || !isJpeg}
-              className="px-7 py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer"
+              className="px-6 py-2.5 bg-stone-900 text-stone-100 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 disabled:opacity-50 text-xs font-mono font-bold tracking-wider uppercase rounded-md shadow-sm transition-all flex items-center gap-2 cursor-pointer"
             >
               {isApplying ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  <span>Injecting EXIF Binary...</span>
+                  <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                  <span>INJECTING EXIF BINARY...</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4 shrink-0" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <svg className="w-3.5 h-3.5 shrink-0" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  <span>Apply &amp; Download Photo</span>
+                  <span>APPLY &amp; DOWNLOAD PHOTO</span>
                 </>
               )}
             </button>
@@ -643,9 +638,9 @@ export default function MetadataEditorTool() {
             <button
               type="button"
               onClick={handleReset}
-              className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 text-sm font-medium rounded-xl transition-colors cursor-pointer"
+              className="px-4 py-2.5 border border-hairline bg-surface hover:bg-hairline/30 text-ink/80 dark:text-chalk/80 text-xs font-mono font-medium rounded-md transition-colors cursor-pointer"
             >
-              Reset All
+              RESET ALL
             </button>
           </div>
         </div>

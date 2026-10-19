@@ -51,88 +51,98 @@ export default function Page() {
     },
   ];
 
-  return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          Selective GPS Stripper · Preserves Camera & Date
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. II // SELECTIVE GEOLOCATION SANITIZATION
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
-          Remove GPS from Photos
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
+          Remove GPS Location from Photos
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Strip exact GPS location tags from your photos before sharing them online. Keep your home, school, and workplace private.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Surgically sever satellite geolocation pins and elevation records from photo headers. Preserves camera metadata, capture timestamps, and optical profile settings.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>TARGET: GPSIFD DIRECTORY</span>
+          <span className="opacity-40">/</span>
+          <span>DATE &amp; TIME: PRESERVED</span>
+          <span className="opacity-40">/</span>
+          <span>ACCURACY: AIR-GAPPED RAM</span>
+        </div>
+      </header>
 
       {/* Selective GPS Remover Tool */}
       <CoreRemoverTool toolType="gps" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      {/* Editorial Dispatches / ELI5 Content & FAQs */}
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">ANALYSIS // GEOGRAPHIC EXPOSURE</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Why erase hidden map pins? (The trail of breadcrumbs)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Have you ever heard the fairy tale of Hansel and Gretel leaving breadcrumbs along the forest path so they could find their way home? When your phone takes a picture with location enabled, it leaves digital breadcrumbs everywhere you go!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Every time you snap a photo of your breakfast, your bedroom, your garden, or your school playground, a shiny breadcrumb is baked right into the photo. Anyone who downloads that photo can follow those breadcrumbs right to your front door.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Strangers on the internet do not need to know where you live or what route you walk your dog every morning. Your neighborhood and home are private spaces meant just for you, your family, and your close friends.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our GPS remover sweeps away those breadcrumbs before you post your pictures online. It leaves the photo beautiful, while turning off the invisible trail so nobody can ever follow you home!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Have you ever heard the fairy tale of Hansel and Gretel leaving breadcrumbs along the forest path so they could find their way home? When your phone takes a picture with location enabled, it leaves digital breadcrumbs everywhere you go!
+              </p>
+              <p>
+                Every time you snap a photo of your breakfast, your bedroom, your garden, or your school playground, a shiny breadcrumb is baked right into the photo. Anyone who downloads that photo can follow those breadcrumbs right to your front door.
+              </p>
+              <p>
+                Strangers on the internet do not need to know where you live or what route you walk your dog every morning. Your neighborhood and home are private spaces meant just for you, your family, and your close friends.
+              </p>
+              <p>
+                Our GPS remover sweeps away those breadcrumbs before you post your pictures online. It leaves the photo beautiful, while turning off the invisible trail so nobody can ever follow you home!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">PROTOCOL // SELECTIVE SURGERY</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               How selective GPS removal works (Keeping the good memories)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imagine drawing a lovely picture in art class. In the corner of the paper, you write: &ldquo;Drawn by me on my birthday with my favorite colored markers.&rdquo; But the teacher also stamped your home street address at the bottom of the page.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              You want to show everyone the picture and let them know which markers you used, but you definitely do not want your home address stamped there for all the kids to see. That is exactly what our selective cleaner does!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              It uses a precision digital eraser that rubs away only the street address and map numbers, while keeping the date stamp, the time, and the camera model completely untouched.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              This way, your photo album on your computer stays neatly organized in chronological order, but anyone who downloads the photo sees zero clues about where on Earth you were standing!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Imagine drawing a lovely picture in art class. In the corner of the paper, you write: &ldquo;Drawn by me on my birthday with my favorite colored markers.&rdquo; But the teacher also stamped your home street address at the bottom of the page.
+              </p>
+              <p>
+                You want to show everyone the picture and let them know which markers you used, but you definitely do not want your home address stamped there for all the kids to see. That is exactly what our selective cleaner does!
+              </p>
+              <p>
+                It uses a precision digital eraser that rubs away only the street address and map numbers, while keeping the date stamp, the time, and the camera model completely untouched.
+              </p>
+              <p>
+                This way, your photo album on your computer stays neatly organized in chronological order, but anyone who downloads the photo sees zero clues about where on Earth you were standing!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Learn how GPS coordinates get inside your pictures and how our selective tool keeps you safe.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +150,7 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
-  );
+    </div>
 }

@@ -237,7 +237,7 @@ export default function FormatConverterTool({ type }: { type: ConverterType }) {
   };
 
   return (
-    <div className="paper-card p-4 sm:p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900/90 transition-colors">
+    <div className="editorial-card p-5 sm:p-8 md:p-10 mb-14 shadow-paper border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors">
       {!selectedFile ? (
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
@@ -248,34 +248,34 @@ export default function FormatConverterTool({ type }: { type: ConverterType }) {
       ) : (
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200 dark:border-stone-800">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-full text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1.5">
-                <span>{config.badge}</span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+              <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+                {config.badge}
+              </span>
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100">
                 {selectedFile.name}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Original: <span className="font-mono font-semibold">{formatFileSize(selectedFile.size)}</span> • Converting to {config.targetExt.toUpperCase()}
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                Original: <span className="font-semibold text-stone-700 dark:text-stone-300">{formatFileSize(selectedFile.size)}</span> • Output: {config.targetExt.toUpperCase()}
               </p>
             </div>
             <button
               onClick={handleReset}
-              className="self-start sm:self-auto text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+              className="self-start sm:self-auto font-mono text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 px-3.5 py-2 rounded-lg transition-colors cursor-pointer"
             >
-              Upload Another Photo
+              [ Upload Another Photo ]
             </button>
           </div>
 
           {/* Processing Spinner */}
           {isConverting && (
-            <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <span className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin inline-block mb-3"></span>
-              <p className="text-sm font-bold text-slate-800 dark:text-white">
+            <div className="p-8 text-center bg-stone-50 dark:bg-stone-850 rounded-xl border border-stone-200 dark:border-stone-800">
+              <span className="w-6 h-6 border-2 border-stone-900 dark:border-stone-100 border-t-transparent rounded-full animate-spin inline-block mb-3"></span>
+              <p className="font-serif text-sm font-bold text-stone-900 dark:text-stone-100">
                 Converting to {config.targetExt.toUpperCase()}...
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 mt-1">
                 Processing pixels in browser memory and stripping all metadata
               </p>
             </div>
@@ -283,40 +283,40 @@ export default function FormatConverterTool({ type }: { type: ConverterType }) {
 
           {/* Error Message */}
           {errorMessage && (
-            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-medium">
-              ⚠️ {errorMessage}
+            <div className="p-4 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 font-mono text-xs">
+              [ERROR] {errorMessage}
             </div>
           )}
 
           {/* Comparison Preview */}
           {convertedUrl && !isConverting && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-white dark:bg-slate-900 flex flex-col items-center">
-                <span className="text-xs font-bold text-slate-500 mb-2">Original Image</span>
+              <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-white dark:bg-stone-900 flex flex-col items-center">
+                <span className="editorial-kicker text-stone-400 dark:text-stone-500 mb-2">Original Photograph</span>
                 {previewUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={previewUrl}
                     alt="Original"
-                    className="max-h-56 object-contain rounded-xl bg-slate-50 dark:bg-slate-950/40"
+                    className="max-h-56 object-contain rounded-lg bg-stone-50 dark:bg-stone-950/40"
                   />
                 )}
-                <span className="mt-2 text-xs font-mono font-semibold text-slate-600 dark:text-slate-400">
+                <span className="mt-2.5 font-mono text-xs text-stone-600 dark:text-stone-400">
                   {formatFileSize(selectedFile.size)}
                 </span>
               </div>
 
-              <div className="border border-emerald-300 dark:border-emerald-800 rounded-2xl p-4 bg-emerald-50/20 dark:bg-emerald-950/20 flex flex-col items-center">
-                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-1">
-                  <span>✓</span> Converted {config.targetExt.toUpperCase()} (Clean)
+              <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-stone-50/50 dark:bg-stone-850 flex flex-col items-center">
+                <span className="editorial-kicker text-stone-900 dark:text-stone-100 mb-2 flex items-center gap-1 font-bold">
+                  ✓ Converted {config.targetExt.toUpperCase()} (Clean)
                 </span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={convertedUrl}
                   alt="Converted"
-                  className="max-h-56 object-contain rounded-xl bg-slate-50 dark:bg-slate-950/40"
+                  className="max-h-56 object-contain rounded-lg bg-white dark:bg-stone-950/40"
                 />
-                <span className="mt-2 text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                <span className="mt-2.5 font-mono text-xs font-bold text-stone-900 dark:text-stone-100">
                   {convertedBlob ? formatFileSize(convertedBlob.size) : '...'}
                 </span>
               </div>
@@ -325,7 +325,7 @@ export default function FormatConverterTool({ type }: { type: ConverterType }) {
 
           {/* File Size Analytics */}
           {sizeAnalytics && !isConverting && (
-            <FileSizeAnalyticsCard analytics={sizeAnalytics} title="Format Conversion Analytics" />
+            <FileSizeAnalyticsCard analytics={sizeAnalytics} title="Conversion Ledger" />
           )}
 
           {/* Action Button */}
@@ -333,9 +333,9 @@ export default function FormatConverterTool({ type }: { type: ConverterType }) {
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-all cursor-pointer"
+                className="flex items-center gap-2 px-6 py-3.5 bg-stone-900 hover:bg-black dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-stone-950 font-mono text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
               >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 <span>Download Converted {config.targetExt.toUpperCase()}</span>
@@ -343,7 +343,7 @@ export default function FormatConverterTool({ type }: { type: ConverterType }) {
 
               <button
                 onClick={handleReset}
-                className="px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-3.5 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-mono text-xs font-semibold rounded-lg transition-colors cursor-pointer"
               >
                 Reset
               </button>

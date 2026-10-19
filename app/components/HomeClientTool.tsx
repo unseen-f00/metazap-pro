@@ -155,25 +155,25 @@ export default function HomeClientTool() {
   const isAnyProcessing = selectedFiles.some((f) => f.isProcessing);
 
   return (
-    <div className="paper-card p-4 sm:p-6 md:p-10 mb-12 shadow-paper-lg border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900/90 transition-colors">
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="editorial-card p-5 sm:p-8 md:p-10 mb-14 shadow-paper border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors">
+      <div className="mb-6 pb-4 border-b border-stone-100 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-full text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-2">
-            <span>✨ INSTANT CLIENT-SIDE SANITIZER</span>
-          </div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-[family-name:var(--font-merriweather)]">
-            Clean Your Photos
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+            [ IN-BROWSER SANITIZER // MEMORY BUFFER ]
+          </span>
+          <h2 className="text-xl md:text-2xl font-bold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
+            Photo Sanitization Studio
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Select an image to strip hidden camera tags, GPS location, and personal metadata.
+          <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+            Drop an image to wipe hidden camera models, GPS coordinates, and personal timestamps.
           </p>
         </div>
         {selectedFiles.length > 0 && !isAnyProcessing && (
           <button
             onClick={handleReset}
-            className="self-start sm:self-auto text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+            className="self-start sm:self-auto font-mono text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 px-3.5 py-2 rounded-lg transition-colors cursor-pointer"
           >
-            Clear / Upload New
+            [ Clear / New Image ]
           </button>
         )}
       </div>
@@ -182,7 +182,7 @@ export default function HomeClientTool() {
       {selectedFiles.length === 0 ? (
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
-          label="Drop your photos here or tap to browse"
+          label="Drop photograph here to inspect & sanitize"
           description="JPEG, PNG, WebP, TIFF, GIF, HEIC — up to 20MB per photo"
           accept="image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif"
         />
@@ -190,15 +190,15 @@ export default function HomeClientTool() {
         <div className="space-y-6">
           {/* Live Preview during processing */}
           {selectedFiles[0]?.previewUrl && (
-            <div className="relative border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 bg-slate-100/50 dark:bg-slate-950/50 flex flex-col items-center justify-center overflow-hidden shadow-md">
+            <div className="relative border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-stone-50/60 dark:bg-stone-950/60 flex flex-col items-center justify-center overflow-hidden shadow-2xs">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={selectedFiles[0].previewUrl}
                 alt="Preview"
-                className="max-h-64 object-contain rounded-xl shadow-xs"
+                className="max-h-64 object-contain rounded-lg shadow-2xs"
               />
-              <div className="mt-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                <span>📷 {selectedFiles[0].file.name}</span>
+              <div className="mt-3 font-mono text-xs text-stone-600 dark:text-stone-400 flex items-center gap-2">
+                <span>{selectedFiles[0].file.name}</span>
                 <span>•</span>
                 <span>{formatFileSize(selectedFiles[0].file.size)}</span>
               </div>
@@ -214,22 +214,22 @@ export default function HomeClientTool() {
           />
         </div>
       ) : (
-        <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in duration-200">
           {selectedFiles.map((item, idx) => (
             <div key={idx} className="space-y-6">
               {/* Live Preview & Action Section */}
-              <div className="border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-900/60 flex flex-col lg:flex-row items-center gap-6">
-                {/* Live Image Preview (Visual Feedback) */}
+              <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-5 sm:p-6 bg-stone-50/50 dark:bg-stone-900/50 flex flex-col lg:flex-row items-center gap-6">
+                {/* Live Image Preview (Darkroom Framed Print) */}
                 {item.previewUrl && (
-                  <div className="w-full lg:w-72 shrink-0 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 shadow-md flex flex-col items-center">
+                  <div className="w-full lg:w-72 shrink-0 bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl p-3 shadow-2xs flex flex-col items-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={item.previewUrl}
                       alt={item.file.name}
-                      className="w-full h-48 object-contain rounded-xl bg-slate-50 dark:bg-slate-950/40"
+                      className="w-full h-48 object-contain rounded-lg bg-stone-50 dark:bg-stone-900/50"
                     />
-                    <div className="w-full mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                      <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[140px]">
+                    <div className="w-full mt-3 pt-2.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between font-mono text-[11px] text-stone-500 dark:text-stone-400">
+                      <span className="font-semibold text-stone-800 dark:text-stone-200 truncate max-w-[140px]">
                         {item.file.name}
                       </span>
                       <span>{formatFileSize(item.file.size)}</span>
@@ -240,40 +240,40 @@ export default function HomeClientTool() {
                 {/* Status & Download Controls */}
                 <div className="w-full flex-1 flex flex-col justify-between">
                   <div>
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full shadow-2xs">
-                        ✓ All EXIF Stripped
+                    <div className="flex flex-wrap items-center gap-2 mb-3 font-mono text-[11px]">
+                      <span className="px-2.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200">
+                        ✓ EXIF STRIPPED
                       </span>
-                      <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full shadow-2xs">
-                        ✓ GPS Wiped
+                      <span className="px-2.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200">
+                        ✓ GPS WIPED
                       </span>
-                      <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full shadow-2xs">
-                        ✓ 100% Private
+                      <span className="px-2.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200">
+                        ✓ 100% PRIVATE
                       </span>
                     </div>
 
-                    <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
-                      Photo Successfully Sanitized
+                    <h3 className="font-serif text-lg md:text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+                      Photograph Successfully Sanitized
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Your photo was stripped locally in your browser memory. Hidden camera serial numbers, GPS coordinates, and edit timestamps have been permanently removed.
+                    <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-sans">
+                      All hidden camera serial numbers, GPS breadcrumbs, and software edit histories have been pruned locally inside your browser memory.
                     </p>
 
                     {item.status === 'error' && (
-                      <p className="text-xs text-rose-600 dark:text-rose-400 font-medium mt-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-2.5 rounded-lg">
-                        {item.errorMessage}
+                      <p className="font-mono text-xs text-rose-700 dark:text-rose-400 mt-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-2.5 rounded-lg">
+                        [ERROR] {item.errorMessage}
                       </p>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-6 pt-5 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center gap-3">
+                  <div className="mt-6 pt-5 border-t border-stone-200 dark:border-stone-800 flex flex-wrap items-center gap-3">
                     {item.status === 'done' && (
                       <button
                         onClick={() => handleDownload(item)}
-                        className="flex items-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs md:text-sm font-bold rounded-xl shadow-sm hover:shadow transition-all cursor-pointer"
+                        className="flex items-center gap-2 px-6 py-3.5 bg-stone-900 hover:bg-black dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-stone-950 font-mono text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
                       >
-                        <svg width="16" height="16" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         <span>Download Clean Photo</span>
@@ -282,7 +282,7 @@ export default function HomeClientTool() {
 
                     <button
                       onClick={handleReset}
-                      className="px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs md:text-sm font-medium rounded-xl transition-colors cursor-pointer"
+                      className="px-5 py-3.5 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-mono text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                     >
                       Clean Another Image
                     </button>
@@ -305,18 +305,21 @@ export default function HomeClientTool() {
       )}
 
       {/* Feature highlights under upload */}
-      <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-        <div className="p-3">
-          <p className="text-xs font-bold text-slate-800 dark:text-white">100% In-Browser</p>
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Your files never leave your device</p>
+      <div className="mt-8 pt-6 border-t border-stone-100 dark:border-stone-800 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        <div className="p-2">
+          <span className="editorial-kicker text-stone-400 block mb-1">01 / LOCAL BUFFER</span>
+          <p className="text-xs font-bold text-stone-900 dark:text-stone-100">100% In-Browser Execution</p>
+          <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">Files never leave your local device memory</p>
         </div>
-        <div className="p-3">
-          <p className="text-xs font-bold text-slate-800 dark:text-white">Zero Quality Loss</p>
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Only hidden tags are wiped, pixels stay crisp</p>
+        <div className="p-2 border-t sm:border-t-0 sm:border-l border-stone-100 dark:border-stone-800">
+          <span className="editorial-kicker text-stone-400 block mb-1">02 / VISUAL INTEGRITY</span>
+          <p className="text-xs font-bold text-stone-900 dark:text-stone-100">Zero Pixel Quality Loss</p>
+          <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">Tracking tags stripped while pixels remain untouched</p>
         </div>
-        <div className="p-3">
-          <p className="text-xs font-bold text-slate-800 dark:text-white">All Major Formats</p>
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">JPEG, PNG, WebP, TIFF, GIF, HEIC</p>
+        <div className="p-2 border-t sm:border-t-0 sm:border-l border-stone-100 dark:border-stone-800">
+          <span className="editorial-kicker text-stone-400 block mb-1">03 / COMPATIBILITY</span>
+          <p className="text-xs font-bold text-stone-900 dark:text-stone-100">Standard Image Formats</p>
+          <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">JPEG, PNG, WebP, TIFF, GIF, HEIC</p>
         </div>
       </div>
     </div>

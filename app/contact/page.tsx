@@ -9,40 +9,44 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <section className="mx-auto max-w-3xl px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 shadow-paper border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <h1 className="font-[family-name:var(--font-merriweather)] text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
-          Contact Us
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 md:py-16">
+      <article className="editorial-card p-6 md:p-12">
+        <div className="editorial-kicker mb-3">
+          DISPATCH DESK // COMMUNICATIONS &amp; INQUIRIES
+        </div>
+
+        <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-ink dark:text-chalk mb-6">
+          Contact the Lab
         </h1>
-        <div className="text-slate-600 dark:text-slate-300 text-base leading-relaxed space-y-5">
+        <div className="text-ink/80 dark:text-chalk/80 text-sm sm:text-base leading-relaxed space-y-5 font-sans">
           <p>
-            Have questions, feedback, or need help with a specific image format? We are here to help.
+            Have technical inquiries, bug reports on specific camera models, or feedback on our privacy engine? The engineering team welcomes direct dispatches.
           </p>
-          <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl p-6 text-center my-6">
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Email Inquiries</p>
-            <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400 select-all">hello@metazap.com</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">We typically reply within 24–48 hours.</p>
+          <div className="bg-surface-subtle border border-hairline rounded-lg p-6 text-center my-6">
+            <p className="font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest mb-1">Electronic Mail Inquiries</p>
+            <p className="font-mono text-base sm:text-lg font-bold text-ink dark:text-chalk select-all">hello@metazap.com</p>
+            <p className="font-mono text-[11px] text-ink/50 dark:text-chalk/50 mt-2">Standard dispatch response time: 24–48 hours.</p>
           </div>
-          <p>
-            Because our tool runs 100% locally in your browser, please note that we do not have access to any photos you clean, and we cannot recover files once your browser tab is closed.
+          <p className="text-xs text-ink/70 dark:text-chalk/70 italic border-l-2 border-hairline pl-4">
+            Notice: Because MetaZap executes strictly client-side within browser RAM, our team maintains zero server logs, databases, or access to your image files. We cannot retrieve or restore files once your browser tab is closed.
           </p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="mt-8 pt-6 border-t border-hairline flex items-center justify-between font-mono text-xs">
           <Link
             href="/"
-            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+            className="text-ink dark:text-chalk hover:underline uppercase font-bold"
           >
-            ← Back to Photo Cleaner
+            ← RETURN TO TOOLKIT INDEX
           </Link>
           <Link
             href="/privacy-policy"
-            className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+            className="text-ink/60 dark:text-chalk/60 hover:text-ink dark:hover:text-chalk uppercase"
           >
             Privacy Policy →
           </Link>
         </div>
-      </div>
-    </section>
+      </article>
+    </div>
   );
 }

@@ -2,9 +2,13 @@
 
 /**
  * UploadDropzone.tsx
- * Mobile-First, Accessible, Dark-Mode Drag-and-Drop Image Uploader.
- * Enforces strict MIME & extension verification, provides live visual toasts on rejection,
- * and passes the appropriate accept attributes to the native file input.
+ * Architectural Darkroom Ingestion Dropzone for MetaZap.
+ * Features:
+ * - Corner registration marks (+) evoking contact sheets & darkroom proofing
+ * - Strict client-side MIME & extension verification
+ * - Accessible focus rings & keyboard activation (Enter / Space)
+ * - Minimalist editorial toast notification on validation rejection
+ * - Full Dark Mode & Mobile Responsive
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -25,7 +29,7 @@ export default function UploadDropzone({
   maxFiles = 25,
   multiple = true,
   accept = 'image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif',
-  label = 'Drop your images here',
+  label = 'Drop photograph here to inspect & sanitize',
   description = 'JPEG, PNG, WebP, TIFF, GIF, HEIC — up to 20MB each',
   selectedFilesCount = 0,
 }: UploadDropzoneProps) {
@@ -80,17 +84,12 @@ export default function UploadDropzone({
     }
   };
 
-  /**
-   * JavaScript onChange handler:
-   * Rejects any file that doesn't strictly match the required MIME type / accept rule,
-   * displays a toast/alert notification, and clears the file input.
-   */
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     if (files.length > 0) {
       handleFiles(files);
     }
-    // Reset file input value so selecting the same file again triggers onChange
+    // Clear value to allow re-upload of the same file
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -101,7 +100,6 @@ export default function UploadDropzone({
     let firstError: string | null = null;
 
     for (const file of fileList) {
-      // Validate strictly against the active tool's accept requirements
       const result = validateImageFile(file, accept);
       if (result.isValid) {
         validFiles.push(file);
@@ -118,7 +116,6 @@ export default function UploadDropzone({
       setToastMessage(null);
     }
 
-    // Only forward strictly valid files to the processing component
     if (validFiles.length > 0) {
       onFilesSelected(validFiles.slice(0, maxFiles));
     }
@@ -130,41 +127,41 @@ export default function UploadDropzone({
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">
-      {/* Interactive Toast / Alert Notification */}
+      {/* Editorial Toast / Alert Notification */}
       {toastMessage && (
         <div
           role="alert"
           aria-live="assertive"
-          className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm shadow-md flex items-start justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200"
+          className="mb-4 p-4 rounded-lg bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 border border-stone-800 dark:border-stone-200 text-xs shadow-md flex items-start justify-between gap-3 animate-in fade-in slide-in-from-top-1 duration-150"
         >
           <div className="flex items-start gap-2.5">
-            <span className="text-lg leading-none shrink-0" aria-hidden="true">
-              ⚠️
+            <span className="font-mono text-sm leading-none shrink-0" aria-hidden="true">
+              [!]
             </span>
             <div>
-              <p className="font-bold text-xs uppercase tracking-wider text-rose-900 dark:text-rose-100">
-                Format Restriction Error
+              <p className="editorial-kicker text-stone-400 dark:text-stone-600">
+                Format Restriction
               </p>
-              <p className="mt-0.5 text-xs sm:text-sm leading-relaxed">{toastMessage}</p>
+              <p className="mt-0.5 leading-relaxed font-sans">{toastMessage}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={dismissToast}
-            className="text-rose-500 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-100 text-xs font-bold px-2 py-1 rounded-md hover:bg-rose-200/50 dark:hover:bg-rose-900/50 transition-colors"
+            className="font-mono text-[11px] font-bold px-2 py-0.5 rounded border border-stone-700 dark:border-stone-300 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors"
             aria-label="Dismiss alert"
           >
-            ✕
+            DISMISS
           </button>
         </div>
       )}
 
-      {/* Main Drag-and-Drop Target */}
+      {/* Main Drag-and-Drop Ingestion Target */}
       <div
-        className={`relative border-2 border-dashed rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 text-center transition-all cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+        className={`relative border rounded-xl p-8 sm:p-12 md:p-14 text-center transition-all duration-150 cursor-pointer select-none focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-stone-100 ${
           isDragging
-            ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 scale-[1.01]'
-            : 'border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-white dark:hover:bg-slate-900 hover:shadow-paper'
+            ? 'border-stone-900 dark:border-stone-100 bg-stone-100/90 dark:bg-stone-800/80 scale-[1.005]'
+            : 'border-dashed border-stone-300 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-400 hover:bg-white dark:hover:bg-stone-900/80'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -180,7 +177,21 @@ export default function UploadDropzone({
         tabIndex={0}
         aria-label="Upload photo"
       >
-        {/* Hidden native browser file input with strict accept attribute */}
+        {/* Contact-sheet corner crosshairs (+) */}
+        <span className="absolute top-2.5 left-3 font-mono text-xs text-stone-300 dark:text-stone-700 select-none pointer-events-none">
+          +
+        </span>
+        <span className="absolute top-2.5 right-3 font-mono text-xs text-stone-300 dark:text-stone-700 select-none pointer-events-none">
+          +
+        </span>
+        <span className="absolute bottom-2.5 left-3 font-mono text-xs text-stone-300 dark:text-stone-700 select-none pointer-events-none">
+          +
+        </span>
+        <span className="absolute bottom-2.5 right-3 font-mono text-xs text-stone-300 dark:text-stone-700 select-none pointer-events-none">
+          +
+        </span>
+
+        {/* Hidden native input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -192,45 +203,52 @@ export default function UploadDropzone({
         />
 
         <div className="pointer-events-none">
-          <div className="mb-3 md:mb-4 text-4xl md:text-5xl" aria-hidden="true">
-            ⚡
+          {/* Architectural Aperture Icon */}
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full border border-stone-200 dark:border-stone-700 flex items-center justify-center bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-5 h-5 shrink-0"
+              aria-hidden="true"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="m21 15-5-5L5 21" />
+            </svg>
           </div>
-          <p className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-1.5 md:mb-2">
+
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1.5">
+            [ INGESTION PLANE // LOCAL MEMORY ]
+          </span>
+
+          <p className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 mb-2 tracking-tight">
             {label}
           </p>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+
+          <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto leading-relaxed font-sans mb-4">
             {description}
           </p>
 
           {selectedFilesCount > 0 ? (
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 rounded-full text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              ✓ {selectedFilesCount} file{selectedFilesCount > 1 ? 's' : ''} ready to clean
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-950 rounded-md text-xs font-mono font-medium">
+              ✓ {selectedFilesCount} photo{selectedFilesCount > 1 ? 's' : ''} queued for local processing
             </div>
           ) : (
-            <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-white dark:bg-slate-900 rounded-full border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-2xs">
-              <svg
-                width="14"
-                height="14"
-                className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-              <span>Tap to browse or drop here · 100% in-browser</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 font-mono text-[11px] bg-white dark:bg-stone-800">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+              <span>Tap to select or drag photo · Zero server upload</span>
             </div>
           )}
 
           {errorMessage && (
-            <p className="mt-4 text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg inline-block border border-rose-200 dark:border-rose-900">
-              {errorMessage}
+            <p className="mt-4 font-mono text-xs text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-md inline-block border border-rose-200 dark:border-rose-900">
+              [ERROR] {errorMessage}
             </p>
           )}
         </div>

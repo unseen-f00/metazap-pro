@@ -22,23 +22,23 @@ export default function MetadataTable({
   className = '',
 }: MetadataTableProps) {
   return (
-    <div className={`overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${className}`}>
-      <table className="w-full text-sm">
-        <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">
+    <div className={`overflow-x-auto rounded-lg border border-hairline bg-surface ${className}`}>
+      <table className="w-full font-mono text-xs">
+        <thead className="bg-surface-subtle text-ink/70 dark:text-chalk/70 border-b border-hairline uppercase tracking-wider">
           <tr>
-            <th className="text-left px-4 py-3">Field</th>
-            <th className="text-left px-4 py-3">Value</th>
-            {showEdit && <th className="text-left px-4 py-3">Action</th>}
+            <th className="text-left px-4 py-3 font-semibold">Field</th>
+            <th className="text-left px-4 py-3 font-semibold">Value</th>
+            {showEdit && <th className="text-left px-4 py-3 font-semibold">Action</th>}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody className="divide-y divide-hairline">
           {metadata.map((entry, index) => (
-            <tr key={index} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-              <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{entry.label}</td>
-              <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono">{entry.value}</td>
+            <tr key={index} className="hover:bg-hairline/20 transition-colors">
+              <td className="px-4 py-3 text-ink/80 dark:text-chalk/80">{entry.label}</td>
+              <td className="px-4 py-3 text-ink dark:text-chalk break-all">{entry.value}</td>
               {showEdit && (
                 <td className="px-4 py-3">
-                  <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-xs font-medium">
+                  <button className="text-ink dark:text-chalk hover:underline uppercase font-bold text-[11px]">
                     Edit
                   </button>
                 </td>
@@ -47,7 +47,7 @@ export default function MetadataTable({
           ))}
           {metadata.length === 0 && (
             <tr>
-              <td colSpan={showEdit ? 3 : 2} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500">
+              <td colSpan={showEdit ? 3 : 2} className="px-4 py-8 text-center text-ink/40 dark:text-chalk/40">
                 No metadata detected in this image
               </td>
             </tr>

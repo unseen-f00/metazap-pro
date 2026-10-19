@@ -62,127 +62,169 @@ export default function HomePage() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      {/* Hero Section */}
-      <div className="paper-card p-8 md:p-14 text-center mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          100% Browser-Based Privacy · Zero Uploads
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20">
+      {/* Editorial Broadsheet Hero Masthead */}
+      <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md border border-stone-200 dark:border-stone-800 bg-stone-100/60 dark:bg-stone-900/60 text-stone-600 dark:text-stone-300 font-mono text-[11px] font-semibold mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+          <span>100% IN-BROWSER MEMORY EXECUTION · ZERO REMOTE UPLOADS</span>
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-5 leading-tight">
-          MetaZap: The Ultimate Photo Privacy &amp; Metadata Toolkit
+
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-100 mb-6 leading-[1.15]">
+          MetaZap: The Digital Darkroom for Photo Privacy
         </h1>
-        <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Remove hidden EXIF tags, GPS location markers, and camera details before sharing pictures online. Fast, simple, and processed right inside your browser.
+
+        <p className="text-base sm:text-lg md:text-xl text-stone-600 dark:text-stone-300 max-w-2xl mx-auto leading-relaxed font-sans mb-6">
+          Strip hidden EXIF tags, GPS location markers, and camera serials before sharing pictures online. Fast, simple, and processed completely inside your device RAM.
         </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-[11px] text-stone-400 dark:text-stone-500">
+          <span className="px-2 py-0.5 rounded border border-stone-200 dark:border-stone-800">[ ZERO UPLOAD ]</span>
+          <span className="px-2 py-0.5 rounded border border-stone-200 dark:border-stone-800">[ UNTOUCHED PIXELS ]</span>
+          <span className="px-2 py-0.5 rounded border border-stone-200 dark:border-stone-800">[ INSTANT EXPORT ]</span>
+        </div>
       </div>
 
-      {/* Interactive Tool Area */}
+      {/* Primary Interactive Ingestion & Sanitization Tool */}
       <HomeClientTool />
 
-      {/* Human-Readable Editorial & Explanatory Sections */}
-      <section className="mt-16 max-w-4xl mx-auto">
+      {/* Human-Readable Broadsheet Dispatches */}
+      <section className="mt-20 max-w-4xl mx-auto">
+        <div className="mb-10 pb-4 border-b border-stone-200 dark:border-stone-800 text-center">
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+            ESSAY &amp; PERSPECTIVE
+          </span>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
+            The Hidden Anatomy of a Digital Photograph
+          </h2>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              What is photo metadata? (The invisible backpack)
-            </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+          {/* Dispatch I */}
+          <article className="editorial-card p-6 md:p-8 space-y-4 border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
+              DISPATCH I // THE INVISIBLE BACKPACK
+            </span>
+            <h3 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              What is photo metadata?
+            </h3>
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Imagine you take a sweet picture of your pet dog in the backyard. When you look at the screen, you just see your puppy wagging his tail. But your camera is secretly playing detective! Without asking you, it straps a tiny invisible backpack onto the back of your picture. Inside that backpack, it packs a bunch of little sticky notes.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               On the first sticky note, it writes down the exact minute and second you clicked the button. On another note, it writes down the exact phone you were holding, how big the camera glass was, and how bright the sunshine was outside. It even writes down whether your flash blinked like a little lightning bolt.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Even worse, if your phone has a map turned on, it drops a bright shiny breadcrumb right into the backpack! That breadcrumb has the exact numbers pointing to your backyard, your street, and your bedroom window. If you give that photo to anyone else, they do not just get the puppy—they get the whole invisible backpack, too.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Computer scientists call this backpack &ldquo;EXIF metadata.&rdquo; But you can just think of it as a bunch of sneaky label stickers glued to the back of your drawing. Our website is like a friendly helper who gently unzips the invisible backpack, dumps out all the private sticky notes into the trash, and hands you back just the clean puppy photo!
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
+              Computer scientists call this backpack &ldquo;EXIF metadata.&rdquo; But you can just think of it as a bunch of sneaky label stickers glued to the back of your drawing. Our website gently unzips that invisible backpack, dumps out all the private sticky notes into the trash, and hands you back just the clean puppy photo!
             </p>
-          </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Why remove it before sharing? (Keeping secrets safe)
-            </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+          {/* Dispatch II */}
+          <article className="editorial-card p-6 md:p-8 space-y-4 border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
+              DISPATCH II // DIGITAL SOVEREIGNTY
+            </span>
+            <h3 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              Why remove it before sharing?
+            </h3>
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               Think about what would happen if you drew a secret treasure map of your bedroom and left it on a playground park bench for anyone to pick up. A stranger could look at it and know exactly where you keep your favorite teddy bear, what time you eat dinner, and which door leads into your house. That would not feel very safe, would it?
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               When you send a photo across the internet or put it on a public website, that photo travels to hundreds of computers. If the photo still has its invisible backpack on, curious people or greedy computer robots can open it up. They can read the map numbers to see where you live, where you go to school, and what playground you visit every weekend.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               They can also see when you were away on a trip! If you post a photo from the swimming pool while you are still splashing in the water, the little sticky note says, &ldquo;Taken today at 2 PM three states away!&rdquo; Now people know your real house is empty. That is private information you never wanted to give away to strangers.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Cleaning your picture is just like locking your front door before you go to bed. It does not mean you are doing anything wrong—it just means your home, your family, and your private spaces belong to you and nobody else. When you wipe away the metadata, your photo becomes a simple, pretty picture that keeps your secret clubhouse completely safe!
+            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
+              Cleaning your picture is just like locking your front door before you go to bed. It does not mean you are doing anything wrong—it just means your home, your family, and your private spaces belong to you and nobody else. When you wipe away the metadata, your photo keeps your secret clubhouse completely safe!
             </p>
-          </div>
+          </article>
         </div>
 
-        {/* How it Works Step-by-Step */}
-        <div className="paper-card p-8 md:p-10 mb-16 border border-slate-200/80 dark:border-slate-800">
-          <h2 className="font-[family-name:var(--font-merriweather)] text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-4 text-center">
-            How It Works (Easy as 1, 2, 3!)
-          </h2>
-          <p className="text-slate-600 dark:text-slate-300 text-center max-w-2xl mx-auto mb-8 text-sm md:text-base leading-relaxed">
-            Cleaning your pictures here is as easy as putting toys into a toy chest. You do not need any special computer skills, no passwords, and no complicated downloads.
-          </p>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-slate-50/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center mx-auto mb-3">
-                1
-              </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white text-base mb-2">Drop in Your Picture</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-xs md:text-sm leading-relaxed">
-                Pick up your picture file and drop it into the upload box. It opens immediately right on your screen without signing up or asking for an email address.
-              </p>
-            </div>
-            <div className="text-center p-4 bg-slate-50/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center mx-auto mb-3">
-                2
-              </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white text-base mb-2">The Local Robot Cleans</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-xs md:text-sm leading-relaxed">
-                A tiny helper robot inside your web browser snips off the invisible backpack, throws away the sticky notes, and leaves your colored pixels untouched.
-              </p>
-            </div>
-            <div className="text-center p-4 bg-slate-50/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center mx-auto mb-3">
-                3
-              </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white text-base mb-2">Save &amp; Share Proudly</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-xs md:text-sm leading-relaxed">
-                Click download to get your brand-new clean photo. Now you can show your photo to friends, post it online, and know your private home is 100% protected.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Frequently Asked Questions */}
-        <div>
+        {/* Protocol Walkthrough (1, 2, 3) */}
+        <div className="editorial-card p-8 md:p-12 mb-16 border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
           <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+              THE THREE PHASES
+            </span>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100">
+              How It Works: Clean as 1, 2, 3
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Clear, simple answers with zero confusing words so anyone can understand photo privacy.
+            <p className="text-stone-500 dark:text-stone-400 text-xs sm:text-sm mt-1 max-w-xl mx-auto">
+              Sanitizing your photographs requires zero software installs, zero accounts, and zero cloud uploads.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-5 border border-stone-200 dark:border-stone-800 rounded-lg bg-stone-50/50 dark:bg-stone-850">
+              <span className="font-mono text-xs font-bold text-stone-900 dark:text-stone-100 block mb-2">
+                [ PHASE 01 ]
+              </span>
+              <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100 mb-2">
+                Ingest Photograph
+              </h3>
+              <p className="text-stone-600 dark:text-stone-400 text-xs leading-relaxed font-sans">
+                Drop your image file into the ingestion box. The binary bytes load straight into your device RAM memory without ever touching an external server.
+              </p>
+            </div>
+
+            <div className="p-5 border border-stone-200 dark:border-stone-800 rounded-lg bg-stone-50/50 dark:bg-stone-850">
+              <span className="font-mono text-xs font-bold text-stone-900 dark:text-stone-100 block mb-2">
+                [ PHASE 02 ]
+              </span>
+              <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100 mb-2">
+                Local Purge
+              </h3>
+              <p className="text-stone-600 dark:text-stone-400 text-xs leading-relaxed font-sans">
+                A client-side sanitization routine unlinks EXIF, GPS, and header text chunks, leaving your original color pixels and sharpness 100% untouched.
+              </p>
+            </div>
+
+            <div className="p-5 border border-stone-200 dark:border-stone-800 rounded-lg bg-stone-50/50 dark:bg-stone-850">
+              <span className="font-mono text-xs font-bold text-stone-900 dark:text-stone-100 block mb-2">
+                [ PHASE 03 ]
+              </span>
+              <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100 mb-2">
+                Export &amp; Share
+              </h3>
+              <p className="text-stone-600 dark:text-stone-400 text-xs leading-relaxed font-sans">
+                Download your fresh clean photograph. Share freely to social media, forums, or marketplaces knowing your location and home remain private secrets.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Editorial Q&A / FAQs */}
+        <div>
+          <div className="text-center mb-8 pb-4 border-b border-stone-200 dark:border-stone-800">
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+              QUESTIONS &amp; ANSWERS
+            </span>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-stone-500 dark:text-stone-400 text-xs sm:text-sm">
+              Clear, honest explanations on photo privacy, file headers, and local sandbox security.
+            </p>
+          </div>
+
+          <div className="space-y-3">
             {faqs.map((item, index) => (
               <details
                 key={index}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900 shadow-2xs hover:border-stone-400 dark:hover:border-stone-700 transition-all overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer px-6 py-4 font-serif font-bold text-stone-900 dark:text-stone-100 select-none flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-850 transition-colors">
+                  <span className="text-sm sm:text-base pr-4">{item.q}</span>
+                  <span className="font-mono text-xs text-stone-400 group-open:rotate-180 transition-transform duration-150 shrink-0">
+                    ▼
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-6 pb-6 pt-3 text-stone-600 dark:text-stone-400 text-xs sm:text-sm leading-relaxed border-t border-stone-100 dark:border-stone-800 space-y-3 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -192,6 +234,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </section>
+    </div>
   );
 }

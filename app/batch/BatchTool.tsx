@@ -31,12 +31,12 @@ export interface BatchFileItem {
 }
 
 const STATUS_LABELS: Record<BatchFileItem['status'], { text: string; color: string }> = {
-  pending: { text: 'Waiting in queue', color: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700' },
-  reading: { text: '1. Reading bytes...', color: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800 animate-pulse' },
-  stripping: { text: '2. Stripping tags...', color: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 animate-pulse' },
-  finalizing: { text: '3. Finalizing image...', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800 animate-pulse' },
-  done: { text: '✓ Cleaned & Safe', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' },
-  error: { text: '✕ Processing Failed', color: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800' },
+  pending: { text: 'QUEUED', color: 'bg-surface-subtle text-ink/70 dark:text-chalk/70 border-hairline font-mono' },
+  reading: { text: '01. INGESTING', color: 'bg-surface-subtle text-ink dark:text-chalk border-hairline font-mono animate-pulse' },
+  stripping: { text: '02. STRIPPING', color: 'bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/30 font-mono animate-pulse' },
+  finalizing: { text: '03. FINALIZING', color: 'bg-surface-subtle text-ink dark:text-chalk border-hairline font-mono animate-pulse' },
+  done: { text: '✓ SANITIZED', color: 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/30 font-mono' },
+  error: { text: '✕ FAILED', color: 'bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/30 font-mono' },
 };
 
 export default function BatchTool() {
@@ -223,26 +223,26 @@ export default function BatchTool() {
   const batchAnalytics = finishedItems.length > 0 ? calculateSizeAnalytics(totalOriginalBytes, totalCleanedBytes) : null;
 
   return (
-    <div className="paper-card p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div className="editorial-card p-6 md:p-10 mb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-hairline">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-200 rounded-full text-xs font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 mb-2">
-            <span>📦 BATCH PROCESSOR &amp; PREVIEW GRID</span>
+          <div className="editorial-kicker mb-2">
+            BATCH RUNNER // CONCURRENT INGESTION ENGINE
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-[family-name:var(--font-merriweather)]">
-            Bulk Photo Cleaner &amp; ZIP Export
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk tracking-tight">
+            Bulk Photo Sanitizer &amp; ZIP Compilation
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Drop multiple images to clean them simultaneously. All processed 100% locally in your browser.
+          <p className="text-sm text-ink/70 dark:text-chalk/70 mt-1">
+            Drop up to 25 assets. Processed sequentially in local sandbox RAM with zero server communication.
           </p>
         </div>
         {items.length > 0 && (
           <button
             onClick={handleReset}
             disabled={isProcessing}
-            className="self-start md:self-auto text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50"
+            className="self-start md:self-auto text-xs font-mono font-medium text-ink/80 dark:text-chalk/80 hover:text-ink dark:hover:text-chalk border border-hairline hover:bg-hairline/40 px-3.5 py-2 rounded-md transition-colors disabled:opacity-40"
           >
-            Clear All / Start Over
+            RESET QUEUE / START OVER
           </button>
         )}
       </div>
@@ -252,25 +252,25 @@ export default function BatchTool() {
           onFilesSelected={handleFilesSelected}
           maxFiles={25}
           multiple={true}
-          label="Drop multiple photos here (up to 25 files)"
-          description="JPEG, PNG, WebP, TIFF, GIF, HEIC — all processed 100% in your browser"
+          label="Drop batch photos here (up to 25 files)"
+          description="JPEG, PNG, WebP, TIFF, GIF, HEIC — processed 100% in local memory"
           accept="image/jpeg,image/png,image/webp,image/tiff,image/gif,image/bmp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.tiff,.gif,.bmp,.heic,.heif"
         />
       ) : (
         <div className="space-y-6">
-          {/* Celebratory Banner when all files are completed */}
+          {/* Celebratory Completion Banner */}
           {allCompleted && (
-            <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-emerald-950/40 border border-emerald-200/90 dark:border-emerald-800/80 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs animate-in fade-in duration-300">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-sm shrink-0">
-                  🎉
+            <div className="border border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/20 rounded-lg p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-md bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 flex items-center justify-center font-mono font-bold text-base shrink-0">
+                  ✓
                 </div>
                 <div>
-                  <p className="font-bold text-sm sm:text-base text-emerald-950 dark:text-emerald-100">
-                    Your images are 100% private and ready!
+                  <p className="font-serif font-bold text-base text-ink dark:text-chalk">
+                    Queue Sanitized &amp; Cryptographically Cleaned
                   </p>
-                  <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
-                    All {items.length} photos have been sanitized locally. Ready to download as a single ZIP archive.
+                  <p className="font-mono text-xs text-ink/70 dark:text-chalk/70 mt-0.5">
+                    All {items.length} frames stripped of identifiers. Ready to export as unified ZIP.
                   </p>
                 </div>
               </div>
@@ -279,12 +279,12 @@ export default function BatchTool() {
                 type="button"
                 onClick={handleDownloadAllAsZip}
                 disabled={isZipping}
-                className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 shrink-0"
+                className="w-full sm:w-auto px-5 py-2.5 bg-stone-900 text-stone-100 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 text-xs font-mono font-bold tracking-wider uppercase rounded-md transition-all shadow-sm flex items-center justify-center gap-2 shrink-0"
               >
                 {isZipping ? (
-                  <span>Zipping...</span>
+                  <span>COMPILING ZIP ARCHIVE...</span>
                 ) : (
-                  <span>Download ZIP Now ↓</span>
+                  <span>EXPORT ARCHIVE (.ZIP) ↓</span>
                 )}
               </button>
             </div>
@@ -299,40 +299,40 @@ export default function BatchTool() {
           )}
 
           {/* Batch Status Bar */}
-          <div className="bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
+          <div className="border border-hairline bg-surface-subtle rounded-lg p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-ink dark:text-chalk mb-3">
               <span className="flex items-center gap-2">
                 {isProcessing ? (
                   <>
-                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-ping"></span>
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
                     <span>
-                      Processed {completedCount} of {items.length} images...
+                      PROCESSING {completedCount} OF {items.length}...
                       {activeProcessingIndex !== null && items[activeProcessingIndex]
-                        ? ` (Cleaning "${items[activeProcessingIndex].file.name}")`
+                        ? ` [${items[activeProcessingIndex].file.name}]`
                         : ''}
                     </span>
                   </>
                 ) : allCompleted ? (
                   <>
                     <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                    <span>All {items.length} files successfully cleaned!</span>
+                    <span>ALL {items.length} ASSETS SUCCESSFULLY SANITIZED</span>
                   </>
                 ) : (
                   <span>
-                    Queue ready: {items.length} file{items.length > 1 ? 's' : ''} staged
+                    INGESTION STAGED: {items.length} ASSET{items.length > 1 ? 'S' : ''} IN RUNNER
                   </span>
                 )}
               </span>
-              <span className="text-slate-500 dark:text-slate-400 font-medium">
-                {completedCount} of {items.length} completed ({progressPercent}%)
+              <span className="text-ink/60 dark:text-chalk/60">
+                {completedCount} / {items.length} COMPLETE ({progressPercent}%)
               </span>
             </div>
 
             {/* Overall progress bar */}
-            <div className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
+            <div className="w-full h-1.5 bg-hairline rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 rounded-full ${
-                  allCompleted ? 'bg-emerald-500' : 'bg-gradient-to-r from-indigo-500 to-indigo-600'
+                  allCompleted ? 'bg-emerald-600 dark:bg-emerald-400' : 'bg-stone-900 dark:bg-stone-100'
                 }`}
                 style={{ width: `${progressPercent}%` }}
               />
@@ -345,18 +345,18 @@ export default function BatchTool() {
                   type="button"
                   onClick={handleProcessAll}
                   disabled={isProcessing}
-                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs md:text-sm font-bold rounded-xl transition-all shadow-sm flex items-center gap-2"
+                  className="px-6 py-2.5 bg-stone-900 text-stone-100 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 disabled:opacity-50 text-xs font-mono font-bold tracking-wider uppercase rounded-md transition-all shadow-sm flex items-center gap-2"
                 >
                   {isProcessing ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
                       <span>
-                        Cleaning {inProgressCount > 0 ? `(${completedCount + 1}/${items.length})` : '...'}
+                        CLEANING {inProgressCount > 0 ? `(${completedCount + 1}/${items.length})` : '...'}
                       </span>
                     </>
                   ) : (
                     <>
-                      <span>⚡ Clean All {items.length} Photos</span>
+                      <span>CLEAN ALL {items.length} ASSETS</span>
                     </>
                   )}
                 </button>
@@ -367,19 +367,19 @@ export default function BatchTool() {
                   type="button"
                   onClick={handleDownloadAllAsZip}
                   disabled={isZipping || isProcessing}
-                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs md:text-sm font-bold rounded-xl transition-all shadow-sm flex items-center gap-2"
+                  className="px-6 py-2.5 border border-hairline bg-surface hover:bg-hairline/30 disabled:opacity-50 text-ink dark:text-chalk text-xs font-mono font-bold tracking-wider uppercase rounded-md transition-all shadow-sm flex items-center gap-2"
                 >
                   {isZipping ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      <span>Creating ZIP Archive...</span>
+                      <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                      <span>COMPILING ZIP...</span>
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 shrink-0" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <svg className="w-3.5 h-3.5 shrink-0" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
-                      <span>Download All as ZIP ({completedCount} Files)</span>
+                      <span>DOWNLOAD ZIP ARCHIVE ({completedCount} ASSETS)</span>
                     </>
                   )}
                 </button>
@@ -399,19 +399,19 @@ export default function BatchTool() {
                   input.click();
                 }}
                 disabled={isProcessing}
-                className="px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs md:text-sm font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="px-4 py-2.5 border border-hairline bg-surface hover:bg-hairline/30 text-ink/80 dark:text-chalk/80 text-xs font-mono font-medium rounded-md transition-colors"
               >
-                + Add More Photos
+                + ADD MORE ASSETS
               </button>
             </div>
 
             {zipSuccess && (
-              <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-200 text-xs font-medium flex items-center justify-between">
-                <span>✓ ZIP package assembled and download started!</span>
+              <div className="mt-4 p-3 border border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/30 rounded-md text-emerald-800 dark:text-emerald-200 text-xs font-mono flex items-center justify-between">
+                <span>✓ ZIP ARCHIVE ASSEMBLED AND DISPATCHED TO DOWNLOADS</span>
                 <button
                   type="button"
                   onClick={() => setZipSuccess(false)}
-                  className="text-emerald-700 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-100"
+                  className="text-ink/50 hover:text-ink dark:text-chalk/50 dark:hover:text-chalk ml-4"
                 >
                   ✕
                 </button>
@@ -420,13 +420,13 @@ export default function BatchTool() {
           </div>
 
           {/* Bulk Upload Preview Grid (Visual Feedback Grid) */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 px-1">
-              <span>PHOTO PREVIEW GRID ({items.length} IMAGES)</span>
-              <span>LIVE QUEUE STATUS</span>
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-ink/60 dark:text-chalk/60 px-1 border-b border-hairline pb-2">
+              <span>PHOTO LEDGER ({items.length} ASSETS)</span>
+              <span>STAGE STATUS</span>
             </div>
 
-            {/* Responsive CSS Grid: grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 */}
+            {/* Responsive Grid: grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {items.map((item, idx) => {
                 const statusMeta = STATUS_LABELS[item.status];
@@ -436,17 +436,17 @@ export default function BatchTool() {
                 return (
                   <div
                     key={item.id}
-                    className={`border rounded-2xl p-3.5 bg-white dark:bg-slate-900 transition-all flex flex-col justify-between shadow-xs ${
+                    className={`border rounded-lg p-3.5 bg-surface transition-all flex flex-col justify-between ${
                       isDone
-                        ? 'border-emerald-300 dark:border-emerald-700 ring-2 ring-emerald-100 dark:ring-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-sm'
+                        ? 'border-emerald-500/40 ring-1 ring-emerald-500/20'
                         : isItemActive
-                        ? 'border-indigo-300 dark:border-indigo-700 ring-2 ring-indigo-100 dark:ring-indigo-950 bg-indigo-50/20 dark:bg-indigo-950/20'
-                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'border-amber-500/40 ring-1 ring-amber-500/20'
+                        : 'border-hairline hover:border-ink/30 dark:hover:border-chalk/30'
                     }`}
                   >
                     <div>
-                      {/* Image Preview Container with Overlay Checkmark */}
-                      <div className="relative w-full h-40 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 mb-3 flex items-center justify-center">
+                      {/* Image Preview Container with Contact-Sheet Frame */}
+                      <div className="relative w-full h-40 rounded-md overflow-hidden bg-hairline/20 border border-hairline mb-3 flex items-center justify-center">
                         {item.previewUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -455,43 +455,43 @@ export default function BatchTool() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-3xl text-slate-400">📷</span>
+                          <span className="font-mono text-xs text-ink/40">NO PREVIEW</span>
                         )}
 
-                        {/* Order badge */}
-                        <div className="absolute top-2 left-2 bg-slate-900/70 backdrop-blur-xs text-white text-[11px] font-mono px-2 py-0.5 rounded-md">
-                          #{idx + 1}
+                        {/* Frame index badge */}
+                        <div className="absolute top-2 left-2 bg-stone-900/80 backdrop-blur-xs text-stone-100 text-[10px] font-mono px-1.5 py-0.5 rounded">
+                          #{String(idx + 1).padStart(2, '0')}
                         </div>
 
-                        {/* Small checkmark ✓ over preview when done */}
+                        {/* Verified badge */}
                         {isDone && (
-                          <div className="absolute top-2 right-2 bg-emerald-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-black text-sm shadow-md border-2 border-white dark:border-slate-900 animate-in zoom-in-75 duration-200">
+                          <div className="absolute top-2 right-2 bg-emerald-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs shadow-xs border border-white dark:border-stone-900">
                             ✓
                           </div>
                         )}
 
-                        {/* Processing spinner overlay when active */}
+                        {/* Processing overlay */}
                         {isItemActive && (
-                          <div className="absolute inset-0 bg-indigo-950/40 backdrop-blur-2xs flex flex-col items-center justify-center gap-1.5 text-white">
-                            <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                            <span className="text-[11px] font-semibold tracking-wide">Cleaning...</span>
+                          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-2xs flex flex-col items-center justify-center gap-1.5 text-stone-100">
+                            <span className="w-4 h-4 border-2 border-stone-100 border-t-transparent rounded-full animate-spin"></span>
+                            <span className="text-[10px] font-mono tracking-wider">STRIPPING...</span>
                           </div>
                         )}
                       </div>
 
                       {/* File Details */}
-                      <div className="px-1 mb-2">
-                        <p className="font-bold text-slate-900 dark:text-white text-xs truncate" title={item.file.name}>
+                      <div className="px-0.5 mb-2">
+                        <p className="font-mono font-semibold text-xs text-ink dark:text-chalk truncate" title={item.file.name}>
                           {item.file.name}
                         </p>
-                        <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        <div className="flex items-center gap-2 text-[11px] font-mono text-ink/60 dark:text-chalk/60 mt-0.5">
                           <span>{(item.file.size / (1024 * 1024)).toFixed(2)} MB</span>
-                          <span>•</span>
+                          <span className="opacity-40">/</span>
                           <span className="uppercase">{item.file.type.split('/')[1] || 'IMAGE'}</span>
                         </div>
                       </div>
 
-                      {/* File Size Analytics (Before vs After) */}
+                      {/* File Size Analytics */}
                       {item.sizeAnalytics && (
                         <div className="mb-2.5">
                           <FileSizeAnalyticsCard compact analytics={item.sizeAnalytics} />
@@ -500,9 +500,9 @@ export default function BatchTool() {
                     </div>
 
                     {/* Status & Action Footer */}
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 mt-1">
+                    <div className="pt-2 border-t border-hairline flex items-center justify-between gap-2 mt-1">
                       <span
-                        className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusMeta.color} truncate`}
+                        className={`text-[10px] px-2 py-0.5 rounded border ${statusMeta.color} truncate`}
                       >
                         {statusMeta.text}
                       </span>
@@ -512,13 +512,13 @@ export default function BatchTool() {
                           <button
                             type="button"
                             onClick={() => handleDownloadSingle(item)}
-                            className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                            className="px-2.5 py-1 border border-hairline bg-surface hover:bg-hairline/40 text-ink dark:text-chalk text-[11px] font-mono font-medium rounded transition-colors flex items-center gap-1"
                             title="Download single clean image"
                           >
                             <svg className="w-3 h-3 shrink-0" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            <span>Save</span>
+                            <span>SAVE</span>
                           </button>
                         )}
 
@@ -526,7 +526,7 @@ export default function BatchTool() {
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(item.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
+                            className="p-1 text-ink/40 hover:text-rose-600 dark:text-chalk/40 dark:hover:text-rose-400 rounded transition-colors"
                             title="Remove image from batch"
                           >
                             <svg className="w-3.5 h-3.5 shrink-0" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

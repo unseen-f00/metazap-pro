@@ -15,8 +15,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#090d16' },
+    { media: '(prefers-color-scheme: light)', color: '#fbfaf8' },
+    { media: '(prefers-color-scheme: dark)', color: '#0c0e12' },
   ],
 };
 
@@ -38,6 +38,7 @@ const merriweather = Merriweather({
  * Page metadata for SEO with updated MetaZap branding.
  */
 export const metadata: Metadata = {
+  metadataBase: new URL('https://metazap.app'),
   title: {
     default: 'MetaZap | 100% In-Browser Photo Privacy & Metadata Toolkit',
     template: '%s | MetaZap',
@@ -101,7 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin="anonymous"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#fafafa] dark:bg-[#090d16] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+      <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-stone-900 selection:text-white dark:selection:bg-stone-100 dark:selection:text-stone-900 transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {/* Global Navigation Header */}
           <GlobalHeader />

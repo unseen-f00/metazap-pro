@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          Privacy Risk Scoring · 100% Client-Side
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. IV // THREAT AUDIT &amp; RISK DOCKET
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           Photo Privacy Analyzer
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Scan your photos for dangerous privacy leaks. Get an instant 0–100 Privacy Risk Score and detect hidden GPS coordinates, serial numbers, and timestamps.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Forensic risk assessment calculating an exact 0–100 privacy leak quotient. Detects satellite geolocation beacons, camera serials, and timestamp trails.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>ALGORITHM: 100-PT WEIGHTED THREAT MATRIX</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED SCAN</span>
+          <span className="opacity-40">/</span>
+          <span>INSTANT SANITIZE HOOK</span>
+        </div>
+      </header>
 
       {/* Interactive Analyzer Tool with Transparent Stepper */}
       <AnalyzerTool toolType="privacy" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">ASSESSMENT // REPORT CARD</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               What is a Privacy Risk Score? (The safety report card)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imagine getting a school report card, but instead of grading spelling, reading, or math, it grades how safe your secret treehouse is from curious spies!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              If your photo receives a red badge and a high score, that means your photo has a giant neon arrow pointing straight to your treehouse! It contains exact GPS map coordinates or hardware serial numbers that anyone can read.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              If it receives a yellow badge, it means there are smaller clues—like what time you took the shot or your camera brand—that give away parts of your daily routine.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              And if your photo gets a shining green badge, that means your treehouse is completely invisible! There are zero clues, zero map pins, and zero tracking tags. You can share it proudly with anyone in the world!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Imagine getting a school report card, but instead of grading spelling, reading, or math, it grades how safe your secret treehouse is from curious spies!
+              </p>
+              <p>
+                If your photo receives a red badge and a high score, that means your photo has a giant neon arrow pointing straight to your treehouse! It contains exact GPS map coordinates or hardware serial numbers that anyone can read.
+              </p>
+              <p>
+                If it receives a yellow badge, it means there are smaller clues—like what time you took the shot or your camera brand—that give away parts of your daily routine.
+              </p>
+              <p>
+                And if your photo gets a shining green badge, that means your treehouse is completely invisible! There are zero clues, zero map pins, and zero tracking tags. You can share it proudly with anyone in the world!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">TAXONOMY // TRIAGE PROTOCOL</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               How the three risk colors work (Traffic light rules)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our privacy scoring system uses the same simple rules as traffic lights on the street corner: Red, Yellow, and Green!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Red means STOP and look out! Exact GPS numbers and permanent camera serial numbers are active in the file. You should definitely clean these tags before posting the photo online.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Yellow means CAUTION and think carefully. The file has timestamps or author names. If you are sharing with close family, it is fine, but for public websites, wiping it is best.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Green means GO and share freely! The file has been completely cleaned and holds zero private surprises. It is safe, private, and ready for the world!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Our privacy scoring system uses the same simple rules as traffic lights on the street corner: Red, Yellow, and Green!
+              </p>
+              <p>
+                Red means STOP and look out! Exact GPS numbers and permanent camera serial numbers are active in the file. You should definitely clean these tags before posting the photo online.
+              </p>
+              <p>
+                Yellow means CAUTION and think carefully. The file has timestamps or author names. If you are sharing with close family, it is fine, but for public websites, wiping it is best.
+              </p>
+              <p>
+                Green means GO and share freely! The file has been completely cleaned and holds zero private surprises. It is safe, private, and ready for the world!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Learn how privacy risk scores work and how to keep your personal photos safe.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

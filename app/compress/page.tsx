@@ -32,45 +32,59 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-      <div className="paper-card p-6 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          Dynamic Photo Size Editor · 100% In-Browser
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. XVI // DYNAMIC QUANTIZATION &amp; PAYLOAD COMPRESSION
         </div>
-
-        <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white font-[family-name:var(--font-merriweather)] leading-tight mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           Photo Size Editor &amp; Compressor
         </h1>
-
-        <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
-          Reduce image file sizes dynamically by adjusting compression quality and resolution sliders with real-time Before vs After analytics. Completely private with zero server uploads.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Dynamic quality tuning and resolution downsampling via client-side canvas rasterization. Drops metadata payload and reduces storage footprint in RAM.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>ALGORITHM: DYNAMIC BITMAP RESAMPLE</span>
+          <span className="opacity-40">/</span>
+          <span>EXIF: SANITIZED</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED COMPILATION</span>
+        </div>
+      </header>
 
       {/* Main Interactive Compressor Tool */}
       <CompressorTool />
 
       {/* Educational & FAQ Section */}
-      <div className="mt-16 paper-card p-6 md:p-10 border border-slate-200/80 dark:border-slate-800 shadow-paper">
-        <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-merriweather)]">
-          Frequently Asked Questions
+      <section className="editorial-card p-6 md:p-10 max-w-4xl mx-auto mt-16">
+        <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+        <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+          Frequently Addressed Questions
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {faqs.map((faq, idx) => (
-            <div key={idx} className="border-b border-slate-100 dark:border-slate-800 pb-5 last:border-b-0">
-              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-2">
-                {faq.q}
-              </h3>
-              {faq.a.map((p, pIdx) => (
-                <p key={pIdx} className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-2 last:mb-0">
-                  {p}
-                </p>
-              ))}
-            </div>
+            <details
+              key={idx}
+              className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
+            >
+              <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                <span className="text-base sm:text-lg pr-4">{faq.q}</span>
+                <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                  [+]
+                </span>
+              </summary>
+              <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
+                {faq.a.map((p, pIdx) => (
+                  <p key={pIdx}>{p}</p>
+                ))}
+              </div>
+            </details>
           ))}
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

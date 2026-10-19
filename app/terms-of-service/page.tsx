@@ -9,23 +9,24 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <section className="mx-auto max-w-4xl px-6 py-16 md:py-24">
-      <div className="paper-card p-8 md:p-14 shadow-paper border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300 mb-6 tracking-wide">
-          <span>📜 TRANSPARENT USAGE GUIDELINES</span>
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 md:py-16">
+      <article className="editorial-card p-6 md:p-14">
+        <div className="editorial-kicker mb-3">
+          LEGAL DOCKET // ACCEPTABLE USE COVENANT
         </div>
 
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4 leading-tight">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           Terms of Service
         </h1>
-        <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-          Last Updated: October 13, 2026 • Effective for All Users
+        <p className="font-mono text-xs text-ink/60 dark:text-chalk/60 mb-8 pb-6 border-b border-hairline uppercase tracking-wider">
+          Last Updated: October 13, 2026 • Effective Across All Interactive Tools
         </p>
 
-        <div className="space-y-10 text-slate-700 dark:text-slate-300 text-base md:text-lg leading-relaxed">
+        <div className="space-y-10 text-ink/80 dark:text-chalk/80 text-sm sm:text-base leading-relaxed font-sans">
           {/* Section 1 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">SECTION 01</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               1. Acceptance of Terms
             </h2>
             <p className="mb-4">
@@ -37,11 +38,12 @@ export default function TermsOfServicePage() {
           </div>
 
           {/* Section 2 */}
-          <div className="bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl p-6 md:p-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+          <div className="bg-surface-subtle border border-hairline rounded-lg p-6 md:p-8">
+            <div className="editorial-kicker mb-1">SECTION 02 // TITLE &amp; INTELLECTUAL PROPERTY</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               2. Intellectual Property &amp; Image Ownership
             </h2>
-            <p className="mb-4 font-semibold text-slate-900 dark:text-white">
+            <p className="mb-4 font-semibold text-ink dark:text-chalk">
               You retain 100% full, unencumbered ownership and all copyright rights to every image you process with MetaZap.
             </p>
             <p className="mb-4">
@@ -54,27 +56,29 @@ export default function TermsOfServicePage() {
 
           {/* Section 3 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">SECTION 03</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               3. Permitted &amp; Acceptable Use
             </h2>
             <p className="mb-4">
               MetaZap is provided free of charge for personal, commercial, non-profit, educational, and journalistic purposes. You may freely use our tools to:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-slate-600 dark:text-slate-300 text-base mb-4">
+            <ul className="list-disc pl-6 space-y-2 text-ink/75 dark:text-chalk/75 text-sm sm:text-base mb-4">
               <li>Strip private GPS coordinates, timestamps, and device serial numbers before sharing photos online.</li>
               <li>Clean photos before publishing them on public marketplaces, news publications, and social media platforms.</li>
               <li>Inject custom artist credits, software tags, and copyright statements into your creative works.</li>
               <li>Perform batch sanitization and local ZIP compilation of photo archives.</li>
             </ul>
-            <p className="font-semibold text-slate-900 dark:text-white mb-2">Prohibited Activities:</p>
-            <p className="text-slate-600 dark:text-slate-300 text-base">
+            <p className="font-semibold text-ink dark:text-chalk mb-2">Prohibited Activities:</p>
+            <p className="text-ink/75 dark:text-chalk/75 text-sm sm:text-base">
               You agree not to use the EXIF Editor or other utilities to commit fraud, forge legal or criminal evidence, impersonate another individual, or remove copyright notices from works for which you lack legal authorization or fair use rights.
             </p>
           </div>
 
           {/* Section 4 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">SECTION 04</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               4. Disclaimer of Warranties (&ldquo;AS-IS&rdquo;)
             </h2>
             <p className="mb-4">
@@ -83,14 +87,15 @@ export default function TermsOfServicePage() {
             <p className="mb-4">
               While our metadata removal algorithms and binary chunk strippers are designed to preserve visual pixel fidelity while removing EXIF, GPS, and XMP tags, software anomalies or browser-specific limitations can occasionally occur.
             </p>
-            <p className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl p-4 text-amber-900 dark:text-amber-200 text-sm">
-              <strong>Best Practice Recommendation:</strong> Always keep a separate, untouched backup of your original high-resolution master photographs before performing batch sanitization or metadata modifications.
+            <p className="border border-hairline bg-surface-subtle rounded-md p-4 text-ink/80 dark:text-chalk/80 font-mono text-xs">
+              <strong>[RECOMMENDED PROTOCOL]</strong> Always keep a separate, untouched backup of your original high-resolution master photographs before performing batch sanitization or metadata modifications.
             </p>
           </div>
 
           {/* Section 5 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">SECTION 05</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               5. Limitation of Liability
             </h2>
             <p className="mb-4">
@@ -100,7 +105,8 @@ export default function TermsOfServicePage() {
 
           {/* Section 6 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">SECTION 06</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               6. Service Availability &amp; Modifications
             </h2>
             <p className="mb-4">
@@ -112,8 +118,9 @@ export default function TermsOfServicePage() {
           </div>
 
           {/* Section 7 */}
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+          <div className="border-t border-hairline pt-8">
+            <div className="editorial-kicker mb-1">SECTION 07</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               7. Governing Law &amp; Severability
             </h2>
             <p className="mb-4">
@@ -122,23 +129,23 @@ export default function TermsOfServicePage() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-8 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
           <Link
             href="/"
-            className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors flex items-center gap-1.5"
+            className="text-ink dark:text-chalk hover:underline flex items-center gap-1.5 uppercase font-bold"
           >
-            <span>←</span> Return to Homepage
+            <span>←</span> RETURN TO TOOLKIT INDEX
           </Link>
-          <div className="flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400">
-            <Link href="/about" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+          <div className="flex items-center gap-6 text-ink/60 dark:text-chalk/60 uppercase">
+            <Link href="/about" className="hover:text-ink dark:hover:text-chalk transition-colors">
               About MetaZap
             </Link>
-            <Link href="/privacy-policy" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="hover:text-ink dark:hover:text-chalk transition-colors">
               Privacy Policy
             </Link>
           </div>
         </div>
-      </div>
-    </section>
+      </article>
+    </div>
   );
 }

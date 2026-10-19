@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          Selective AI Cleaner · Preserves Camera EXIF
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. XII // SELECTIVE PROMPT PURGE &amp; EXIF RETENTION
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           AI-Only Metadata Remover
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Strip AI generation prompts, diffusion parameters, and workflow histories from your images while keeping authentic camera details completely intact.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Surgically purges Midjourney prompts, Stable Diffusion parameters, and diffusion workflows while preserving camera EXIF, lenses, and capture timestamps.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>FILTER: AI PARAMETERS ONLY</span>
+          <span className="opacity-40">/</span>
+          <span>CAMERA HARDWARE EXIF: PRESERVED</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED STREAM</span>
+        </div>
+      </header>
 
       {/* Interactive Tool with Transparent Progress Stepper */}
       <CoreRemoverTool toolType="ai-only" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DISPATCH // INTELLECTUAL PROPERTY</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Why AI pictures remember secret spells (The magical recipe card)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              When you ask a magic AI computer robot like Midjourney, DALL-E, or Stable Diffusion to paint a magnificent dragon or magical castle, you type out a special sentence called a &ldquo;prompt.&rdquo;
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              That prompt is like a magic spell recipe. You might have spent hours figuring out which magical words make the dragon’s scales shine brightest or make the castle glow in the sunset.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              The AI robot paints the dragon, but it secretly folds up your exact prompt spell and glues it inside the picture file! Anyone who downloads your dragon can read your exact magic words.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool pulls out that folded secret spell and drops it into the paper shredder, so your dragon stays glorious while your secret magic words stay completely private!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                When you ask a magic AI computer robot like Midjourney, DALL-E, or Stable Diffusion to paint a magnificent dragon or magical castle, you type out a special sentence called a &ldquo;prompt.&rdquo;
+              </p>
+              <p>
+                That prompt is like a magic spell recipe. You might have spent hours figuring out which magical words make the dragon’s scales shine brightest or make the castle glow in the sunset.
+              </p>
+              <p>
+                The AI robot paints the dragon, but it secretly folds up your exact prompt spell and glues it inside the picture file! Anyone who downloads your dragon can read your exact magic words.
+              </p>
+              <p>
+                Our tool pulls out that folded secret spell and drops it into the paper shredder, so your dragon stays glorious while your secret magic words stay completely private!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">PROTOCOL // DUAL-TIER PRESERVATION</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Selective cleaning: Erasing AI tags, keeping real memories
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              What if you took a real camera photo of your family on vacation, and then used an AI tool to touch up the lighting or remove a photobomber in the background?
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              You still want your photo album to remember that the picture was taken on family vacation with your camera lens. You just do not want the file to say &ldquo;Touched up by AI with prompt: remove stranger.&rdquo;
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool uses a smart selective scanner. It searches specifically for AI words like Midjourney, Stable Diffusion, and prompt parameters, and deletes only those tags.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Your real camera model and vacation date stamps are preserved 100% intact, giving you the cleanest, most professional hybrid image possible!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                What if you took a real camera photo of your family on vacation, and then used an AI tool to touch up the lighting or remove a photobomber in the background?
+              </p>
+              <p>
+                You still want your photo album to remember that the picture was taken on family vacation with your camera lens. You just do not want the file to say &ldquo;Touched up by AI with prompt: remove stranger.&rdquo;
+              </p>
+              <p>
+                Our tool uses a smart selective scanner. It searches specifically for AI words like Midjourney, Stable Diffusion, and prompt parameters, and deletes only those tags.
+              </p>
+              <p>
+                Your real camera model and vacation date stamps are preserved 100% intact, giving you the cleanest, most professional hybrid image possible!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Discover how AI prompt metadata works and how selective cleaning keeps your creative recipes safe.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

@@ -336,7 +336,7 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
   };
 
   return (
-    <div className="paper-card p-4 sm:p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900/90 transition-colors">
+    <div className="editorial-card p-5 sm:p-8 md:p-10 mb-14 shadow-paper border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors">
       {!selectedFile ? (
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
@@ -348,15 +348,15 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
         <div className="space-y-6">
           {/* Live Preview Card during processing */}
           {previewUrl && (
-            <div className="relative border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 bg-slate-100/50 dark:bg-slate-950/50 flex flex-col items-center justify-center overflow-hidden shadow-md">
+            <div className="relative border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-stone-50/60 dark:bg-stone-950/60 flex flex-col items-center justify-center overflow-hidden shadow-2xs">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="max-h-64 object-contain rounded-xl shadow-xs"
+                className="max-h-64 object-contain rounded-lg shadow-2xs"
               />
-              <div className="mt-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                <span>📷 {selectedFile.name}</span>
+              <div className="mt-3 font-mono text-xs text-stone-600 dark:text-stone-400 flex items-center gap-2">
+                <span>{selectedFile.name}</span>
                 <span>•</span>
                 <span>{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
               </div>
@@ -372,26 +372,26 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
           />
         </div>
       ) : (
-        <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in duration-200">
           {/* Live Preview & Action Section */}
-          <div className="border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-900/60 flex flex-col lg:flex-row items-center gap-6">
-            {/* Live Image Preview (Visual Feedback) */}
+          <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-5 sm:p-6 bg-stone-50/50 dark:bg-stone-900/50 flex flex-col lg:flex-row items-center gap-6">
+            {/* Live Image Preview (Darkroom Framed Print) */}
             {previewUrl && (
-              <div className="w-full lg:w-72 shrink-0 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 shadow-md flex flex-col items-center">
+              <div className="w-full lg:w-72 shrink-0 bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl p-3 shadow-2xs flex flex-col items-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={previewUrl}
                   alt={selectedFile.name}
-                  className="w-full h-48 object-contain rounded-xl bg-slate-50 dark:bg-slate-950/40"
+                  className="w-full h-48 object-contain rounded-lg bg-stone-50 dark:bg-stone-900/50"
                 />
-                <div className="w-full mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[140px]">
+                <div className="w-full mt-3 pt-2.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between font-mono text-[11px] text-stone-500 dark:text-stone-400">
+                  <span className="font-semibold text-stone-800 dark:text-stone-200 truncate max-w-[140px]">
                     {selectedFile.name}
                   </span>
                   <span>{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                 </div>
                 {dimensions && (
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="font-mono text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">
                     {dimensions.width} × {dimensions.height} px
                   </p>
                 )}
@@ -401,29 +401,29 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
             {/* Status & Download Controls */}
             <div className="w-full flex-1 flex flex-col justify-between">
               <div>
-                <div className="flex flex-wrap items-center gap-2 mb-3">
+                <div className="flex flex-wrap items-center gap-2 mb-3 font-mono text-[11px]">
                   {config.badges.map((badge, idx) => (
                     <span
                       key={idx}
-                      className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full shadow-2xs"
+                      className="px-2.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200"
                     >
                       {badge}
                     </span>
                   ))}
                 </div>
 
-                <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
-                  Photo Successfully Sanitized
+                <h3 className="font-serif text-lg md:text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+                  Photograph Successfully Sanitized
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-sans">
                   Your image has been processed 100% locally on your machine. All sensitive headers, tracking markers, and private tags have been removed while keeping the original visual clarity intact.
                 </p>
 
                 {selectedFile &&
                   (toolType === 'gps' || toolType === 'xmp' || toolType === 'ai-only') &&
                   !isSelectiveJpegSupported(selectedFile) && (
-                    <div className="mt-3.5 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-medium flex items-center gap-2">
-                      <span className="text-base shrink-0">⚠️</span>
+                    <div className="mt-3.5 p-3 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200 font-mono text-xs flex items-center gap-2">
+                      <span className="text-base shrink-0">[!]</span>
                       <span>
                         Selective stripping is fully supported for JPEGs. Other formats will undergo full metadata stripping.
                       </span>
@@ -431,20 +431,20 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
                   )}
 
                 {errorMessage && (
-                  <p className="text-xs text-rose-600 dark:text-rose-400 font-medium mt-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-2.5 rounded-lg">
-                    {errorMessage}
+                  <p className="font-mono text-xs text-rose-700 dark:text-rose-400 mt-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-2.5 rounded-lg">
+                    [ERROR] {errorMessage}
                   </p>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 pt-5 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center gap-3">
+              <div className="mt-6 pt-5 border-t border-stone-200 dark:border-stone-800 flex flex-wrap items-center gap-3">
                 {cleanedUrl && (
                   <button
                     onClick={handleDownload}
-                    className="flex items-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs md:text-sm font-bold rounded-xl shadow-sm hover:shadow transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-6 py-3.5 bg-stone-900 hover:bg-black dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-stone-950 font-mono text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
                   >
-                    <svg width="16" height="16" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span>{config.downloadButtonLabel}</span>
@@ -453,7 +453,7 @@ export default function CoreRemoverTool({ toolType }: { toolType: CoreRemoverTyp
 
                 <button
                   onClick={handleReset}
-                  className="px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs md:text-sm font-medium rounded-xl transition-colors cursor-pointer"
+                  className="px-5 py-3.5 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-mono text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                 >
                   Clean Another Photo
                 </button>

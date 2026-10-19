@@ -9,25 +9,26 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section className="mx-auto max-w-4xl px-6 py-16 md:py-24">
-      <div className="paper-card p-8 md:p-14 shadow-paper border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
-        {/* Header Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-200 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 rounded-full text-xs font-bold text-indigo-700 mb-6 tracking-wide">
-          <span>🛡️ ZERO-KNOWLEDGE ARCHITECTURE</span>
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 md:py-16">
+      <article className="editorial-card p-6 md:p-14">
+        {/* Editorial Masthead Kicker */}
+        <div className="editorial-kicker mb-3">
+          LAB MANIFESTO // ZERO-KNOWLEDGE RAM ARCHITECTURE
         </div>
 
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-tight">
-          About MetaZap
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-6 leading-tight">
+          About MetaZap Lab
         </h1>
 
-        <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-[family-name:var(--font-inter)] mb-10 pb-8 border-b border-slate-100 dark:border-slate-800">
+        <p className="font-serif italic text-lg sm:text-xl text-ink/75 dark:text-chalk/75 leading-relaxed mb-10 pb-8 border-b border-hairline">
           We built MetaZap with a radical yet simple principle: you should never have to sacrifice your private photos to an unknown cloud server just to wipe your home GPS coordinates or camera serial numbers.
         </p>
 
-        <div className="space-y-10 text-slate-700 dark:text-slate-300 text-base md:text-lg leading-relaxed">
+        <div className="space-y-10 text-ink/80 dark:text-chalk/80 text-sm sm:text-base leading-relaxed font-sans">
           {/* Section 1 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">01 // FORENSIC BACKGROUND</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               The Invisible Privacy Threat in Modern Photography
             </h2>
             <p className="mb-4">
@@ -42,8 +43,9 @@ export default function AboutPage() {
           </div>
 
           {/* Section 2 */}
-          <div className="bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 md:p-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+          <div className="bg-surface-subtle border border-hairline rounded-lg p-6 md:p-8">
+            <div className="editorial-kicker mb-1">02 // ARCHITECTURAL CRITIQUE</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               The Flawed Traditional Solution: Cloud Converters
             </h2>
             <p className="mb-4">
@@ -59,7 +61,8 @@ export default function AboutPage() {
 
           {/* Section 3 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">03 // CLIENT-SIDE ENCLAVE</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               Our Answer: 100% In-Browser, Zero Server Uploads
             </h2>
             <p className="mb-4">
@@ -75,31 +78,32 @@ export default function AboutPage() {
 
           {/* Section 4 */}
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+            <div className="editorial-kicker mb-1">04 // USER DEMOGRAPHICS</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               Who We Serve
             </h2>
             <div className="grid sm:grid-cols-2 gap-4 my-6">
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <h3 className="font-bold text-slate-900 dark:text-white mb-2">📸 Photographers &amp; Creators</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
+              <div className="p-5 rounded-lg border border-hairline bg-surface">
+                <h3 className="font-serif font-bold text-ink dark:text-chalk mb-1.5 text-base">Photographers &amp; Creators</h3>
+                <p className="text-xs sm:text-sm text-ink/70 dark:text-chalk/70 leading-relaxed">
                   Embed custom copyright licenses and author credits while stripping proprietary camera sensor serial numbers before delivering portfolios to clients.
                 </p>
               </div>
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <h3 className="font-bold text-slate-900 dark:text-white mb-2">👨‍👩‍👧 Families &amp; Parents</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
+              <div className="p-5 rounded-lg border border-hairline bg-surface">
+                <h3 className="font-serif font-bold text-ink dark:text-chalk mb-1.5 text-base">Families &amp; Parents</h3>
+                <p className="text-xs sm:text-sm text-ink/70 dark:text-chalk/70 leading-relaxed">
                   Safely share vacation snapshots and school activities online without broadcasting exact GPS coordinates of your home, parks, or neighborhoods.
                 </p>
               </div>
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <h3 className="font-bold text-slate-900 dark:text-white mb-2">📰 Journalists &amp; Whistleblowers</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
+              <div className="p-5 rounded-lg border border-hairline bg-surface">
+                <h3 className="font-serif font-bold text-ink dark:text-chalk mb-1.5 text-base">Journalists &amp; Sources</h3>
+                <p className="text-xs sm:text-sm text-ink/70 dark:text-chalk/70 leading-relaxed">
                   Sanitize documents and on-the-ground reporting photos to protect confidential sources, hidden locations, and device fingerprints.
                 </p>
               </div>
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <h3 className="font-bold text-slate-900 dark:text-white mb-2">🛍️ Marketplace Sellers</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
+              <div className="p-5 rounded-lg border border-hairline bg-surface">
+                <h3 className="font-serif font-bold text-ink dark:text-chalk mb-1.5 text-base">Marketplace Sellers</h3>
+                <p className="text-xs sm:text-sm text-ink/70 dark:text-chalk/70 leading-relaxed">
                   List items for sale on Craigslist, eBay, or Facebook Marketplace without inadvertently giving buyers your physical residential address.
                 </p>
               </div>
@@ -107,8 +111,9 @@ export default function AboutPage() {
           </div>
 
           {/* Section 5 */}
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-merriweather)]">
+          <div className="border-t border-hairline pt-8">
+            <div className="editorial-kicker mb-1">05 // COMMUNITY COVENANT</div>
+            <h2 className="font-serif text-2xl font-bold text-ink dark:text-chalk mb-4">
               Free, Transparent, and Always Respectful
             </h2>
             <p className="mb-4">
@@ -120,24 +125,24 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Navigation Footer */}
-        <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Navigation Colophon Footer */}
+        <div className="mt-12 pt-8 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
           <Link
             href="/"
-            className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors flex items-center gap-1.5"
+            className="text-ink dark:text-chalk hover:underline flex items-center gap-1.5 uppercase font-bold"
           >
-            <span>←</span> Back to Photo Privacy Tools
+            <span>←</span> RETURN TO TOOLKIT INDEX
           </Link>
-          <div className="flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400">
-            <Link href="/privacy-policy" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+          <div className="flex items-center gap-6 text-ink/60 dark:text-chalk/60 uppercase">
+            <Link href="/privacy-policy" className="hover:text-ink dark:hover:text-chalk transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms-of-service" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+            <Link href="/terms-of-service" className="hover:text-ink dark:hover:text-chalk transition-colors">
               Terms of Service
             </Link>
           </div>
         </div>
-      </div>
-    </section>
+      </article>
+    </div>
   );
 }

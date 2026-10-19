@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          Deep Metadata Inspector · 100% Client-Side
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. III // FORENSIC EXIF &amp; METADATA INSPECTOR
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           Tell Me My Metadata
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Inspect all hidden camera settings, GPS coordinates, timestamps, and software tags buried inside your photos before you share them online.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Deep structural diagnostic reading hidden camera settings, GPS coordinates, timestamps, and software tags buried inside your digital photos.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>PARSER: EXIF, XMP, IPTC</span>
+          <span className="opacity-40">/</span>
+          <span>DIAGNOSTIC: MULTI-TIER LEDGER</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED RAM: ZERO NETWORK IO</span>
+        </div>
+      </header>
 
       {/* Interactive Analyzer Tool with Transparent Stepper */}
       <AnalyzerTool toolType="viewer" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DISPATCH // RADIOLOGICAL SCAN</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               What is this viewer? (The magic x-ray machine)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imagine finding a mysterious birthday present wrapped in colorful paper. From the outside, all you can see is the shiny wrapping and the ribbon. But what if you had a magic superhero x-ray machine that could peek right through the paper?
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              That magic x-ray machine is exactly what this tool is for digital photos! When you look at an image on your phone screen, you only see the visual picture—the trees, the sunset, or your smiling friends.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool looks beneath the visual surface and reads all the hidden notes tucked inside the file header. It shows you the camera model, the exact time you took the shot, and whether there are map coordinates pointing to your house.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              It organizes everything into clean, easy-to-read tables so you can see exactly what secrets your photo is carrying before you show it to anyone else!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Imagine finding a mysterious birthday present wrapped in colorful paper. From the outside, all you can see is the shiny wrapping and the ribbon. But what if you had a magic superhero x-ray machine that could peek right through the paper?
+              </p>
+              <p>
+                That magic x-ray machine is exactly what this tool is for digital photos! When you look at an image on your phone screen, you only see the visual picture—the trees, the sunset, or your smiling friends.
+              </p>
+              <p>
+                Our tool looks beneath the visual surface and reads all the hidden notes tucked inside the file header. It shows you the camera model, the exact time you took the shot, and whether there are map coordinates pointing to your house.
+              </p>
+              <p>
+                It organizes everything into clean, easy-to-read tables so you can see exactly what secrets your photo is carrying before you show it to anyone else!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">ANALYSIS // DEFENSIVE HYGIENE</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Why looking inside is the smartest thing to do
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Before you hand your backpack to a friend or leave it at school, it is always a smart idea to unzip the front pockets and make sure you did not leave your house keys or secret diary inside.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Checking your photos works the exact same way. Most people share pictures on the internet without ever realizing that their phone stamped their home address or camera serial number inside the file.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              By using this viewer, you get to see the honest truth. If you see your home address or sensitive timestamps in the table, you know you should clean the photo before uploading it.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Knowledge is your superpower! When you know what is hiding inside your pictures, you are in total control of your own digital privacy.
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Before you hand your backpack to a friend or leave it at school, it is always a smart idea to unzip the front pockets and make sure you did not leave your house keys or secret diary inside.
+              </p>
+              <p>
+                Checking your photos works the exact same way. Most people share pictures on the internet without ever realizing that their phone stamped their home address or camera serial number inside the file.
+              </p>
+              <p>
+                By using this viewer, you get to see the honest truth. If you see your home address or sensitive timestamps in the table, you know you should clean the photo before uploading it.
+              </p>
+              <p>
+                Knowledge is your superpower! When you know what is hiding inside your pictures, you are in total control of your own digital privacy.
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Discover what hidden metadata tags are and how inspecting them protects your privacy.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

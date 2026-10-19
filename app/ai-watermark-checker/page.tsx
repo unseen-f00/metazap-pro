@@ -55,87 +55,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          AI Prompt &amp; Metadata Signature Scanner · 100% Client-Side
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. VIII // CONTAINER CHUNKS &amp; PROMPT PAYLOAD INSPECTOR
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           AI Prompt &amp; Metadata Signature Scanner
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Scan container headers (PNG iTXt, JPEG APP1, XMP) for embedded AI prompts, diffusion parameters, and model signatures with zero server uploads.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Deep structural diagnostic scanning PNG iTXt text chunks, JPEG APP1 segments, and XMP packets for embedded prompt recipes and model configurations.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>PARSERS: PNG iTXt, tEXt, zTXt, JPEG APP1</span>
+          <span className="opacity-40">/</span>
+          <span>SCOPES: PROMPT, SEED, SAMPLER, GRAPH</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED SCAN</span>
+        </div>
+      </header>
 
       {/* Interactive Analyzer Tool with Transparent Stepper */}
       <AnalyzerTool toolType="ai-watermark" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
         {/* Explanatory Sections */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DISPATCH // CONTAINER ENCODING</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               How AI generators stamp prompts &amp; metadata into files
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              When software like Stable Diffusion, Midjourney, ComfyUI, or DALL-E generates an image, it automatically writes extensive recipe information directly into the file container.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              This data includes your raw prompt, negative prompts, model checkpoint hashes, CFG guidance scales, and even full execution graphs detailing every node used in rendering.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Anyone with basic file-reading software can inspect these container chunks and view the exact techniques, parameters, and prompts you used to create your artwork.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our scanner checks these container headers and displays the exact indicators found, so you know exactly what is embedded before sharing your work.
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                When software like Stable Diffusion, Midjourney, ComfyUI, or DALL-E generates an image, it automatically writes extensive recipe information directly into the file container.
+              </p>
+              <p>
+                This data includes your raw prompt, negative prompts, model checkpoint hashes, CFG guidance scales, and even full execution graphs detailing every node used in rendering.
+              </p>
+              <p>
+                Anyone with basic file-reading software can inspect these container chunks and view the exact techniques, parameters, and prompts you used to create your artwork.
+              </p>
+              <p>
+                Our scanner checks these container headers and displays the exact indicators found, so you know exactly what is embedded before sharing your work.
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">TECHNICAL CLARIFICATION // METHODOLOGY</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Container metadata inspection vs. pixel steganography
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              It is important to understand the difference between container metadata signatures and steganographic watermarks.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Container metadata (such as PNG iTXt text chunks, JPEG APP1 XMP packets, and C2PA manifests) contains human-readable or structured binary dictionaries detailing how the image was generated.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imperceptible pixel steganography (like Google SynthID), on the other hand, subtly modifies pixel values across frequency domains and requires proprietary neural network models to read.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool specifically and honestly focuses on container metadata inspection—where the vast majority of practical AI prompts, seeds, and workflow signatures reside!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                It is important to understand the difference between container metadata signatures and steganographic watermarks.
+              </p>
+              <p>
+                Container metadata (such as PNG iTXt text chunks, JPEG APP1 XMP packets, and C2PA manifests) contains human-readable or structured binary dictionaries detailing how the image was generated.
+              </p>
+              <p>
+                Imperceptible pixel steganography (like Google SynthID), on the other hand, subtly modifies pixel values across frequency domains and requires proprietary neural network models to read.
+              </p>
+              <p>
+                Our tool specifically and honestly focuses on container metadata inspection—where the vast majority of practical AI prompts, seeds, and workflow signatures reside!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Learn how AI metadata signatures work and how to detect them in your images.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -143,8 +154,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

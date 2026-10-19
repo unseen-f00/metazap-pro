@@ -187,7 +187,7 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
   };
 
   return (
-    <div className="paper-card p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800">
+    <div className="editorial-card p-6 md:p-10 mb-12">
       {!selectedFile ? (
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
@@ -198,16 +198,16 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
       ) : isProcessing ? (
         <div className="space-y-6">
           {previewUrl && (
-            <div className="relative border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 bg-slate-100/50 dark:bg-slate-800/50 flex flex-col items-center justify-center overflow-hidden shadow-md">
+            <div className="relative border border-hairline rounded-lg p-3 bg-surface-subtle flex flex-col items-center justify-center overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="max-h-64 object-contain rounded-xl shadow-xs"
+                className="max-h-64 object-contain rounded-md shadow-2xs"
               />
-              <div className="mt-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                <span>🔍 {selectedFile.name}</span>
-                <span>•</span>
+              <div className="mt-2.5 font-mono text-xs text-ink/70 dark:text-chalk/70 flex items-center gap-2">
+                <span>{selectedFile.name}</span>
+                <span className="opacity-40">/</span>
                 <span>{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
               </div>
             </div>
@@ -223,23 +223,23 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
       ) : (
         <div className="space-y-8 animate-in fade-in duration-300">
           {/* File Header Bar */}
-          <div className="border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 bg-slate-50/70 dark:bg-slate-800/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="border border-hairline rounded-lg p-4 sm:p-5 bg-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5 min-w-0">
               {previewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
                   alt={selectedFile.name}
-                  className="w-14 h-14 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
+                  className="w-14 h-14 object-cover rounded-md border border-hairline shadow-2xs shrink-0"
                 />
               ) : (
-                <div className="w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl shadow-xs shrink-0">
-                  🔍
+                <div className="w-11 h-11 rounded-md bg-surface border border-hairline flex items-center justify-center font-mono text-xs text-ink/60 shrink-0">
+                  IMG
                 </div>
               )}
               <div className="min-w-0">
-                <p className="font-bold text-slate-900 dark:text-white text-sm truncate">{selectedFile.name}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="font-mono font-semibold text-ink dark:text-chalk text-xs sm:text-sm truncate">{selectedFile.name}</p>
+                <p className="font-mono text-xs text-ink/60 dark:text-chalk/60 mt-0.5">
                   {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · {selectedFile.type || 'Image'}
                 </p>
               </div>
@@ -249,15 +249,15 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
               <button
                 onClick={handleQuickClean}
                 disabled={isCleaning}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-xs hover:shadow transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-stone-100 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 disabled:opacity-50 text-xs font-mono font-bold tracking-wider uppercase rounded-md shadow-sm transition-all"
               >
-                {isCleaning ? 'Cleaning...' : '✨ Clean & Download'}
+                {isCleaning ? 'STRIPPING...' : 'CLEAN & DOWNLOAD'}
               </button>
               <button
                 onClick={handleReset}
-                className="px-3.5 py-2 bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-xl transition-colors"
+                className="px-3.5 py-2 border border-hairline bg-surface hover:bg-hairline/30 text-ink/80 dark:text-chalk/80 text-xs font-mono font-medium rounded-md transition-colors"
               >
-                Scan Another
+                SCAN ANOTHER
               </button>
             </div>
           </div>
@@ -265,97 +265,94 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           {/* 1. Deep Metadata Viewer View */}
           {toolType === 'viewer' && viewerResult && (
             <div className="space-y-6">
-              {/* Windows File Properties Overview Cards */}
+              {/* File Properties Summary */}
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">🗂️</span>
-                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                      Windows File Properties Summary
-                    </h3>
+                <div className="flex items-center justify-between mb-3 border-b border-hairline pb-2">
+                  <div className="editorial-kicker">
+                    INDEX // FORENSIC TAG SUMMARY
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                    {viewerResult.summary.totalTags} Total Tags Found
+                  <span className="font-mono text-xs text-ink/60 dark:text-chalk/60">
+                    {viewerResult.summary.totalTags} TOTAL TAGS RECORDED
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {/* Camera Maker / Model */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>📷</span> Camera Maker &amp; Model
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      Camera Maker &amp; Model
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.cameraCombined || 'Not Recorded'}>
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5 truncate" title={viewerResult.details.cameraCombined || 'Not Recorded'}>
                       {viewerResult.details.cameraCombined || 'Not Recorded'}
                     </p>
                   </div>
 
                   {/* F-Stop (Aperture) */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>🔘</span> F-Stop (Aperture)
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      F-Stop (Aperture)
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 font-mono">
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5">
                       {viewerResult.details.fStop || 'N/A'}
                     </p>
                   </div>
 
                   {/* ISO Speed */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>⚡</span> ISO Speed
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      ISO Speed
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 font-mono">
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5">
                       {viewerResult.details.iso || 'N/A'}
                     </p>
                   </div>
 
                   {/* Exposure Time */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>⏱️</span> Exposure Time
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      Exposure Time
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 font-mono">
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5">
                       {viewerResult.details.exposureTime || 'N/A'}
                     </p>
                   </div>
 
                   {/* Lens Info */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>🔭</span> Lens Specification
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      Lens Specification
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.lensInfo || 'Standard Lens'}>
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5 truncate" title={viewerResult.details.lensInfo || 'Standard Lens'}>
                       {viewerResult.details.lensInfo || 'Standard Lens'}
                     </p>
                   </div>
 
                   {/* Software */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>💻</span> Software / Firmware
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      Software / Firmware
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.software || 'Camera OS'}>
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5 truncate" title={viewerResult.details.software || 'Camera OS'}>
                       {viewerResult.details.software || 'Camera OS'}
                     </p>
                   </div>
 
                   {/* Date Taken */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>🕒</span> Date Taken
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      Date Taken
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.dateTaken || 'No timestamp'}>
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5 truncate" title={viewerResult.details.dateTaken || 'No timestamp'}>
                       {viewerResult.details.dateTaken || 'No timestamp'}
                     </p>
                   </div>
 
                   {/* Author / Artist */}
-                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      <span>👤</span> Author / Artist
+                  <div className="bg-surface p-3.5 rounded-lg border border-hairline">
+                    <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">
+                      Author / Artist
                     </p>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate" title={viewerResult.details.author || 'Anonymous'}>
+                    <p className="font-mono text-xs font-bold text-ink dark:text-chalk mt-1.5 truncate" title={viewerResult.details.author || 'Anonymous'}>
                       {viewerResult.details.author || 'Anonymous'}
                     </p>
                   </div>
@@ -364,21 +361,16 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
 
               {/* GPS Geolocation & Mini Map Section */}
               {viewerResult.details.gps && (
-                <div className="p-4 sm:p-5 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
+                <div className="p-4 sm:p-5 rounded-lg border border-hairline bg-surface-subtle space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">📍</span>
-                      <div>
-                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                          GPS Geolocation Pinpoint
-                        </h4>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                          {viewerResult.details.gps.formatted}
-                          {viewerResult.details.gps.altitude !== undefined
-                            ? ` · ${viewerResult.details.gps.altitude.toFixed(1)}m elevation`
-                            : ''}
-                        </p>
-                      </div>
+                    <div>
+                      <div className="editorial-kicker mb-1">GEOLOCATION LOG // LAT/LON COORDINATES</div>
+                      <h4 className="font-mono text-xs sm:text-sm font-bold text-ink dark:text-chalk">
+                        {viewerResult.details.gps.formatted}
+                        {viewerResult.details.gps.altitude !== undefined
+                          ? ` · ${viewerResult.details.gps.altitude.toFixed(1)}m elevation`
+                          : ''}
+                      </h4>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -386,16 +378,16 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                         href={`https://www.google.com/maps?q=${viewerResult.details.gps.latitude},${viewerResult.details.gps.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                        className="px-3 py-1.5 border border-hairline bg-surface hover:bg-hairline/30 text-ink dark:text-chalk rounded-md text-xs font-mono font-medium transition-all shadow-2xs flex items-center gap-1"
                       >
-                        <span>Open in Google Maps</span>
+                        <span>VIEW MAP PIN</span>
                         <span>↗</span>
                       </a>
                     </div>
                   </div>
 
-                  {/* Interactive Mini Map Frame */}
-                  <div className="w-full h-56 sm:h-64 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xs bg-slate-100 dark:bg-slate-800">
+                  {/* Mini Map Frame */}
+                  <div className="w-full h-56 sm:h-64 rounded-md overflow-hidden border border-hairline bg-surface">
                     <iframe
                       title="OpenStreetMap Mini Map"
                       width="100%"
@@ -414,28 +406,28 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
               {/* Categorized Metadata Tables & Raw Tags Explorer */}
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-                  <div className="flex items-center gap-2">
+                  <div className="inline-flex p-1 border border-hairline rounded-md bg-surface gap-1">
                     <button
                       type="button"
                       onClick={() => setViewerTab('properties')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
                         viewerTab === 'properties'
-                          ? 'bg-indigo-600 text-white shadow-xs'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                          ? 'bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 shadow-2xs'
+                          : 'text-ink/70 dark:text-chalk/70 hover:text-ink dark:hover:text-chalk'
                       }`}
                     >
-                      Windows File Properties
+                      FILE PROPERTIES
                     </button>
                     <button
                       type="button"
                       onClick={() => setViewerTab('raw')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
                         viewerTab === 'raw'
-                          ? 'bg-indigo-600 text-white shadow-xs'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                          ? 'bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 shadow-2xs'
+                          : 'text-ink/70 dark:text-chalk/70 hover:text-ink dark:hover:text-chalk'
                       }`}
                     >
-                      Raw Tags Directory ({Object.keys(viewerResult.rawTags).length})
+                      RAW DIRECTORY ({Object.keys(viewerResult.rawTags).length})
                     </button>
                   </div>
 
@@ -444,8 +436,8 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                       type="text"
                       value={searchTagQuery}
                       onChange={(e) => setSearchTagQuery(e.target.value)}
-                      placeholder="Search any tag (e.g. Flash, Lens, ISO)..."
-                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64"
+                      placeholder="FILTER BY TAG (E.G. FLASH, ISO)..."
+                      className="px-3 py-1.5 text-xs font-mono rounded-md border border-hairline bg-surface text-ink dark:text-chalk placeholder:text-ink/40 focus:outline-hidden focus:border-ink dark:focus:border-chalk w-full sm:w-64"
                     />
                   )}
                 </div>
@@ -453,20 +445,20 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                 {viewerTab === 'properties' ? (
                   <div className="space-y-4">
                     {viewerResult.sections.map((sec, sIdx) => (
-                      <div key={sIdx} className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
-                        <div className="bg-slate-100/70 dark:bg-slate-800/80 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                          <span className="font-semibold text-xs text-slate-800 dark:text-slate-200 uppercase tracking-wide">
+                      <div key={sIdx} className="border border-hairline rounded-lg overflow-hidden bg-surface">
+                        <div className="bg-surface-subtle px-4 py-2.5 border-b border-hairline flex items-center justify-between font-mono text-xs text-ink dark:text-chalk uppercase tracking-wide">
+                          <span className="font-semibold">
                             {sec.category}
                           </span>
-                          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                            {sec.tags.length} {sec.tags.length === 1 ? 'entry' : 'entries'}
+                          <span className="text-[11px] text-ink/60 dark:text-chalk/60">
+                            {sec.tags.length} {sec.tags.length === 1 ? 'ENTRY' : 'ENTRIES'}
                           </span>
                         </div>
-                        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                        <div className="divide-y divide-hairline">
                           {sec.tags.map((tag, tIdx) => (
-                            <div key={tIdx} className="px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                              <span className="font-medium text-slate-600 dark:text-slate-400 sm:w-1/3 truncate">{tag.label}</span>
-                              <span className={`sm:w-2/3 break-all ${tag.isSensitive ? 'font-semibold text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'}`}>
+                            <div key={tIdx} className="px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1 font-mono text-xs hover:bg-hairline/20 transition-colors">
+                              <span className="text-ink/60 dark:text-chalk/60 sm:w-1/3 truncate">{tag.label}</span>
+                              <span className={`sm:w-2/3 break-all ${tag.isSensitive ? 'font-semibold text-rose-600 dark:text-rose-400' : 'text-ink dark:text-chalk'}`}>
                                 {tag.value}
                               </span>
                             </div>
@@ -476,8 +468,8 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                     ))}
                   </div>
                 ) : (
-                  <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
-                    <div className="max-h-96 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 font-mono text-xs">
+                  <div className="border border-hairline rounded-lg overflow-hidden bg-surface">
+                    <div className="max-h-96 overflow-y-auto divide-y divide-hairline font-mono text-xs">
                       {Object.entries(viewerResult.rawTags)
                         .filter(([k, v]) =>
                           searchTagQuery
@@ -486,9 +478,9 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                             : true
                         )
                         .map(([k, v], rIdx) => (
-                          <div key={rIdx} className="px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                            <span className="text-indigo-600 dark:text-indigo-400 font-semibold sm:w-1/3 truncate">{k}</span>
-                            <span className="text-slate-700 dark:text-slate-300 sm:w-2/3 break-all">{v}</span>
+                          <div key={rIdx} className="px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 hover:bg-hairline/20">
+                            <span className="text-ink dark:text-chalk font-semibold sm:w-1/3 truncate">{k}</span>
+                            <span className="text-ink/70 dark:text-chalk/70 sm:w-2/3 break-all">{v}</span>
                           </div>
                         ))}
                     </div>
@@ -503,38 +495,38 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
             <div className="space-y-6">
               {/* Highlight Metrics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="paper-card p-4 sm:p-5 bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 rounded-2xl shadow-xs">
-                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
-                    <span>🏷️</span> Total Tags Found
+                <div className="border border-hairline rounded-lg p-4 sm:p-5 bg-surface-subtle">
+                  <div className="editorial-kicker mb-1">
+                    INDEX // DETECTED HEADERS
                   </div>
-                  <p className="text-3xl font-black text-slate-900 dark:text-white mt-2">
+                  <p className="text-3xl font-mono font-bold text-ink dark:text-chalk mt-2">
                     {calcResult.totalTagsFound}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="font-mono text-[11px] text-ink/60 dark:text-chalk/60 mt-1">
                     EXIF, GPS, XMP, &amp; TIFF metadata headers
                   </p>
                 </div>
 
-                <div className="paper-card p-4 sm:p-5 bg-amber-50/60 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 rounded-2xl shadow-xs">
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
-                    <span>✂️</span> Tags Removed / Wipeable
+                <div className="border border-hairline rounded-lg p-4 sm:p-5 bg-surface-subtle">
+                  <div className="editorial-kicker mb-1">
+                    PRUNABLE // WIPABLE METRICS
                   </div>
-                  <p className="text-3xl font-black text-amber-700 dark:text-amber-400 mt-2">
+                  <p className="text-3xl font-mono font-bold text-amber-600 dark:text-amber-400 mt-2">
                     {calcResult.tagsRemovedCount}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="font-mono text-[11px] text-ink/60 dark:text-chalk/60 mt-1">
                     Ready to be permanently wiped
                   </p>
                 </div>
 
-                <div className="paper-card p-4 sm:p-5 bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl shadow-xs">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
-                    <span>📉</span> Space Saved
+                <div className="border border-hairline rounded-lg p-4 sm:p-5 bg-surface-subtle">
+                  <div className="editorial-kicker mb-1">
+                    EFFICIENCY // RECLAIMABLE PAYLOAD
                   </div>
-                  <p className="text-3xl font-black text-emerald-700 dark:text-emerald-400 mt-2">
+                  <p className="text-3xl font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                     {calcResult.spaceSavedFormatted}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="font-mono text-[11px] text-ink/60 dark:text-chalk/60 mt-1">
                     {calcResult.metadataPercentage}% header bloat eliminated
                   </p>
                 </div>
@@ -542,42 +534,42 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
 
               {/* Before vs After Size Breakdown */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Original File Size</p>
-                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 font-mono">{calcResult.fileSizeFormatted}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.fileSizeBytes.toLocaleString()} bytes</p>
+                <div className="border border-hairline rounded-lg p-4 bg-surface">
+                  <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">Original File Size</p>
+                  <p className="text-lg font-mono font-bold text-ink dark:text-chalk mt-1">{calcResult.fileSizeFormatted}</p>
+                  <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50 mt-0.5">{calcResult.fileSizeBytes.toLocaleString()} B</p>
                 </div>
 
-                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider">Cleaned File Size</p>
-                  <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 font-mono">{calcResult.cleanedSizeFormatted}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.cleanedSizeBytes.toLocaleString()} bytes</p>
+                <div className="border border-hairline rounded-lg p-4 bg-surface">
+                  <p className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Cleaned File Size</p>
+                  <p className="text-lg font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">{calcResult.cleanedSizeFormatted}</p>
+                  <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50 mt-0.5">{calcResult.cleanedSizeBytes.toLocaleString()} B</p>
                 </div>
 
-                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Visual Dimensions</p>
-                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 font-mono">
+                <div className="border border-hairline rounded-lg p-4 bg-surface">
+                  <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">Visual Dimensions</p>
+                  <p className="text-lg font-mono font-bold text-ink dark:text-chalk mt-1">
                     {calcResult.dimensions.width > 0 ? `${calcResult.dimensions.width} × ${calcResult.dimensions.height}` : 'N/A'}
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.megapixels}</p>
+                  <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50 mt-0.5">{calcResult.megapixels}</p>
                 </div>
 
-                <div className="paper-card p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Format &amp; Density</p>
-                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-1">{calcResult.formatName}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{calcResult.dpi} DPI</p>
+                <div className="border border-hairline rounded-lg p-4 bg-surface">
+                  <p className="text-[10px] font-mono text-ink/60 dark:text-chalk/60 uppercase tracking-wider">Format &amp; Density</p>
+                  <p className="text-lg font-mono font-bold text-ink dark:text-chalk mt-1">{calcResult.formatName}</p>
+                  <p className="font-mono text-[10px] text-ink/50 dark:text-chalk/50 mt-0.5">{calcResult.dpi} DPI</p>
                 </div>
               </div>
 
               {/* Progress representation */}
-              <div className="paper-card p-5 border border-slate-200 dark:border-slate-800 rounded-2xl">
-                <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-200 mb-2">
+              <div className="border border-hairline rounded-lg p-5 bg-surface-subtle">
+                <div className="flex justify-between font-mono text-xs text-ink/80 dark:text-chalk/80 mb-2">
                   <span>Visual Image Pixels: {(100 - calcResult.metadataPercentage).toFixed(1)}%</span>
                   <span className="text-amber-700 dark:text-amber-400">Metadata Overhead: {calcResult.metadataPercentage}%</span>
                 </div>
-                <div className="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden flex">
+                <div className="w-full h-1.5 bg-hairline rounded-full overflow-hidden flex">
                   <div
-                    className="h-full bg-indigo-600 transition-all duration-500"
+                    className="h-full bg-stone-900 dark:bg-stone-100 transition-all duration-500"
                     style={{ width: `${Math.max(5, 100 - calcResult.metadataPercentage)}%` }}
                   />
                   <div
@@ -585,8 +577,8 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                     style={{ width: `${Math.min(95, calcResult.metadataPercentage)}%` }}
                   />
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
-                  Wiping metadata from this image will save approximately <strong>{calcResult.spaceSavedFormatted}</strong> ({calcResult.metadataPercentage}%) of storage without touching image resolution.
+                <p className="font-sans text-xs text-ink/70 dark:text-chalk/70 mt-3">
+                  Wiping metadata from this image will save approximately <strong>{calcResult.spaceSavedFormatted}</strong> ({calcResult.metadataPercentage}%) of storage without altering raw image raster values.
                 </p>
               </div>
             </div>
@@ -595,31 +587,31 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           {/* 3. Privacy Risk Score View */}
           {toolType === 'privacy' && privacyResult && (
             <div className="space-y-6">
-              {/* Big Score Header */}
-              <div className={`p-6 rounded-2xl border flex flex-col sm:flex-row items-center gap-6 ${
+              {/* Score Header */}
+              <div className={`p-6 rounded-lg border flex flex-col sm:flex-row items-center gap-6 ${
                 privacyResult.riskLevel === 'high'
-                  ? 'bg-rose-50/70 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60 text-rose-950 dark:text-rose-100'
+                  ? 'border-rose-500/40 bg-rose-500/5 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100'
                   : privacyResult.riskLevel === 'medium'
-                  ? 'bg-amber-50/70 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60 text-amber-950 dark:text-amber-100'
-                  : 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/60 text-emerald-950 dark:text-emerald-100'
+                  ? 'border-amber-500/40 bg-amber-500/5 dark:bg-amber-950/20 text-amber-950 dark:text-amber-100'
+                  : 'border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/20 text-emerald-950 dark:text-emerald-100'
               }`}>
-                <div className={`w-20 h-20 rounded-full flex flex-col items-center justify-center shrink-0 font-black shadow-sm ${
+                <div className={`w-18 h-18 rounded-md flex flex-col items-center justify-center shrink-0 font-mono font-bold border border-current ${
                   privacyResult.riskLevel === 'high'
-                    ? 'bg-rose-600 text-white'
+                    ? 'text-rose-600 dark:text-rose-400'
                     : privacyResult.riskLevel === 'medium'
-                    ? 'bg-amber-500 text-white'
-                    : 'bg-emerald-600 text-white'
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-emerald-600 dark:text-emerald-400'
                 }`}>
                   <span className="text-2xl leading-none">{privacyResult.score}</span>
-                  <span className="text-[10px] uppercase font-bold opacity-80">/ 100</span>
+                  <span className="text-[10px] uppercase font-mono opacity-80">/ 100</span>
                 </div>
 
                 <div className="space-y-1 text-center sm:text-left">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider mb-1 bg-white/70 dark:bg-slate-900/70 border border-current">
-                    {privacyResult.riskLevel === 'high' ? '⚠️ High Privacy Risk' : privacyResult.riskLevel === 'medium' ? '⚡ Medium Privacy Risk' : '🛡️ Safe & Protected'}
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider mb-1 border border-current">
+                    {privacyResult.riskLevel === 'high' ? 'HIGH PRIVACY RISK' : privacyResult.riskLevel === 'medium' ? 'MEDIUM PRIVACY RISK' : 'PRIVACY PROTECTED'}
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">{privacyResult.summaryMessage}</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300">
+                  <h3 className="font-serif text-lg font-bold text-ink dark:text-chalk">{privacyResult.summaryMessage}</h3>
+                  <p className="font-mono text-xs text-ink/70 dark:text-chalk/70">
                     {privacyResult.findings.length} threat {privacyResult.findings.length === 1 ? 'signal' : 'signals'} evaluated in this photo.
                   </p>
                 </div>
@@ -627,24 +619,24 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
 
               {/* Findings List */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Detected Privacy Findings</h4>
+                <div className="editorial-kicker">EVALUATION LOG // DETECTED PRIVACY FINDINGS</div>
                 {privacyResult.findings.length === 0 ? (
-                  <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 text-xs font-medium">
+                  <div className="p-4 rounded-lg border border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-200 text-xs font-mono">
                     ✓ Clean! No sensitive location coordinates, hardware serial numbers, or author tags were found in this file.
                   </div>
                 ) : (
                   privacyResult.findings.map((f, i) => (
-                    <div key={i} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex items-start gap-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase shrink-0 mt-0.5 ${
-                        f.level === 'high' ? 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300' : f.level === 'medium' ? 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    <div key={i} className="p-4 rounded-lg border border-hairline bg-surface flex items-start gap-3">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase shrink-0 mt-0.5 border ${
+                        f.level === 'high' ? 'border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-300' : f.level === 'medium' ? 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300' : 'border-hairline bg-surface-subtle text-ink/70 dark:text-chalk/70'
                       }`}>
                         {f.level}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-900 dark:text-white">{f.title}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{f.description}</p>
+                        <p className="font-mono font-semibold text-xs text-ink dark:text-chalk">{f.title}</p>
+                        <p className="font-sans text-xs text-ink/70 dark:text-chalk/70 mt-0.5">{f.description}</p>
                         {f.tagValue && (
-                          <p className="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded mt-1.5 inline-block">
+                          <p className="text-[11px] font-mono text-ink/80 dark:text-chalk/80 bg-surface-subtle border border-hairline px-2 py-0.5 rounded mt-1.5 inline-block">
                             {f.tagValue}
                           </p>
                         )}
@@ -659,23 +651,17 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           {/* 4. C2PA Checker View */}
           {toolType === 'c2pa' && c2paResult && (
             <div className="space-y-6">
-              <div className={`p-6 rounded-2xl border flex items-center gap-5 ${
-                c2paResult.hasC2pa
-                  ? 'bg-amber-50/70 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60'
-                  : 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/60'
-              }`}>
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-xs shrink-0 ${
-                  c2paResult.hasC2pa ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white'
-                }`}>
-                  {c2paResult.hasC2pa ? '📜' : '🛡️'}
+              <div className="p-5 rounded-lg border border-hairline bg-surface-subtle flex items-center gap-4">
+                <div className="w-12 h-12 rounded-md bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 flex items-center justify-center font-mono font-bold text-sm shrink-0">
+                  {c2paResult.hasC2pa ? 'C2PA' : 'CLEAN'}
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="font-serif text-base font-bold text-ink dark:text-chalk">
                     {c2paResult.hasC2pa
-                      ? 'C2PA Content Credentials Detected'
+                      ? 'C2PA Content Credentials Manifest Detected'
                       : 'Verified Clean: No C2PA Credentials Found'}
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
+                  <p className="text-xs text-ink/70 dark:text-chalk/70 mt-1">
                     {c2paResult.hasC2pa
                       ? 'This image carries cryptographically signed manifests documenting edit history and creation origins.'
                       : 'This image is untracked and contains zero C2PA JUMBF manifests or cryptographic provenance seals.'}
@@ -683,12 +669,12 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
                 </div>
               </div>
 
-              <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-white dark:bg-slate-900 shadow-xs space-y-2">
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Manifest Inspection Log</p>
-                <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+              <div className="border border-hairline rounded-lg p-4 bg-surface space-y-2">
+                <p className="text-xs font-mono font-bold text-ink/70 dark:text-chalk/70 uppercase tracking-wider">Manifest Inspection Log</p>
+                <div className="space-y-1.5 font-mono text-xs text-ink/80 dark:text-chalk/80">
                   {c2paResult.details.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                      <span className="text-ink/40">•</span>
                       <span>{item}</span>
                     </div>
                   ))}
@@ -700,38 +686,32 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
           {/* 5 & 6. AI Image & Watermark Checker View */}
           {(toolType === 'ai-image' || toolType === 'ai-watermark') && aiResult && (
             <div className="space-y-6">
-              <div className={`p-6 rounded-2xl border flex items-center gap-5 ${
-                aiResult.isAiDetected
-                  ? 'bg-rose-50/70 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60'
-                  : 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/60'
-              }`}>
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-xs shrink-0 ${
-                  aiResult.isAiDetected ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
-                }`}>
-                  {aiResult.isAiDetected ? '🤖' : '📷'}
+              <div className="p-5 rounded-lg border border-hairline bg-surface-subtle flex items-center gap-4">
+                <div className="w-12 h-12 rounded-md bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 flex items-center justify-center font-mono font-bold text-xs shrink-0">
+                  {aiResult.isAiDetected ? 'AI+' : 'RAW'}
                 </div>
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider mb-1 bg-white/70 dark:bg-slate-900/70 border border-current">
-                    {aiResult.isAiDetected ? `${aiResult.probability}% Confidence match` : 'Authentic Camera Photo'}
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider mb-1 border border-current text-ink/70 dark:text-chalk/70">
+                    {aiResult.isAiDetected ? `${aiResult.probability}% Confidence Match` : 'Authentic Camera Frame'}
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="font-serif text-base font-bold text-ink dark:text-chalk">
                     {aiResult.isAiDetected
                       ? `AI Signature Detected (${aiResult.engineName || 'Generative Pipeline'})`
                       : 'No AI Signatures or Prompts Detected'}
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
+                  <p className="text-xs text-ink/70 dark:text-chalk/70 mt-1">
                     {aiResult.isAiDetected
-                      ? 'Embedded model prompts, workflow parameters, or generator tags were found inside this file.'
+                      ? 'Embedded model prompts, workflow parameters, or generator tags were discovered inside this file.'
                       : 'No generative AI tags (Midjourney, DALL-E, Stable Diffusion) or prompt payloads were found.'}
                   </p>
                 </div>
               </div>
 
-              {/* Honest Container Inspection Mode Disclaimer */}
-              <div className="p-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/30 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-2.5">
-                <span className="shrink-0 text-base leading-none">ℹ️</span>
+              {/* Container Inspection Mode Disclaimer */}
+              <div className="p-3.5 rounded-lg border border-hairline bg-surface-subtle text-xs text-ink/80 dark:text-chalk/80 flex items-start gap-2.5 font-mono">
+                <span className="shrink-0 text-xs">[NOTE]</span>
                 <div className="space-y-0.5">
-                  <span className="font-bold">Container Metadata Inspection Mode:</span>{' '}
+                  <span className="font-bold">Container Header Inspection Mode:</span>{' '}
                   <span>
                     Scans container text headers (PNG iTXt/tEXt chunks, JPEG APP1 XMP/Exif markers, and workflow parameter dictionaries) for AI generation settings. Forensic pixel-frequency steganography (such as Google SynthID) is not evaluated.
                   </span>
@@ -739,29 +719,26 @@ export default function AnalyzerTool({ toolType }: { toolType: AnalyzerType }) {
               </div>
 
               {aiResult.indicators.length > 0 && (
-                <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-white dark:bg-slate-900 shadow-xs space-y-3">
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Detected AI Signatures &amp; Prompts</p>
+                <div className="border border-hairline rounded-lg p-4 bg-surface space-y-3 font-mono">
+                  <p className="text-xs font-bold text-ink/70 dark:text-chalk/70 uppercase tracking-wider">Detected AI Signatures &amp; Prompts</p>
                   <div className="space-y-2">
                     {aiResult.indicators.map((ind, idx) => (
-                      <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 rounded-lg text-xs space-y-1">
+                      <div key={idx} className="p-3 bg-surface-subtle border border-hairline rounded-md text-xs space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-slate-800 dark:text-slate-200">{ind.label}</span>
+                          <span className="font-bold text-ink dark:text-chalk">{ind.label}</span>
                           <div className="flex items-center gap-1.5">
                             {ind.confidence && (
-                              <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                              <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${
                                 ind.confidence === 'high'
-                                  ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300'
-                                  : 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300'
+                                  ? 'border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+                                  : 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300'
                               }`}>
                                 {ind.confidence}
                               </span>
                             )}
-                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                              {ind.source}
-                            </span>
                           </div>
                         </div>
-                        <p className="text-slate-600 dark:text-slate-300 break-all font-mono text-[11px]">{ind.snippet}</p>
+                        <p className="text-ink/70 dark:text-chalk/70 break-all text-[11px]">{ind.snippet}</p>
                       </div>
                     ))}
                   </div>

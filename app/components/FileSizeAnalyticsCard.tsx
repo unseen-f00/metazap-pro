@@ -2,10 +2,11 @@
 
 /**
  * FileSizeAnalyticsCard.tsx
- * Renders Before vs After File Size Analytics:
- * 1. Original Size
- * 2. Cleaned Size
- * 3. Data Removed (Saved Space)
+ * Financial Ledger Style Size & Space Analytics Card for MetaZap.
+ * Displays:
+ * 1. Original File Size
+ * 2. Cleaned Output Size
+ * 3. Exact Metadata Pruned (Space Saved)
  */
 
 import { SizeAnalytics, calculateSizeAnalytics } from '@/app/lib/metadataRemover';
@@ -22,7 +23,7 @@ export default function FileSizeAnalyticsCard({
   analytics,
   originalSize,
   cleanedSize,
-  title = 'File Size & Space Savings',
+  title = 'Payload & Space Ledger',
   compact = false,
 }: FileSizeAnalyticsCardProps) {
   const data =
@@ -37,28 +38,28 @@ export default function FileSizeAnalyticsCard({
 
   if (compact) {
     return (
-      <div className="grid grid-cols-3 gap-2 p-2.5 bg-slate-100/70 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-center">
+      <div className="grid grid-cols-3 gap-2 p-2.5 bg-stone-100/70 dark:bg-stone-850 rounded-lg border border-stone-200 dark:border-stone-800 text-center font-mono">
         <div>
-          <span className="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+          <span className="block text-[9px] uppercase tracking-wider text-stone-400">
             Original
           </span>
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+          <span className="text-xs font-semibold text-stone-800 dark:text-stone-200">
             {data.originalFormatted}
           </span>
         </div>
         <div>
-          <span className="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+          <span className="block text-[9px] uppercase tracking-wider text-stone-400">
             Cleaned
           </span>
-          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+          <span className="text-xs font-semibold text-stone-900 dark:text-stone-100">
             {data.cleanedFormatted}
           </span>
         </div>
         <div>
-          <span className="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
-            Removed
+          <span className="block text-[9px] uppercase tracking-wider text-stone-400">
+            Pruned
           </span>
-          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+          <span className="text-xs font-semibold text-stone-900 dark:text-stone-100">
             {hasSavings ? `-${data.savedFormatted}` : '0 B'}
           </span>
         </div>
@@ -67,60 +68,59 @@ export default function FileSizeAnalyticsCard({
   }
 
   return (
-    <div className="w-full bg-slate-50/90 dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs">
-      <div className="flex items-center justify-between mb-3.5">
-        <div className="flex items-center gap-2">
-          <span className="text-base sm:text-lg">📊</span>
-          <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+    <div className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-5 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-stone-100 dark:border-stone-800">
+        <div>
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
+            Byte Accounting
+          </span>
+          <h4 className="font-serif text-sm font-bold text-stone-900 dark:text-stone-100">
             {title}
           </h4>
         </div>
-        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-          {hasSavings ? `Wiped ${data.savedPercent}% Metadata` : '100% EXIF Scrubbed'}
+        <span className="self-start sm:self-auto font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700">
+          {hasSavings ? `[ PRUNED ${data.savedPercent}% OVERHEAD ]` : '[ 100% EXIF HEADERS STRIPPED ]'}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {/* Metric 1: Original Size */}
-        <div className="bg-white dark:bg-slate-800/80 rounded-xl p-3.5 border border-slate-200/70 dark:border-slate-700/70 shadow-2xs">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-            <span>📁</span>
-            <span>Original Size</span>
-          </div>
-          <div className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 font-mono">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono">
+        {/* Metric 1: Original Payload */}
+        <div className="p-3.5 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-950/40">
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+            01. Initial Payload
+          </span>
+          <div className="text-base font-bold text-stone-900 dark:text-stone-100">
             {data.originalFormatted}
           </div>
-          <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-            Initial raw uploaded bytes
-          </div>
+          <p className="font-sans text-[11px] text-stone-400 mt-0.5">
+            Raw uploaded file bytes
+          </p>
         </div>
 
-        {/* Metric 2: Cleaned Size */}
-        <div className="bg-white dark:bg-slate-800/80 rounded-xl p-3.5 border border-slate-200/70 dark:border-slate-700/70 shadow-2xs">
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-1">
-            <span>🛡️</span>
-            <span>Cleaned Size</span>
-          </div>
-          <div className="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-400 font-mono">
+        {/* Metric 2: Cleaned Artifact */}
+        <div className="p-3.5 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-950/40">
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+            02. Sanitized Artifact
+          </span>
+          <div className="text-base font-bold text-stone-900 dark:text-stone-100">
             {data.cleanedFormatted}
           </div>
-          <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-            100% Visual Quality Preserved
-          </div>
+          <p className="font-sans text-[11px] text-stone-400 mt-0.5">
+            Visual pixel clarity intact
+          </p>
         </div>
 
-        {/* Metric 3: Data Removed (Saved Space) */}
-        <div className="bg-white dark:bg-slate-800/80 rounded-xl p-3.5 border border-slate-200/70 dark:border-slate-700/70 shadow-2xs">
-          <div className="flex items-center gap-2 text-xs font-semibold text-indigo-700 dark:text-indigo-400 mb-1">
-            <span>📉</span>
-            <span>Data Removed (Saved Space)</span>
+        {/* Metric 3: Metadata Pruned */}
+        <div className="p-3.5 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-950/40">
+          <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+            03. Pruned Overhead
+          </span>
+          <div className="text-base font-bold text-stone-900 dark:text-stone-100">
+            {hasSavings ? `-${data.savedFormatted}` : 'Headers Purged'}
           </div>
-          <div className="text-base sm:text-lg font-bold text-indigo-700 dark:text-indigo-400 font-mono">
-            {hasSavings ? `-${data.savedFormatted}` : 'Metadata Stripped'}
-          </div>
-          <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-            {hasSavings ? `${data.savedPercent}% space saved (${data.savedKb})` : 'Zero tracking tags remain'}
-          </div>
+          <p className="font-sans text-[11px] text-stone-400 mt-0.5">
+            {hasSavings ? `${data.savedPercent}% payload reduced` : 'Zero tracking markers remain'}
+          </p>
         </div>
       </div>
     </div>

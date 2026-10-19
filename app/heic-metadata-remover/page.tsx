@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          Apple HEIC / HEIF Cleaner · 100% Client-Side
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. XIV // APPLE HEIC CONTAINER &amp; MAKERNOTE PURGE
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           HEIC Metadata Remover
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Strip hidden location coordinates, Apple device serial numbers, and creation timestamps from iPhone HEIC photos before sharing them online.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          In-browser decoding and sanitization of Apple HEIC/HEIF containers. Purges iOS GPS coordinates, hardware lens serials, and MakerNote payloads.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>PARSER: HEIC2ANY / CLIENT DECODER</span>
+          <span className="opacity-40">/</span>
+          <span>APPLE MAKERNOTES: DESTROYED</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED OPERATION</span>
+        </div>
+      </header>
 
       {/* Interactive Tool with Transparent Progress Stepper */}
       <CoreRemoverTool toolType="heic-clean" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DISPATCH // APPLE CONTAINER FORENSICS</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               What is an Apple HEIC photo? (The shiny Apple gift box)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              When you take a photo with an Apple iPhone, Apple wraps the picture inside a high-tech digital container called HEIC. Think of it like a very fancy, shiny gift box with a special electronic lock on top.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Apple designed this shiny box so pictures take up less room on your phone. But inside that same box, Apple also slips in a secret paper note. That note writes down the exact iPhone model you were holding, which iOS software version you had, and whether your camera lens had dust or scratches.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Even worse, if your iPhone knows where you are in the world, it drops a shiny satellite map pin into the box! That pin points straight down to your bedroom, your backyard, or your school bus stop.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool acts like a friendly helper who unlocks the shiny Apple box in your browser, dumps the secret paper note and map pin into the trash, and hands you back a clean, safe photo that you can share with total confidence!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                When you take a photo with an Apple iPhone, Apple wraps the picture inside a high-tech digital container called HEIC. Think of it like a very fancy, shiny gift box with a special electronic lock on top.
+              </p>
+              <p>
+                Apple designed this shiny box so pictures take up less room on your phone. But inside that same box, Apple also slips in a secret paper note. That note writes down the exact iPhone model you were holding, which iOS software version you had, and whether your camera lens had dust or scratches.
+              </p>
+              <p>
+                Even worse, if your iPhone knows where you are in the world, it drops a shiny satellite map pin into the box! That pin points straight down to your bedroom, your backyard, or your school bus stop.
+              </p>
+              <p>
+                Our tool acts like a friendly helper who unlocks the shiny Apple box in your browser, dumps the secret paper note and map pin into the trash, and hands you back a clean, safe photo that you can share with total confidence!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DEFENSIVE HYGIENE // GEOGRAPHIC BOUNDARIES</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Why cleaning iPhone photos protects your private home
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Think about inviting a friend over to play video games or eat cookies. You give them your address because you know them and trust them. But you would never tape your home address and bedroom floor plan to a telephone pole on the street corner for any stranger to see!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              When you post an uncleaned iPhone photo onto social media, a public marketplace, or a group chat, anyone who downloads that file can open the secret Apple diary. They can see the exact street where you took the picture and what time you were there.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              If you post photos of your pet in your backyard every afternoon, a stranger could piece together your daily schedule without ever talking to you. That is information that should always stay private and protected.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Running your iPhone pictures through our HEIC cleaner erases that digital trail completely. Your friends still get to see the cute puppy and the delicious birthday cake, but your home and your personal life stay your safe secrets!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Think about inviting a friend over to play video games or eat cookies. You give them your address because you know them and trust them. But you would never tape your home address and bedroom floor plan to a telephone pole on the street corner for any stranger to see!
+              </p>
+              <p>
+                When you post an uncleaned iPhone photo onto social media, a public marketplace, or a group chat, anyone who downloads that file can open the secret Apple diary. They can see the exact street where you took the picture and what time you were there.
+              </p>
+              <p>
+                If you post photos of your pet in your backyard every afternoon, a stranger could piece together your daily schedule without ever talking to you. That is information that should always stay private and protected.
+              </p>
+              <p>
+                Running your iPhone pictures through our HEIC cleaner erases that digital trail completely. Your friends still get to see the cute puppy and the delicious birthday cake, but your home and your personal life stay your safe secrets!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Clear, simple answers to help you understand Apple HEIC photos and how to keep your family safe.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

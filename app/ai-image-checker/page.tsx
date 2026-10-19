@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
-          AI Model &amp; Prompt Scanner · 100% Client-Side
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. VII // SYNTHETIC SIGNATURE &amp; DIFFUSION PROMPT INSPECTOR
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           AI Image Checker
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Check if an image contains synthetic model tags, generation prompts, or workflow parameters from Midjourney, DALL-E, or Stable Diffusion.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Forensic scanner identifying embedded Midjourney prompts, DALL-E parameters, Stable Diffusion node trees, and FLUX generation tags.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>PARSERS: PNG TXT, EXIF USERCOMMENT, XMP</span>
+          <span className="opacity-40">/</span>
+          <span>MODELS: SD, MJ, DALL-E, COMFYUI</span>
+          <span className="opacity-40">/</span>
+          <span>ZERO CLOUD TELEMETRY</span>
+        </div>
+      </header>
 
       {/* Interactive Analyzer Tool with Transparent Stepper */}
       <AnalyzerTool toolType="ai-image" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">DISPATCH // SYNTHESIS FORENSICS</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               How does this checker catch AI art? (The robot fingerprints)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imagine two artists painting a picture of a magical castle. The first artist is a human painter who uses real wooden easels, hair brushes, and oil paints. The second artist is a futuristic robot who uses laser beams and electric styluses!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              To the naked human eye, both castle paintings look colorful, bright, and magnificent. You might not be able to tell which one was drawn by the human and which one was drawn by the robot just by glancing at them.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              However, if a detective uses a special ultraviolet magnifying glass, they can spot tiny metal robot shavings and laser calibration stamps pressed into the canvas!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our AI Image Checker is that ultraviolet magnifying glass! It looks inside the digital file header for software stamps left behind by Midjourney, DALL-E, Stable Diffusion, and ComfyUI, giving you clear factual proof of how the art was made!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Imagine two artists painting a picture of a magical castle. The first artist is a human painter who uses real wooden easels, hair brushes, and oil paints. The second artist is a futuristic robot who uses laser beams and electric styluses!
+              </p>
+              <p>
+                To the naked human eye, both castle paintings look colorful, bright, and magnificent. You might not be able to tell which one was drawn by the human and which one was drawn by the robot just by glancing at them.
+              </p>
+              <p>
+                However, if a detective uses a special ultraviolet magnifying glass, they can spot tiny metal robot shavings and laser calibration stamps pressed into the canvas!
+              </p>
+              <p>
+                Our AI Image Checker is that ultraviolet magnifying glass! It looks inside the digital file header for software stamps left behind by Midjourney, DALL-E, Stable Diffusion, and ComfyUI, giving you clear factual proof of how the art was made!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">EPISTEMOLOGY // BINARY CERTAINTY</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Why metadata signatures are better than guessing pixels
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Many websites on the internet claim they can tell if a photo is AI just by looking at the colored pixels. But those pixel-guessing tools make mistakes all the time!
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              They often look at an authentic photo of a smooth sunset and wrongly accuse it of being AI, or they look at a real AI picture with grainy filters and mistakenly say it is a camera photo.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool does not make random guesses! Instead, it inspects the exact file header metadata. If the file contains the words &ldquo;Midjourney&rdquo; or &ldquo;Prompt: a cute dragon,&rdquo; that is 100% indisputable, factual proof.
-            </p>
-            <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-              It is as reliable as reading the signature at the bottom of a signed letter. You get clear, honest insights without any false accusations!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Many websites on the internet claim they can tell if a photo is AI just by looking at the colored pixels. But those pixel-guessing tools make mistakes all the time!
+              </p>
+              <p>
+                They often look at an authentic photo of a smooth sunset and wrongly accuse it of being AI, or they look at a real AI picture with grainy filters and mistakenly say it is a camera photo.
+              </p>
+              <p>
+                Our tool does not make random guesses! Instead, it inspects the exact file header metadata. If the file contains the words &ldquo;Midjourney&rdquo; or &ldquo;Prompt: a cute dragon,&rdquo; that is 100% indisputable, factual proof.
+              </p>
+              <p>
+                It is as reliable as reading the signature at the bottom of a signed letter. You get clear, honest insights without any false accusations!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Discover how AI generators stamp images and how our signature scanner detects them.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

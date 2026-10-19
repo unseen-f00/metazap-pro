@@ -52,87 +52,98 @@ export default function Page() {
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="paper-card p-8 md:p-12 mb-10 shadow-paper border border-slate-200/80 dark:border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300 text-xs font-semibold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
-          Privacy-First HEIC Converter · 100% Client-Side
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. XXII // HEIC CONTAINER DECODING &amp; UNIVERSAL JPEG EMISSION
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           HEIC to JPG Converter
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          Convert Apple HEIC photos into universal JPG images with all personal metadata and GPS tags cleanly removed. Fast, free, and completely in your browser.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Air-gapped translation decoding Apple HEIC containers into universal high-fidelity JPEGs with complete elimination of satellite GPS pins and device serials.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>SOURCE: HEIC / HEIF</span>
+          <span className="opacity-40">/</span>
+          <span>TARGET: HIGH-FIDELITY JPEG</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED COMPILATION</span>
+        </div>
+      </header>
 
       {/* Interactive Tool with Transparent Progress Stepper */}
       <CoreRemoverTool toolType="heic-convert" />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        {/* Explanatory Sections with Massive ELI5 Content */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* Explanatory Sections */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">INTEROPERABILITY // UNIVERSALITY</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Why turn Apple HEIC into universal JPG? (The universal key)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Imagine an iPhone speaks a special private language that only Apple devices can understand. If you send that file to your grandmother’s Windows computer, a school website, or an Android phone, the computer says: &ldquo;I do not know how to read this strange file!&rdquo;
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              JPG is the friendly universal language of digital pictures. Every single computer, phone, website, and digital photo frame on the planet understands JPG instantly.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              When you convert your iPhone photos into JPGs, you never have to worry about whether a website or friend can open your picture. It opens everywhere without any errors.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our converter does this translation in one quick second, making your photos easy to share, print, and enjoy anywhere you go!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Imagine an iPhone speaks a special private language that only Apple devices can understand. If you send that file to your grandmother’s Windows computer, a school website, or an Android phone, the computer says: &ldquo;I do not know how to read this strange file!&rdquo;
+              </p>
+              <p>
+                JPG is the friendly universal language of digital pictures. Every single computer, phone, website, and digital photo frame on the planet understands JPG instantly.
+              </p>
+              <p>
+                When you convert your iPhone photos into JPGs, you never have to worry about whether a website or friend can open your picture. It opens everywhere without any errors.
+              </p>
+              <p>
+                Our converter does this translation in one quick second, making your photos easy to share, print, and enjoy anywhere you go!
+              </p>
+            </div>
+          </article>
 
-          <div className="paper-card p-6 md:p-8 space-y-4 border border-slate-200/80 dark:border-slate-800">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <article className="editorial-card p-6 md:p-8 space-y-4">
+            <div className="editorial-kicker">SECURITY // ISOLATED CONVERSION</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
               Converting with 100% privacy (No snooping clouds)
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Most free converter websites on the internet make you upload your private photos to their giant computer servers in a faraway warehouse. But why would you send private photos of your kids or vacation across the world just to change a file format?
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Sending photos to unfamiliar servers is risky because you never know who might save a copy or use your photos to train robot computers.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              Our tool does the entire conversion right inside your own web browser. Your photo never travels across the internet wires, and no server ever sees your picture.
-            </p>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
-              It also scrubs away all GPS map coordinates during the conversion, so the JPG you download is both universally compatible and completely private!
-            </p>
-          </div>
+            <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
+              <p>
+                Most free converter websites on the internet make you upload your private photos to their giant computer servers in a faraway warehouse. But why would you send private photos of your kids or vacation across the world just to change a file format?
+              </p>
+              <p>
+                Sending photos to unfamiliar servers is risky because you never know who might save a copy or use your photos to train robot computers.
+              </p>
+              <p>
+                Our tool does the entire conversion right inside your own web browser. Your photo never travels across the internet wires, and no server ever sees your picture.
+              </p>
+              <p>
+                It also scrubs away all GPS map coordinates during the conversion, so the JPG you download is both universally compatible and completely private!
+              </p>
+            </div>
+          </article>
         </div>
 
         {/* FAQs */}
-        <div>
-          <div className="text-center mb-8">
-            <h2 className="font-[family-name:var(--font-merriweather)] text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-              Frequently Asked Questions (Explained for Everyone)
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Everything you need to know about converting Apple HEIC photos into clean, universal JPGs.
-            </p>
-          </div>
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
+          </h2>
 
           <div className="space-y-4">
             {faqs.map((item, i) => (
               <details
                 key={i}
-                className="group border border-slate-200/90 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer px-6 py-4.5 font-semibold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base text-slate-800 dark:text-slate-200 pr-4">{item.q}</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-open:rotate-180 shrink-0 text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{item.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100/60 dark:border-slate-800 space-y-3">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {item.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -140,8 +151,8 @@ export default function Page() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

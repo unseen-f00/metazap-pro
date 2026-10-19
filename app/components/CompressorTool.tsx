@@ -180,28 +180,28 @@ export default function CompressorTool() {
   };
 
   return (
-    <div className="paper-card p-4 sm:p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900/90 transition-colors">
+    <div className="editorial-card p-5 sm:p-8 md:p-10 mb-14 shadow-paper border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors">
       {!selectedFile ? (
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
-          label="Drop photos here to compress and resize"
+          label="Drop photo here to compress & scale"
           description="JPEG, PNG, WebP — reduce file size with real-time sliders"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
         />
       ) : (
         <div className="space-y-6">
           {/* Header controls bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200 dark:border-stone-800">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-full text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1.5">
-                <span>⚡ DYNAMIC PHOTO COMPRESSOR</span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+              <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+                DYNAMIC COMPRESSION STUDIO
+              </span>
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100">
                 {selectedFile.name}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                 Original:{' '}
-                <span className="font-semibold text-slate-700 dark:text-slate-300 font-mono">
+                <span className="font-semibold text-stone-700 dark:text-stone-300">
                   {formatFileSize(selectedFile.size)}
                 </span>
                 {originalDimensions && (
@@ -214,21 +214,21 @@ export default function CompressorTool() {
             </div>
             <button
               onClick={handleReset}
-              className="self-start sm:self-auto text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+              className="self-start sm:self-auto font-mono text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 px-3.5 py-2 rounded-lg transition-colors cursor-pointer"
             >
-              Upload Different Photo
+              [ Upload Different Photo ]
             </button>
           </div>
 
           {/* Interactive Controls & Sliders Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-5 bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-2xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-5 bg-stone-50/70 dark:bg-stone-850 border border-stone-200 dark:border-stone-800 rounded-xl shadow-2xs">
             {/* Control 1: Compression Quality Slider */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <span>🎛️</span> Compression Quality
+                <span className="font-serif font-bold text-stone-800 dark:text-stone-200">
+                  Compression Quality
                 </span>
-                <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/80 px-2 py-0.5 rounded-md border border-indigo-200/60 dark:border-indigo-800/60">
+                <span className="font-mono font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 px-2 py-0.5 rounded border border-stone-200 dark:border-stone-700">
                   {Math.round(quality * 100)}%
                 </span>
               </div>
@@ -239,9 +239,9 @@ export default function CompressorTool() {
                 step="0.05"
                 value={quality}
                 onChange={(e) => setQuality(parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-1.5 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-stone-900 dark:accent-stone-100"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+              <div className="flex justify-between font-mono text-[10px] text-stone-400">
                 <span>Smallest File (10%)</span>
                 <span>Balanced (80%)</span>
                 <span>Max Quality (100%)</span>
@@ -251,13 +251,13 @@ export default function CompressorTool() {
             {/* Control 2: Resolution Scale Slider */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <span>📐</span> Resolution Scale
+                <span className="font-serif font-bold text-stone-800 dark:text-stone-200">
+                  Resolution Scale
                 </span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-200/60 dark:border-emerald-800/60">
+                <span className="font-mono font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 px-2 py-0.5 rounded border border-stone-200 dark:border-stone-700">
                   {Math.round(scale * 100)}%
                   {compressedDimensions && (
-                    <span className="ml-1 text-[11px] text-slate-500 font-normal">
+                    <span className="ml-1 text-[11px] text-stone-500 font-normal">
                       ({compressedDimensions.width}×{compressedDimensions.height})
                     </span>
                   )}
@@ -270,9 +270,9 @@ export default function CompressorTool() {
                 step="0.05"
                 value={scale}
                 onChange={(e) => setScale(parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                className="w-full h-1.5 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-stone-900 dark:accent-stone-100"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+              <div className="flex justify-between font-mono text-[10px] text-stone-400">
                 <span>Mini (10%)</span>
                 <span>Half (50%)</span>
                 <span>Original (100%)</span>
@@ -280,24 +280,24 @@ export default function CompressorTool() {
             </div>
 
             {/* Control 3: Output Format Preset Buttons */}
-            <div className="space-y-2 md:col-span-2 pt-2 border-t border-slate-200/60 dark:border-slate-800/60">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+            <div className="space-y-2 md:col-span-2 pt-3 border-t border-stone-200/60 dark:border-stone-800/60">
+              <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
                 Target Format
               </span>
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { format: 'image/jpeg' as OutputFormat, label: 'JPEG (Universal)', icon: '📷' },
-                  { format: 'image/webp' as OutputFormat, label: 'WebP (High Efficiency)', icon: '🌐' },
+                  { format: 'image/webp' as OutputFormat, label: 'WebP (Efficient)', icon: '🌐' },
                   { format: 'image/png' as OutputFormat, label: 'PNG (Lossless / Alpha)', icon: '🖼️' },
                 ].map((item) => (
                   <button
                     key={item.format}
                     type="button"
                     onClick={() => setOutputFormat(item.format)}
-                    className={`px-3 py-2 text-xs font-semibold rounded-xl border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`px-3 py-2 text-xs font-mono rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       outputFormat === item.format
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        ? 'bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-950 border-stone-900 dark:border-stone-100 font-bold shadow-2xs'
+                        : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800'
                     }`}
                   >
                     <span>{item.icon}</span>
@@ -311,33 +311,33 @@ export default function CompressorTool() {
           {/* Live Preview & Comparison */}
           {compressedUrl && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-3 bg-white dark:bg-slate-900 flex flex-col items-center">
-                <span className="text-xs font-bold text-slate-500 mb-2">Original Image</span>
+              <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-white dark:bg-stone-900 flex flex-col items-center">
+                <span className="editorial-kicker text-stone-400 dark:text-stone-500 mb-2">Original Photograph</span>
                 {previewUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={previewUrl}
                     alt="Original"
-                    className="max-h-56 object-contain rounded-xl bg-slate-50 dark:bg-slate-950/40"
+                    className="max-h-56 object-contain rounded-lg bg-stone-50 dark:bg-stone-950/40"
                   />
                 )}
-                <span className="mt-2 text-xs font-mono font-semibold text-slate-600 dark:text-slate-400">
+                <span className="mt-2.5 font-mono text-xs text-stone-600 dark:text-stone-400">
                   {formatFileSize(selectedFile.size)}
                 </span>
               </div>
 
-              <div className="border border-emerald-300/80 dark:border-emerald-800/80 rounded-2xl p-3 bg-emerald-50/20 dark:bg-emerald-950/20 flex flex-col items-center relative">
-                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-1">
-                  <span>✓</span> Compressed Preview
-                  {isCompressing && <span className="animate-pulse">(Calculating...)</span>}
+              <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-stone-50/50 dark:bg-stone-850 flex flex-col items-center relative">
+                <span className="editorial-kicker text-stone-900 dark:text-stone-100 mb-2 flex items-center gap-1 font-bold">
+                  ✓ Compressed Preview
+                  {isCompressing && <span className="animate-pulse font-normal">(Calculating...)</span>}
                 </span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={compressedUrl}
                   alt="Compressed"
-                  className="max-h-56 object-contain rounded-xl bg-slate-50 dark:bg-slate-950/40"
+                  className="max-h-56 object-contain rounded-lg bg-white dark:bg-stone-950/40"
                 />
-                <span className="mt-2 text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                <span className="mt-2.5 font-mono text-xs font-bold text-stone-900 dark:text-stone-100">
                   {compressedBlob ? formatFileSize(compressedBlob.size) : '...'}
                 </span>
               </div>
@@ -346,7 +346,7 @@ export default function CompressorTool() {
 
           {/* Size Analytics Before vs After */}
           {sizeAnalytics && (
-            <FileSizeAnalyticsCard analytics={sizeAnalytics} title="Compression Savings" />
+            <FileSizeAnalyticsCard analytics={sizeAnalytics} title="Compression Ledger" />
           )}
 
           {/* Download Action */}
@@ -354,9 +354,9 @@ export default function CompressorTool() {
             <button
               onClick={handleDownload}
               disabled={isCompressing || !compressedBlob}
-              className="flex items-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-all cursor-pointer"
+              className="flex items-center gap-2 px-6 py-3.5 bg-stone-900 hover:bg-black dark:bg-stone-100 dark:hover:bg-white disabled:opacity-50 text-stone-50 dark:text-stone-950 font-mono text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
             >
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               <span>Download Compressed Image</span>
@@ -364,7 +364,7 @@ export default function CompressorTool() {
 
             <button
               onClick={handleReset}
-              className="px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer"
+              className="px-5 py-3.5 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-mono text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               Reset
             </button>

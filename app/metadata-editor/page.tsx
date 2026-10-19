@@ -9,27 +9,38 @@ export const metadata: Metadata = {
 
 export default function MetadataEditorPage() {
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="mb-10 text-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-200 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 rounded-full text-xs font-bold text-indigo-700 mb-4 tracking-wide">
-          <span>🛠️ IN-BROWSER EXIF INJECTOR</span>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. XVIII // EXIF REGISTRATION &amp; FIELD INJECTION
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4 leading-tight">
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
           Image Metadata Editor
         </h1>
-        <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-[family-name:var(--font-inter)]">
-          Manually write custom photographer credits, legal copyright notices, capture timestamps, and software tags directly into your image file with zero server uploads.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Custom field registration writing photographer credits, legal copyright covenants, ISO 8601 capture dates, and optical hardware profiles in RAM.
         </p>
-      </div>
+
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>PARSERS: PIEXIFJS &amp; EXIFR</span>
+          <span className="opacity-40">/</span>
+          <span>PIXEL ALTERATION: 0.00%</span>
+          <span className="opacity-40">/</span>
+          <span>AIR-GAPPED STORAGE</span>
+        </div>
+      </header>
 
       <MetadataEditorTool />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        <div className="paper-card p-8 md:p-12 shadow-paper border border-slate-200/80 dark:border-slate-800">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight font-[family-name:var(--font-merriweather)]">
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        <article className="editorial-card p-6 md:p-8 space-y-4">
+          <div className="editorial-kicker">DISPATCH // REGISTRY NOTATION</div>
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-ink dark:text-chalk">
             What is an EXIF Metadata Editor? (Explained Simply)
           </h2>
-          <div className="space-y-5 text-base md:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-xs sm:text-sm text-ink/80 dark:text-chalk/80 leading-relaxed font-sans">
             <p>
               Imagine you drew a wonderful picture in art class, and on the back of the paper, you have a blank index card where you can write your name, the date you finished it, and a note saying that this drawing belongs to you. If someone finds the picture on the classroom floor, they can just flip it over to see who created it!
             </p>
@@ -43,11 +54,13 @@ export default function MetadataEditorPage() {
               Best of all, all of this writing happens right inside your web browser on your computer. Your photo is never sent to our servers, never saved in a database, and never examined by strangers. You make your edits, download the finished photo, and keep total ownership of your files.
             </p>
           </div>
-        </div>
+        </article>
 
-        <div className="paper-card p-8 md:p-12 shadow-paper border border-slate-200/80 dark:border-slate-800">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-8 tracking-tight font-[family-name:var(--font-merriweather)]">
-            Frequently Asked Questions (ELI5 Style)
+        {/* FAQs */}
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD INQUIRIES // TECHNICAL DISPATCHES</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
           </h2>
           <div className="space-y-4">
             {[
@@ -90,15 +103,15 @@ export default function MetadataEditorPage() {
             ].map((faq, index) => (
               <details
                 key={index}
-                className="group border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm open:shadow-md transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer p-6 font-bold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base md:text-lg pr-4">{faq.q}</span>
-                  <span className="shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 group-open:bg-indigo-100 dark:group-open:bg-indigo-950/70 group-open:text-indigo-600 dark:group-open:text-indigo-400 flex items-center justify-center text-slate-500 dark:text-slate-400 transition-colors text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{faq.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base space-y-4 border-t border-slate-100 dark:border-slate-800 pt-4 bg-slate-50/30 dark:bg-slate-900/30">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {faq.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -106,8 +119,8 @@ export default function MetadataEditorPage() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 # robots.txt
-# Search engine crawling instructions for Image Metadata Remover
+# Search engine crawling instructions for MetaZap
 # All bots are allowed to crawl public pages.
 
 User-agent: *
@@ -7,4 +7,4 @@ Allow: /
 Disallow: /api/
 
 # Reference sitemap for discovery
-Sitemap: https://image-metadata-remover.vercel.app/sitemap.xml
+Sitemap: https://metazap.app/sitemap.xml

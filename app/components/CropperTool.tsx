@@ -228,41 +228,41 @@ export default function CropperTool() {
   };
 
   return (
-    <div className="paper-card p-4 sm:p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900/90 transition-colors">
+    <div className="editorial-card p-5 sm:p-8 md:p-10 mb-14 shadow-paper border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors">
       {!selectedFile ? (
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
-          label="Drop photos here to crop for social media"
+          label="Drop photo here to crop for social media"
           description="JPEG, PNG, WebP — instant aspect ratio presets (1:1, 9:16, 16:9)"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
         />
       ) : (
         <div className="space-y-6">
           {/* Header controls bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200 dark:border-stone-800">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-full text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1.5">
-                <span>✂️ SOCIAL MEDIA CROPPER</span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+              <span className="editorial-kicker text-stone-400 dark:text-stone-500 block mb-1">
+                ASPECT RATIO STUDIO
+              </span>
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100">
                 {selectedFile.name}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {formatFileSize(selectedFile.size)} • Select preset and drag to adjust framing
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                {formatFileSize(selectedFile.size)} • Select preset &amp; drag bounding box
               </p>
             </div>
             <button
               onClick={handleReset}
-              className="self-start sm:self-auto text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+              className="self-start sm:self-auto font-mono text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 px-3.5 py-2 rounded-lg transition-colors cursor-pointer"
             >
-              Upload Different Photo
+              [ Upload Different Photo ]
             </button>
           </div>
 
           {/* Preset Buttons */}
           <div className="space-y-2">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              Select Aspect Ratio Preset:
+            <span className="editorial-kicker text-stone-400 dark:text-stone-500 block">
+              Aspect Ratio Presets
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
               {PRESETS.map((preset, idx) => (
@@ -270,19 +270,19 @@ export default function CropperTool() {
                   key={preset.label}
                   type="button"
                   onClick={() => selectPreset(idx)}
-                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-3 rounded-lg border text-left transition-all cursor-pointer ${
                     activePresetIndex === idx
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      ? 'bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-950 border-stone-900 dark:border-stone-100 shadow-2xs'
+                      : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-850'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 text-xs font-bold">
+                  <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                     <span>{preset.icon}</span>
                     <span className="truncate">{preset.label}</span>
                   </div>
                   <div
-                    className={`text-[10px] mt-1 truncate ${
-                      activePresetIndex === idx ? 'text-indigo-100' : 'text-slate-400 dark:text-slate-400'
+                    className={`font-mono text-[10px] mt-1 truncate ${
+                      activePresetIndex === idx ? 'text-stone-300 dark:text-stone-700' : 'text-stone-400'
                     }`}
                   >
                     {preset.sublabel}
@@ -293,7 +293,7 @@ export default function CropperTool() {
           </div>
 
           {/* Interactive ReactCrop Canvas */}
-          <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-100/60 dark:bg-slate-950/60 flex flex-col items-center justify-center overflow-auto shadow-inner">
+          <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-stone-50/60 dark:bg-stone-950/60 flex flex-col items-center justify-center overflow-auto shadow-inner">
             <ReactCrop
               crop={crop}
               onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -314,9 +314,9 @@ export default function CropperTool() {
 
           {/* Live Preview Card & Dimensions */}
           {croppedPreviewUrl && (
-            <div className="border border-emerald-200 dark:border-emerald-800 rounded-2xl p-4 bg-emerald-50/30 dark:bg-emerald-950/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-4 bg-stone-50/50 dark:bg-stone-850 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-slate-900 rounded-xl overflow-hidden shadow-sm shrink-0 flex items-center justify-center">
+                <div className="w-18 h-18 bg-stone-900 rounded-lg overflow-hidden shadow-2xs shrink-0 flex items-center justify-center border border-stone-200 dark:border-stone-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={croppedPreviewUrl}
@@ -325,22 +325,22 @@ export default function CropperTool() {
                   />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
-                    <span>✓</span> Crop Preview Ready
+                  <span className="editorial-kicker text-stone-900 dark:text-stone-100 flex items-center gap-1 font-bold">
+                    ✓ Crop Preview Ready
                   </span>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  <p className="font-mono text-xs text-stone-600 dark:text-stone-400 mt-1">
                     Preset:{' '}
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    <span className="font-bold text-stone-900 dark:text-stone-100">
                       {PRESETS[activePresetIndex].label}
                     </span>
                     {croppedBlob && (
-                      <span className="ml-2 font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+                      <span className="ml-2 font-mono text-stone-600 dark:text-stone-300">
                         ({formatFileSize(croppedBlob.size)})
                       </span>
                     )}
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    Metadata will be stripped automatically on export.
+                  <p className="font-mono text-[10px] text-stone-400 mt-0.5">
+                    All tracking metadata stripped automatically on export.
                   </p>
                 </div>
               </div>
@@ -348,9 +348,9 @@ export default function CropperTool() {
               <button
                 onClick={handleDownload}
                 disabled={isProcessingCrop || !croppedBlob}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-all cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 hover:bg-black dark:bg-stone-100 dark:hover:bg-white disabled:opacity-50 text-stone-50 dark:text-stone-950 font-mono text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
               >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 <span>Download Cropped Photo</span>

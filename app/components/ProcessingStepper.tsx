@@ -2,10 +2,9 @@
 
 /**
  * ProcessingStepper.tsx
- * Transparent 4-step progress & trust-building stepper component.
- * Displays real-time inspection stages to reassure users that their
- * photo is being processed locally and securely.
- * Full Dark Mode & Mobile Responsive.
+ * Minimalist Forensic Progress Stepper for MetaZap.
+ * Provides real-time transparency and reassurance that the image is
+ * processed strictly in local browser memory.
  */
 
 export interface StepItem {
@@ -25,66 +24,70 @@ export interface ProcessingStepperProps {
 export default function ProcessingStepper({
   currentStep,
   progressPercent,
-  customStep3Label = 'Stripping Metadata',
-  customStep3Desc = 'Removing targeted tags & preserving visual pixels',
+  customStep3Label = 'Sanitizing Headers',
+  customStep3Desc = 'Purging targeted tags while preserving pixel matrix',
   fileName,
 }: ProcessingStepperProps) {
   const steps: StepItem[] = [
     {
       id: 1,
-      label: 'Reading File',
-      description: 'Loading binary bytes into local browser memory',
+      label: '01. Ingestion',
+      description: 'Loading binary bytes into local RAM buffer',
     },
     {
       id: 2,
-      label: 'Analyzing Tags',
-      description: 'Scanning EXIF, GPS coordinates & header chunks',
+      label: '02. Inspection',
+      description: 'Scanning EXIF directories & GPS tags',
     },
     {
       id: 3,
-      label: customStep3Label,
+      label: `03. ${customStep3Label}`,
       description: customStep3Desc,
     },
     {
       id: 4,
-      label: 'Finalizing',
-      description: 'Verifying clean image output & preparing download',
+      label: '04. Verification',
+      description: 'Verifying zero remaining tracking markers',
     },
   ];
 
   return (
-    <div className="border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 bg-slate-50/80 dark:bg-slate-900/60 shadow-2xs animate-in fade-in duration-300">
+    <div className="border border-stone-200 dark:border-stone-800 rounded-xl p-5 sm:p-6 bg-stone-50/70 dark:bg-stone-900/40 shadow-2xs animate-in fade-in duration-200">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-pulse"></span>
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
-              Live In-Browser Processing
+            <span className="w-1.5 h-1.5 rounded-full bg-stone-900 dark:bg-stone-100 animate-pulse"></span>
+            <span className="editorial-kicker text-stone-900 dark:text-stone-100">
+              Forensic Processing In Progress
             </span>
           </div>
           {fileName && (
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mt-1 truncate max-w-sm">
-              Analyzing: <span className="font-semibold text-slate-800 dark:text-slate-200">{fileName}</span>
+            <p className="font-mono text-xs text-stone-600 dark:text-stone-400 mt-1 truncate max-w-sm">
+              Target: <span className="text-stone-900 dark:text-stone-200 font-semibold">{fileName}</span>
             </p>
           )}
         </div>
-        <div className="text-left sm:text-right">
-          <span className="text-xs font-bold text-slate-900 dark:text-white">{progressPercent}% Completed</span>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">100% Client-Side · Zero Server Uploads</p>
+        <div className="text-left sm:text-right font-mono">
+          <span className="text-xs font-bold text-stone-900 dark:text-stone-100">
+            [{progressPercent}% COMPLETED]
+          </span>
+          <p className="text-[10px] text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+            100% Client-Side RAM Buffer
+          </p>
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="w-full h-2.5 bg-slate-200/90 dark:bg-slate-800 rounded-full overflow-hidden mb-6 p-0.5">
+      {/* Progress Track */}
+      <div className="w-full h-1.5 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden mb-5">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-emerald-500 rounded-full transition-all duration-300 ease-out shadow-xs"
+          className="h-full bg-stone-900 dark:bg-stone-100 rounded-full transition-all duration-200 ease-out"
           style={{ width: `${Math.min(100, Math.max(5, progressPercent))}%` }}
         />
       </div>
 
-      {/* 4-Step Stepper Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* 4-Step Ledger Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
         {steps.map((step) => {
           const isDone = currentStep > step.id;
           const isCurrent = currentStep === step.id;
@@ -92,47 +95,23 @@ export default function ProcessingStepper({
           return (
             <div
               key={step.id}
-              className={`p-3.5 rounded-xl border transition-all ${
+              className={`p-3 rounded-lg border transition-all ${
                 isDone
-                  ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-800/80 text-emerald-950 dark:text-emerald-100'
+                  ? 'bg-stone-100/90 dark:bg-stone-800/60 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100'
                   : isCurrent
-                  ? 'bg-white dark:bg-slate-900 border-indigo-400 dark:border-indigo-600 shadow-sm ring-2 ring-indigo-100 dark:ring-indigo-950 text-slate-900 dark:text-white'
-                  : 'bg-white/40 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/60 text-slate-400 dark:text-slate-500'
+                  ? 'bg-white dark:bg-stone-900 border-stone-900 dark:border-stone-100 shadow-2xs text-stone-950 dark:text-white'
+                  : 'bg-transparent border-stone-200/60 dark:border-stone-800/60 text-stone-400 dark:text-stone-600'
               }`}
             >
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                    isDone
-                      ? 'bg-emerald-600 dark:bg-emerald-500 text-white'
-                      : isCurrent
-                      ? 'bg-indigo-600 dark:bg-indigo-500 text-white animate-pulse'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {isDone ? '✓' : step.id}
-                </div>
-                <span
-                  className={`text-xs font-bold truncate ${
-                    isDone
-                      ? 'text-emerald-800 dark:text-emerald-300'
-                      : isCurrent
-                      ? 'text-indigo-900 dark:text-indigo-300'
-                      : 'text-slate-500 dark:text-slate-400'
-                  }`}
-                >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-mono text-xs font-bold truncate">
                   {step.label}
                 </span>
+                <span className="font-mono text-[10px]">
+                  {isDone ? '✓' : isCurrent ? '●' : '○'}
+                </span>
               </div>
-              <p
-                className={`text-[11px] leading-tight ${
-                  isDone
-                    ? 'text-emerald-700/80 dark:text-emerald-400/80'
-                    : isCurrent
-                    ? 'text-slate-600 dark:text-slate-300'
-                    : 'text-slate-400 dark:text-slate-500'
-                }`}
-              >
+              <p className="text-[11px] leading-tight font-sans text-stone-500 dark:text-stone-400">
                 {step.description}
               </p>
             </div>
@@ -140,24 +119,10 @@ export default function ProcessingStepper({
         })}
       </div>
 
-      {/* Transparent Security Guarantee Pill */}
-      <div className="mt-4 pt-3.5 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-        <span className="flex items-center gap-1.5">
-          <svg
-            width="14"
-            height="14"
-            className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          Sandbox Guarantee: File stays strictly inside your device&apos;s RAM memory.
-        </span>
-        <span className="font-mono text-slate-400 dark:text-slate-500">Step {currentStep} of 4</span>
+      {/* Bottom Sandbox Assurance */}
+      <div className="mt-4 pt-3 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between font-mono text-[11px] text-stone-500 dark:text-stone-400">
+        <span>[ SANDBOX: ZERO EXTERNAL PACKETS TRANSMITTED ]</span>
+        <span>STAGE 0{currentStep} / 04</span>
       </div>
     </div>
   );

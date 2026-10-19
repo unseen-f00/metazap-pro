@@ -9,45 +9,61 @@ export const metadata: Metadata = {
 
 export default function BatchPage() {
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 md:py-20">
-      <div className="mb-10 text-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-200 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300 rounded-full text-xs font-bold text-indigo-700 mb-4 tracking-wide">
-          <span>⚡ BULK PRIVACY ENGINE</span>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+      {/* Editorial Masthead */}
+      <header className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="editorial-kicker mb-3">
+          VOL. IV // BATCH INGESTION &amp; ARCHIVE COMPILATION
         </div>
-        <h1 className="font-[family-name:var(--font-merriweather)] text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4 leading-tight">
-          Batch Photo Metadata Remover
+        <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-ink dark:text-chalk mb-4 leading-tight">
+          Batch Photo Metadata Sanitizer
         </h1>
-        <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-[family-name:var(--font-inter)]">
-          Clean an entire photo album or photoshoot at once. Strip hidden GPS coordinates, serial numbers, and device tags in bulk and download everything as a single ZIP file.
+        <p className="font-serif italic text-base sm:text-lg text-ink/75 dark:text-chalk/75 leading-relaxed">
+          Clean entire portfolios, shoots, or albums in a single continuous client-side pass. Strips location coordinates, hardware identifiers, and creator footprints before archiving to a private ZIP container.
         </p>
-      </div>
 
+        {/* Technical Specification Bar */}
+        <div className="mt-6 pt-4 border-t border-hairline flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-ink/60 dark:text-chalk/60 uppercase tracking-widest">
+          <span>CAPACITY: 25 ASSETS / SESSION</span>
+          <span className="opacity-40">/</span>
+          <span>EXECUTION: LOCAL RAM LOOP</span>
+          <span className="opacity-40">/</span>
+          <span>OUTPUT: VERIFIED ZIP</span>
+        </div>
+      </header>
+
+      {/* Main Interactive Batch Engine */}
       <BatchTool />
 
-      <section className="max-w-4xl mx-auto mt-16 space-y-12">
-        <div className="paper-card p-8 md:p-12 shadow-paper border border-slate-200/80 dark:border-slate-800">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight font-[family-name:var(--font-merriweather)]">
-            How Batch Photo Cleaning Works (Explained for a 6-Year-Old)
+      {/* Editorial Dispatches / ELI5 Analysis & FAQs */}
+      <section className="max-w-4xl mx-auto mt-16 space-y-10">
+        {/* ELI5 Explanation Section */}
+        <article className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">FIELD MANUAL // MECHANICAL EXPLANATION</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-6 tracking-tight">
+            How Batch Processing Operates in Your Device Memory
           </h2>
-          <div className="space-y-5 text-base md:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
+          <div className="space-y-4 text-sm sm:text-base leading-relaxed text-ink/80 dark:text-chalk/80 font-sans">
             <p>
-              Imagine you have a big pile of twenty birthday postcards that you want to send to all your friends. But on the back of every single postcard, there is a sticky price tag showing the store address and the time you bought it. Taking those stickers off one postcard at a time might take you forever!
+              Imagine having a stack of twenty post-office parcels to mail across the country. On the underside of every box, an adhesive shipping docket records the exact home coordinate, warehouse timestamp, and clerk workstation number where the parcel was packed. Peeling those tags off each package manually would be painstaking and error-prone.
             </p>
             <p>
-              Batch processing is like having a magical, super-fast assembly line right on your desk. Instead of picking up one picture, cleaning it, and putting it away before starting the next one, you just drop the whole stack of photos into the box at once.
+              Our batch engine establishes an automated, localized inspection line directly inside your browser window. Instead of processing a single snapshot and halting, your browser queues the entire collection into a managed memory stream.
             </p>
             <p>
-              Our little robot workers inside your browser line the pictures up neatly in a row. One by one, the robot quickly inspects the picture, gently peels off the hidden GPS tracking numbers, wipes away the camera serial numbers, and checks the image to make sure it looks just as beautiful as before.
+              Sequential workers traverse the file queue item-by-item: parsing binary APP markers, surgically severing GPS and EXIF headers, validating visual image integrity, and collecting the sanitized pixel stream into an isolated client-side memory ledger.
             </p>
             <p>
-              Once every single picture in the line has been cleaned, our tool neatly packs all of them into a shiny digital suitcase called a ZIP file. With just one click on the &ldquo;Download All as ZIP&rdquo; button, you get all your safe photos packed together, ready to share with friends or post online without any worries!
+              Once every frame is certified clean, the browser bundles the images into a standardized DEFLATE ZIP container. With a single click, your entire cleaned collection is delivered directly to your disk without ever routing a solitary byte through external infrastructure.
             </p>
           </div>
-        </div>
+        </article>
 
-        <div className="paper-card p-8 md:p-12 shadow-paper border border-slate-200/80 dark:border-slate-800">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-8 tracking-tight font-[family-name:var(--font-merriweather)]">
-            Frequently Asked Questions (ELI5 Style)
+        {/* ELI5 FAQ Section */}
+        <section className="editorial-card p-6 md:p-10">
+          <div className="editorial-kicker mb-2">DISPATCH ARCHIVE // INQUIRIES &amp; PROTOCOLS</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk mb-8 tracking-tight">
+            Frequently Addressed Questions
           </h2>
           <div className="space-y-4">
             {[
@@ -90,15 +106,15 @@ export default function BatchPage() {
             ].map((faq, index) => (
               <details
                 key={index}
-                className="group border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm open:shadow-md transition-all overflow-hidden"
+                className="group border border-hairline rounded-lg bg-surface-subtle open:bg-surface transition-colors overflow-hidden"
               >
-                <summary className="cursor-pointer p-6 font-bold text-slate-900 dark:text-white select-none flex items-center justify-between hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors">
-                  <span className="text-base md:text-lg pr-4">{faq.q}</span>
-                  <span className="shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 group-open:bg-indigo-100 dark:group-open:bg-indigo-950/70 group-open:text-indigo-600 dark:group-open:text-indigo-400 flex items-center justify-center text-slate-500 dark:text-slate-400 transition-colors text-sm">
-                    ▾
+                <summary className="cursor-pointer p-5 font-serif font-semibold text-ink dark:text-chalk select-none flex items-center justify-between hover:bg-hairline/30 transition-colors">
+                  <span className="text-base sm:text-lg pr-4">{faq.q}</span>
+                  <span className="shrink-0 font-mono text-xs text-ink/50 dark:text-chalk/50 group-open:rotate-180 transition-transform">
+                    [+]
                   </span>
                 </summary>
-                <div className="px-6 pb-6 text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base space-y-4 border-t border-slate-100 dark:border-slate-800 pt-4 bg-slate-50/30 dark:bg-slate-900/30">
+                <div className="px-5 pb-5 text-ink/80 dark:text-chalk/80 leading-relaxed text-sm space-y-3 border-t border-hairline pt-4 font-sans">
                   {faq.a.map((paragraph, pIdx) => (
                     <p key={pIdx}>{paragraph}</p>
                   ))}
@@ -106,8 +122,8 @@ export default function BatchPage() {
               </details>
             ))}
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </div>
   );
 }

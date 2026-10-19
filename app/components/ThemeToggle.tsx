@@ -2,7 +2,7 @@
 
 /**
  * ThemeToggle.tsx
- * Accessible dark/light mode toggle button.
+ * Clean, minimal editorial dark/light mode toggle.
  * Supports system preference detection and smooth theme switching.
  */
 
@@ -22,7 +22,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
   if (!mounted) {
     return (
       <div
-        className={`w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 ${className}`}
+        className={`w-9 h-9 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50 ${className}`}
         aria-hidden="true"
       />
     );
@@ -34,49 +34,42 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
     <button
       type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={`relative inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-2xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 shrink-0 ${className}`}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className={`relative inline-flex items-center justify-center w-9 h-9 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50/80 hover:bg-white dark:bg-stone-900/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-stone-100 shrink-0 cursor-pointer ${className}`}
+      aria-label={isDark ? 'Switch to light reading mode' : 'Switch to dark reading mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDark ? (
-        /* Sun Icon */
+        /* Minimalist Sun */
         <svg
-          width="18"
-          height="18"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="1.75"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-4.5 h-4.5 text-amber-400 transition-transform duration-200 hover:rotate-45"
+          className="w-4 h-4 text-stone-200 transition-transform duration-200 hover:rotate-45"
           aria-hidden="true"
         >
-          <circle cx="12" cy="12" r="5" />
-          <line x1="12" y1="1" x2="12" y2="3" />
-          <line x1="12" y1="21" x2="12" y2="23" />
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-          <line x1="1" y1="12" x2="3" y2="12" />
-          <line x1="21" y1="12" x2="23" y2="12" />
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
         </svg>
       ) : (
-        /* Moon Icon */
+        /* Minimalist Moon */
         <svg
-          width="18"
-          height="18"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="1.75"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-4.5 h-4.5 text-slate-700 transition-transform duration-200 hover:-rotate-12"
+          className="w-4 h-4 text-stone-800 transition-transform duration-200 hover:-rotate-12"
           aria-hidden="true"
         >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         </svg>
       )}
     </button>

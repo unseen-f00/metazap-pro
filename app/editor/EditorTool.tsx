@@ -58,22 +58,23 @@ export default function EditorTool() {
   };
 
   return (
-    <div className="paper-card p-6 md:p-10 shadow-paper-lg mb-12 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="editorial-card p-6 md:p-10 mb-12">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-hairline">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-[family-name:var(--font-merriweather)]">
-            Edit EXIF Fields
+          <div className="editorial-kicker mb-2">METADATA LAB // TAG INJECTOR</div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink dark:text-chalk">
+            Custom EXIF Injector
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Update author, copyright, and device tags before saving your photo.
+          <p className="text-sm text-ink/70 dark:text-chalk/70 mt-1 font-sans">
+            Customize author attribution, copyright declarations, and device tags before saving.
           </p>
         </div>
         {selectedFile && (
           <button
             onClick={handleReset}
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors"
+            className="self-start sm:self-auto text-xs font-mono font-medium text-ink/80 dark:text-chalk/80 border border-hairline hover:bg-hairline/30 px-3 py-1.5 rounded-md transition-colors"
           >
-            Clear / Upload New
+            RESET / UPLOAD NEW
           </button>
         )}
       </div>
@@ -87,68 +88,70 @@ export default function EditorTool() {
         />
       ) : (
         <div className="space-y-6">
-          <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 flex items-center gap-3">
-            <span className="text-2xl">📷</span>
+          <div className="border border-hairline rounded-lg p-4 bg-surface-subtle flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-md bg-surface border border-hairline flex items-center justify-center font-mono text-xs font-bold text-ink dark:text-chalk shrink-0">
+              EXIF
+            </div>
             <div>
-              <p className="font-semibold text-xs text-slate-900 dark:text-white">{selectedFile.name}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · Ready to customize
+              <p className="font-mono font-semibold text-xs text-ink dark:text-chalk">{selectedFile.name}</p>
+              <p className="font-mono text-[11px] text-ink/60 dark:text-chalk/60">
+                {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · READY FOR INJECTION
               </p>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             <label className="block">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 block">Author / Artist</span>
+              <span className="text-xs font-mono text-ink/70 dark:text-chalk/70 uppercase mb-1.5 block">Author / Artist</span>
               <input
                 type="text"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-all"
+                className="w-full px-3.5 py-2 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 block">Copyright Notice</span>
+              <span className="text-xs font-mono text-ink/70 dark:text-chalk/70 uppercase mb-1.5 block">Copyright Notice</span>
               <input
                 type="text"
                 value={copyright}
                 onChange={(e) => setCopyright(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-all"
+                className="w-full px-3.5 py-2 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 block">Date & Time Stamp</span>
+              <span className="text-xs font-mono text-ink/70 dark:text-chalk/70 uppercase mb-1.5 block">Date &amp; Time Stamp</span>
               <input
                 type="text"
                 value={dateOriginal}
                 onChange={(e) => setDateOriginal(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-all"
+                className="w-full px-3.5 py-2 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 block">Software Name</span>
+              <span className="text-xs font-mono text-ink/70 dark:text-chalk/70 uppercase mb-1.5 block">Software Stamp</span>
               <input
                 type="text"
                 value={software}
                 onChange={(e) => setSoftware(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-all"
+                className="w-full px-3.5 py-2 rounded-md border border-hairline bg-surface text-xs font-mono text-ink dark:text-chalk focus:outline-hidden focus:border-ink dark:focus:border-chalk transition-all"
               />
             </label>
           </div>
 
-          <div className="pt-2 flex gap-3">
+          <div className="pt-2 flex flex-wrap items-center gap-3">
             <button
               onClick={handleApply}
               disabled={isSaving}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+              className="px-6 py-2.5 bg-stone-900 text-stone-100 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 disabled:opacity-50 text-xs font-mono font-bold tracking-wider uppercase rounded-md shadow-sm transition-all"
             >
-              {isSaving ? 'Processing...' : 'Save & Download Photo'}
+              {isSaving ? 'INJECTING...' : 'SAVE & DOWNLOAD PHOTO'}
             </button>
             <button
               onClick={handleReset}
-              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-xl transition-colors"
+              className="px-4 py-2.5 border border-hairline bg-surface hover:bg-hairline/30 text-ink/80 dark:text-chalk/80 text-xs font-mono font-medium rounded-md transition-colors"
             >
-              Reset Fields
+              RESET FIELDS
             </button>
           </div>
         </div>
